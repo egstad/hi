@@ -1,5 +1,9 @@
 ![hi, this is my logo. it says 'hi,'. alrighty, bye!](https://repository-images.githubusercontent.com/282333995/ac3ead80-cdcd-11ea-81d2-45ef78b6a36d)
 
+this is a website that maybe you'd use.
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/799c0ef4-3ecb-4efe-983e-ed00cc3150d8/deploy-status)](https://app.netlify.com/sites/hi-there-is-this-working/deploys)
+
 ## Build Setup
 
 ```bash
