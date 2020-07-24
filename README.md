@@ -1,4 +1,4 @@
-![hi, this is my logo. it says 'hi,'. alrighty, bye!](https://repository-images.githubusercontent.com/282333995/7ac4e280-cdcb-11ea-9a76-23b59d03b1f7)
+![hi, this is my logo. it says 'hi,'. alrighty, bye!](https://repository-images.githubusercontent.com/282333995/ac3ead80-cdcd-11ea-81d2-45ef78b6a36d)
 
 ## Build Setup
 
