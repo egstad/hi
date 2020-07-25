@@ -1,17 +1,20 @@
 <template>
-  <form v-if="!$store.state.user.isLoggedIn" @submit.prevent="login">
-    <p>let's get you signed in</p>
-    <div>
-      <label for="email">email</label>
-      <input v-model="email" type="email" id="email" />
-    </div>
-    <div>
-      <label for="password">password</label>
-      <input v-model="password" type="password" id="password" />
-    </div>
-    <div v-if="error">{{ error.message }}</div>
-    <button>Login</button>
-  </form>
+  <div v-if="!$store.state.user.isLoggedIn">
+    <form @submit.prevent="loginUser">
+      <p>let's get you signed in</p>
+      <div>
+        <label for="email">email</label>
+        <input v-model="email" type="email" id="email" />
+      </div>
+      <div>
+        <label for="password">password</label>
+        <input v-model="password" type="password" id="password" />
+      </div>
+      <div v-if="error">{{ error.message }}</div>
+      <button>Login</button>
+    </form>
+    <button @click="loginAnon">Login Anonymously</button>
+  </div>
 
   <button v-else @click="logout">
     Logout
@@ -28,7 +31,10 @@ export default {
     }
   },
   methods: {
-    async login() {
+    async loginAnon() {
+      await this.$firebase.auth().signInAnonymously()
+    },
+    async loginUser() {
       try {
         await this.$firebase
           .auth()
