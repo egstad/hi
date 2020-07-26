@@ -1,5 +1,6 @@
 <template>
   <div>
+    <post v-show="$store.state.user.isLoggedIn" class="post" />
     <ul>
       <li v-for="(post, postIndex) in posts" :key="postIndex">
         {{ post.title }}
@@ -9,8 +10,16 @@
 </template>
 
 <script>
+import post from '@/components/post'
+
 export default {
+  components: {
+    post,
+  },
   async asyncData(context) {
+    // are we athenticated?
+    // context.store.dispatch('user/authenticate')
+
     const data = await context.$firebase
       .firestore()
       .collection('posts')
@@ -51,13 +60,10 @@ export default {
     },
   },
 }
-
-// Allow read/write access on all documents to any user signed in to the application
-// service cloud.firestore {
-//   match /databases/{database}/documents {
-//     match /{document=**} {
-//       allow read, write: if request.auth != null;
-//     }
-//   }
-// }
 </script>
+
+<style lang="scss" scoped>
+li {
+  font-size: calc(1em + 1vw);
+}
+</style>
