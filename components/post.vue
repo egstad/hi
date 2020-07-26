@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="submit">
+  <form v-if="$store.state.user.isLoggedIn" @submit.prevent="submit">
     <h1>let's add a new post</h1>
     <input type="text" v-model="title" />
     <button>Submit</button>
