@@ -1,5 +1,5 @@
 <template>
-  <form v-if="$store.state.user.isLoggedIn" @submit.prevent="submit">
+  <form v-if="$store.state.user.isLoggedIn" @submit.prevent="submitPost">
     <h1>let's add a new post</h1>
     <input type="text" v-model="title" />
     <button>Submit</button>
@@ -14,8 +14,14 @@ export default {
       title: '',
     }
   },
+  mounted() {
+    this.$app.$on('post::author', this.authorPost)
+  },
   methods: {
-    submit() {
+    async authorPost() {
+      await this.$store.dispatch('user/authenticate')
+    },
+    submitPost() {
       this.$firebase
         .firestore()
         .collection('posts')

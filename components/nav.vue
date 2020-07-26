@@ -2,19 +2,18 @@
   <!-- index, list, collage, login/logout/register, add post -->
   <ul>
     <li>
-      <p>list</p>
+      <nuxt-link to="/">index</nuxt-link>
     </li>
     <li>
-      <p>collage</p>
+      <nuxt-link to="/profile">profile</nuxt-link>
     </li>
-    <li v-if="!$store.state.user.isLoggedIn">
-      <button @click="$app.$emit('login/open')">sign-in</button>
-    </li>
-    <li v-else>
-      <button @click="$store.commit('user/logout')">logout</button>
+    <li v-if="$store.state.user.isLoggedIn">
+      <button @click="$store.commit('user/logout')">
+        logout
+      </button>
     </li>
     <li>
-      <button @click="$app.$emit('post/author')">+</button>
+      <button @click="$app.$emit('post::author')">+</button>
     </li>
   </ul>
 </template>
@@ -22,7 +21,6 @@
 <style lang="scss" scoped>
 ul {
   display: flex;
-  margin-bottom: 1em;
 }
 
 li {

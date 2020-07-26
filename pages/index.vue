@@ -1,5 +1,6 @@
 <template>
   <div>
+    <post v-show="$store.state.user.isLoggedIn" class="post" />
     <ul>
       <li v-for="(post, postIndex) in posts" :key="postIndex">
         {{ post.title }}
@@ -9,10 +10,15 @@
 </template>
 
 <script>
+import post from '@/components/post'
+
 export default {
+  components: {
+    post,
+  },
   async asyncData(context) {
-    // call this on every page to ensure we're logged in
-    context.store.dispatch('user/authenticate')
+    // are we athenticated?
+    // context.store.dispatch('user/authenticate')
 
     const data = await context.$firebase
       .firestore()

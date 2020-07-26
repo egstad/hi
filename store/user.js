@@ -23,6 +23,8 @@ export const mutations = {
 }
 
 export const actions = {
+  // LOGIN BY EMAIL
+  // IDK if this will ever be userul?
   async loginByEmail({ commit }, payload) {
     try {
       await this.$firebase
@@ -35,16 +37,23 @@ export const actions = {
       window.$app.$emit('login/error', error)
     }
   },
+
+  // LOGIN ANONYMOUSLY
+  // Because sometimes being unknown is freeing...
   async loginAnonymously({ dispatch }) {
     await this.$firebase.auth().signInAnonymously()
     dispatch('authenticate')
   },
-  async authenticate({ commit }) {
+
+  // AUTHENTICATE
+  // See who is currently logged in...
+  async authenticate({ commit, dispatch }) {
     await this.$firebase.auth().onAuthStateChanged(user => {
       if (user) {
         commit('login', user)
       } else {
-        commit('logout')
+        // commit('logout')
+        dispatch('loginAnonymously')
       }
     })
   },

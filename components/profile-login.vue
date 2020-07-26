@@ -1,35 +1,32 @@
 <template>
-  <section class="user">
+  <section>
     <!-- login user -->
-    <div v-if="!$store.state.user.isLoggedIn">
+    <div>
       <form @submit.prevent="validate">
-        <p>let's get you signed in</p>
         <div>
-          <label for="email">email</label>
+          <label for="login-email">email</label>
           <input
             v-model="email"
             type="email"
-            id="email"
+            id="login-email"
             ref="email"
+            placeholder="name@emailaddress.com"
             autocomplete="username"
           />
         </div>
         <div>
-          <label for="password">password</label>
+          <label for="login-password">password</label>
           <input
             v-model="password"
             type="password"
-            id="password"
+            id="login-password"
             ref="password"
             autocomplete="current-password"
           />
         </div>
         <div v-if="error">{{ error.message }}</div>
-        <button>Login</button>
+        <button>login</button>
       </form>
-      <button @click="$store.dispatch('user/loginAnonymously')">
-        Login Anonymously
-      </button>
     </div>
   </section>
 </template>
@@ -60,22 +57,29 @@ export default {
         this.$refs.password.value !== '' && this.$refs.password.checkValidity()
 
       if (emailIsValid && passwordIsValid) {
+        // SIGN IN WITH EMAIL
         this.$store.dispatch('user/loginByEmail', {
           email: this.email,
           password: this.password,
         })
       }
-
-      // if (!passwordIsValid) {
-      //   this.$refs.password.setCustomValidity('wrong password')
-      // }
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-.user {
-  border: 2px solid black;
+label {
+  display: block;
+}
+
+input {
+  width: 100%;
+  margin-bottom: 20px;
+  appearance: none;
+  border: 1px solid black;
+  border-radius: 1px;
+  padding: 10px;
+  font-size: 44px;
 }
 </style>

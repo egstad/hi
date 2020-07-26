@@ -1,10 +1,11 @@
 <template>
   <div class="site">
-    <logo class="logo" />
-    <navigation class="nav" />
-    <post class="post" />
-    <login v-if="!$store.state.user.isLoggedIn" class="login" />
-    <main class="main">
+    <div class="site-nav">
+      <logo class="logo" />
+      <navigation class="nav" />
+    </div>
+
+    <main class="site-content">
       <nuxt />
     </main>
   </div>
@@ -13,14 +14,13 @@
 <script>
 import navigation from '@/components/nav'
 import logo from '@/components/logo'
-import post from '@/components/post'
-import login from '@/components/login'
 export default {
   components: {
     navigation,
-    post,
     logo,
-    login,
+  },
+  async beforeCreate() {
+    await this.$store.dispatch('user/authenticate')
   },
 }
 </script>
@@ -37,16 +37,52 @@ export default {
 .site {
   padding: 24px;
   display: grid;
+  height: 100%;
+  width: 100%;
   // grid-template-columns: 1fr;
-  grid-template-rows: auto;
-  grid-template-areas: 'nav' 'login' 'logo' 'main';
+  // grid-template-rows: auto;
+  @media (min-width: 600px) {
+    grid-template-columns: 1fr 1fr;
+    // grid-template-areas: 'logo nav';
+  }
+
+  // logo and navigation
+  &-nav {
+    display: grid;
+    grid-template-areas: 'nav' 'logo';
+    grid-template-rows: auto;
+    height: 40vmin;
+
+    @media (min-width: 600px) {
+      height: auto;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr auto;
+      grid-template-areas: 'logo' 'nav';
+    }
+
+    .logo {
+      grid-area: logo;
+    }
+
+    .nav {
+      grid-area: nav;
+    }
+  }
+
+  &-content {
+    align-self: end;
+
+    @media (min-width: 600px) {
+      align-self: start;
+    }
+  }
 }
 
 .nav {
-  grid-area: nav;
+  // grid-area: nav;
 }
 
 .login {
-  grid-area: login;
+  // grid-area: login;
 }
 </style>
