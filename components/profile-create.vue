@@ -1,7 +1,7 @@
 <template>
   <section>
-    <!-- login user -->
     <div>
+      <!-- logged-in anonymous user -->
       <form @submit.prevent="validate">
         <div>
           <label for="email">email</label>
@@ -42,16 +42,7 @@ export default {
       error: '',
     }
   },
-  beforeCreate() {
-    this.$app.$on('login/error', this.updateError)
-  },
-  beforeDestroy() {
-    // this.$app.$off('login/error', this.updateError)
-  },
   methods: {
-    updateError(err) {
-      this.error = err.message
-    },
     validate() {
       const emailIsValid =
         this.$refs.email.value !== '' && this.$refs.email.checkValidity()
@@ -59,7 +50,17 @@ export default {
         this.$refs.password.value !== '' && this.$refs.password.checkValidity()
 
       if (emailIsValid && passwordIsValid) {
-        this.registerAnonymous()
+        // if user is anonymously logged-in
+        if (
+          this.$store.state.user.isLoggedIn &&
+          this.$store.state.user.isAnon
+        ) {
+          this.registerAnonymous()
+        }
+        // user isn't logged in at all, let's create a brand new account
+        else {
+          this.registerNewEmail()
+        }
       }
     },
     async registerAnonymous() {
@@ -84,6 +85,14 @@ export default {
             this.error = error
           }
         )
+    },
+    async registerNewEmail() {
+      await this.$firebase
+        .auth()
+        .createUserWithEmailAndPassword(this.email, this.password)
+        .catch(error => {
+          this.error = error
+        })
     },
   },
 }

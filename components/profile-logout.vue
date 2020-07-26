@@ -16,10 +16,6 @@
         </td>
       </tr>
     </table>
-
-    <button @click="$store.commit('user/logout')">
-      logout
-    </button>
   </div>
 </template>
 

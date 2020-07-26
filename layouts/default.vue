@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import * as firebase from 'firebase/app'
+
 import navigation from '@/components/nav'
 import logo from '@/components/logo'
 export default {
@@ -20,7 +22,16 @@ export default {
     logo,
   },
   async beforeCreate() {
-    await this.$store.dispatch('user/authenticate')
+    // await this.$store.dispatch('user/authenticate')
+    // remember me!
+    // await this.$firebase
+    //   .auth()
+    //   .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+
+    // forget me!
+    await this.$firebase
+      .auth()
+      .setPersistence(firebase.auth.Auth.Persistence.SESSION)
   },
 }
 </script>
@@ -62,10 +73,20 @@ export default {
 
     .logo {
       grid-area: logo;
+      @media (min-width: 600px) {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+      }
     }
 
     .nav {
       grid-area: nav;
+      @media (min-width: 600px) {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+      }
     }
   }
 

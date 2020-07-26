@@ -8,7 +8,7 @@
       <nuxt-link to="/profile">profile</nuxt-link>
     </li>
     <li v-if="$store.state.user.isLoggedIn">
-      <button @click="$store.commit('user/logout')">
+      <button @click="$store.dispatch('user/logout')">
         logout
       </button>
     </li>

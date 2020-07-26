@@ -27,6 +27,11 @@
         <div v-if="error">{{ error.message }}</div>
         <button>login</button>
       </form>
+
+      <hr />
+      <button @click="$store.dispatch('user/loginAnonymously')">
+        login anonymously
+      </button>
     </div>
   </section>
 </template>
@@ -58,11 +63,24 @@ export default {
 
       if (emailIsValid && passwordIsValid) {
         // SIGN IN WITH EMAIL
-        this.$store.dispatch('user/loginByEmail', {
-          email: this.email,
-          password: this.password,
-        })
+        this.loginByEmail(this.email, this.password)
       }
+    },
+    async loginByEmail(email, password) {
+      try {
+        await this.$firebase
+          .auth()
+          .signInWithEmailAndPassword(email, password)
+          .then(data => {
+            this.$store.commit('user/login', data.user)
+          })
+      } catch (error) {
+        console.log('loginbyemail error: ', error)
+        this.error = error
+      }
+    },
+    async resetPassword() {
+      await console.log('reset')
     },
   },
 }

@@ -1,6 +1,8 @@
+// import * as firebase from 'firebase/app'
+
 export const state = () => ({
   isLoggedIn: false,
-  isAnon: false,
+  isAnon: null,
   email: null,
   uid: null,
 })
@@ -11,37 +13,27 @@ export const mutations = {
     state.isAnon = user.isAnonymous
     state.email = user.email
     state.uid = user.uid
-    console.table('user updated', state)
+    console.info('user logged-in', state.uid)
   },
   logout(state) {
     state.isLoggedIn = false
     state.isAnon = null
     state.email = null
     state.uid = null
-    console.log('user logged-out', state)
+    console.info('user logged-out', state.uid)
   },
 }
 
 export const actions = {
-  // LOGIN BY EMAIL
-  // IDK if this will ever be userul?
-  async loginByEmail({ commit }, payload) {
-    try {
-      await this.$firebase
-        .auth()
-        .signInWithEmailAndPassword(payload.email, payload.password)
-        .then(data => {
-          commit('login', data.user)
-        })
-    } catch (error) {
-      window.$app.$emit('login/error', error)
-    }
-  },
-
   // LOGIN ANONYMOUSLY
   // Because sometimes being unknown is freeing...
   async loginAnonymously({ dispatch }) {
     await this.$firebase.auth().signInAnonymously()
+
+    // remember me
+    // await this.$firebase
+    //   .auth()
+    //   .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     dispatch('authenticate')
   },
 
@@ -52,9 +44,14 @@ export const actions = {
       if (user) {
         commit('login', user)
       } else {
-        // commit('logout')
-        dispatch('loginAnonymously')
+        // dispatch('logout')
       }
     })
+  },
+
+  // LOGOUT
+  async logout({ commit }) {
+    await this.$firebase.auth().signOut()
+    commit('logout')
   },
 }

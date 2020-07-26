@@ -19,7 +19,13 @@ export default {
   },
   methods: {
     async authorPost() {
+      // let's see who is logged in
       await this.$store.dispatch('user/authenticate')
+
+      // no one? let's sign them in anonymously
+      if (!this.$store.state.user.isLoggedIn) {
+        await this.$store.dispatch('user/loginAnonymously')
+      }
     },
     submitPost() {
       this.$firebase
