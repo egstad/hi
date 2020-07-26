@@ -35,7 +35,7 @@ export default {
 }
 
 .site {
-  padding: 24px;
+  padding: 20px;
   display: grid;
   height: 100%;
   width: 100%;

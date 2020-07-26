@@ -68,16 +68,15 @@ ol {
 }
 
 .box {
-  // display: flex;
-  // flex-direction: column;
-  // align-self: center;
-  // justify-content: center;
   margin-bottom: 20px;
   background: white;
   color: black;
   border-radius: 11px;
+  box-sizing: border-box;
   padding: 40px 20px;
   width: 100%;
+  // overflow-x: auto;
+  overflow: hidden;
 
   @media (min-width: 600px) {
     max-width: 500px;
