@@ -2,20 +2,19 @@
   <section>
     <!-- login user -->
     <div>
-      <form @submit.prevent="validate">
+      <form @submit.prevent="validate" id="login">
         <div>
-          <TextInput
+          <FormInput
             ref="email"
             v-model="email"
             label="email address"
             type="email"
             placeholder="name@address.com"
-            theme="light"
             autocomplete="email"
           />
         </div>
         <div>
-          <TextInput
+          <FormInput
             ref="password"
             v-model="password"
             label="password"
@@ -25,23 +24,26 @@
           />
         </div>
         <div v-if="error">{{ error.message }}</div>
-        <button>login</button>
       </form>
-
-      <hr />
-      <button @click="$store.dispatch('user/loginAnonymously')">
-        login anonymously
-      </button>
+      <div class="buttons">
+        <FormSubmit @click.native="validate" form="login" text="login" />
+        <FormSubmit
+          text="stay anon"
+          @click.native="$store.dispatch('user/loginAnonymously')"
+        />
+      </div>
     </div>
   </section>
 </template>
 
 <script>
-import TextInput from '@/components/molecules/input'
+import FormInput from '@/components/molecules/form-input'
+import FormSubmit from '@/components/molecules/form-submit'
 
 export default {
   components: {
-    TextInput,
+    FormInput,
+    FormSubmit,
   },
   data() {
     return {
@@ -94,17 +96,29 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-label {
-  display: block;
+/deep/.button {
+  color: #92877f;
 }
 
-input {
-  width: 100%;
-  margin-bottom: 20px;
-  appearance: none;
-  border: 1px solid black;
-  border-radius: 1px;
-  padding: 10px;
-  font-size: 44px;
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 4px;
+
+  @media (min-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 800px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (min-width: 1400px) {
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 1600px) {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 </style>

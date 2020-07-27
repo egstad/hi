@@ -8,7 +8,7 @@
       <form @submit.prevent="validate">
         <div>
           <label for="reset-email">email</label>
-          <TextInput
+          <FormInput
             v-model="email"
             type="email"
             ref="email"
@@ -36,11 +36,11 @@
 </template>
 
 <script>
-import TextInput from '@/components/molecules/input'
+import FormInput from '@/components/molecules/form-input'
 
 export default {
   components: {
-    TextInput,
+    FormInput,
   },
   data() {
     return {
