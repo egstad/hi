@@ -21,6 +21,14 @@
 <style lang="scss" scoped>
 ul {
   display: flex;
+  // padding: 20px;
+  margin-bottom: 40px;
+
+  @media (min-width: 700px) {
+    position: fixed;
+    top: 20px;
+    right: 0;
+  }
 }
 
 li {
