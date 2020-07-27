@@ -14,7 +14,7 @@
       <p>if you would like you sign up, create an account</p>
     </div>
 
-    <div class="box" v-if="!$store.state.user.isLoggedIn">
+    <div class="box login" v-if="!$store.state.user.isLoggedIn">
       <h2>login</h2>
       <br />
       <ProfileLogin />
@@ -28,7 +28,7 @@
     </div>
 
     <div
-      class="box"
+      class="box register"
       v-if="!$store.state.user.isLoggedIn || $store.state.user.isAnon"
     >
       <h2>create a profile</h2>
@@ -87,20 +87,22 @@ ol {
 }
 
 .box-wrap {
+  width: 100%;
   display: grid;
   grid-gap: 20px;
-  width: 100%;
-  height: 100%;
-  align-items: end;
 
   @media (min-width: 1600px) {
+    height: 100%;
+    display: grid;
+    grid-gap: 20px;
+    align-items: end;
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
 .box {
-  background: white;
-  color: black;
+  background: blue;
+  color: white;
   border-radius: 11px;
   box-sizing: border-box;
   padding: 40px 20px;
@@ -113,9 +115,22 @@ ol {
     height: auto;
   }
 
-  box-shadow: 0px 0.498106px 2.21381px rgba(0, 0, 0, 0.0365489),
-    0px 1.19702px 5.32008px rgba(0, 0, 0, 0.0525061),
-    0px 2.25388px 10.0172px rgba(0, 0, 0, 0.065),
-    0px 7.51997px 33.4221px rgba(0, 0, 0, 0.0934511);
+  &.login {
+    background: #92877f;
+    color: white;
+
+    /deep/.form-item {
+      color: #92877f;
+    }
+  }
+
+  &.register {
+    background: #fdae15;
+    color: white;
+
+    /deep/.form-item {
+      color: #fdae15;
+    }
+  }
 }
 </style>

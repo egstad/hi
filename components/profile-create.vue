@@ -4,23 +4,24 @@
       <!-- logged-in anonymous user -->
       <form @submit.prevent="validate">
         <div>
-          <label for="email">email</label>
-          <input
+          <TextInput
             v-model="email"
             type="email"
-            id="email"
             ref="email"
-            placeholder="name@emailaddress.com"
-            autocomplete="username"
+            placeholder="name@address.com"
+            label="email address"
+            theme="light"
+            autocomplete="email"
           />
         </div>
         <div>
-          <label for="password">password</label>
-          <input
+          <TextInput
             v-model="password"
             type="password"
-            id="password"
             ref="password"
+            placeholder="••••••"
+            label="password"
+            theme="light"
             autocomplete="current-password"
           />
         </div>
@@ -34,7 +35,12 @@
 <script>
 import * as firebase from 'firebase/app'
 import 'firebase/auth'
+import TextInput from '@/components/molecules/input'
+
 export default {
+  components: {
+    TextInput,
+  },
   data() {
     return {
       email: '',
@@ -45,9 +51,10 @@ export default {
   methods: {
     validate() {
       const emailIsValid =
-        this.$refs.email.value !== '' && this.$refs.email.checkValidity()
+        this.email !== '' && this.$refs.email.$refs.input.checkValidity()
+
       const passwordIsValid =
-        this.$refs.password.value !== '' && this.$refs.password.checkValidity()
+        this.password !== '' && this.$refs.password.$refs.input.checkValidity()
 
       if (emailIsValid && passwordIsValid) {
         // if user is anonymously logged-in
