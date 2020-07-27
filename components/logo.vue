@@ -6,7 +6,7 @@
     <h2>
       <span>leave a note for the internet</span><br />
       <span>anyone can post</span><br />
-      <span>posts expire after a day</span>
+      <span>notes expire after a day</span>
     </h2>
   </header>
 </template>

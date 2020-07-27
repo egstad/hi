@@ -41,11 +41,6 @@ export default {
       required: false,
       default: 'light',
     },
-    color: {
-      type: String,
-      required: false,
-      default: 'black',
-    },
   },
 }
 </script>

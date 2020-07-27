@@ -91,11 +91,15 @@ ol {
   display: grid;
   grid-gap: 20px;
 
-  @media (min-width: 1600px) {
+  @media (min-width: 700px) {
     height: 100%;
     display: grid;
     grid-gap: 20px;
     align-items: end;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1400px) {
     grid-template-columns: repeat(4, 1fr);
   }
 }
@@ -105,7 +109,7 @@ ol {
   color: white;
   border-radius: 11px;
   box-sizing: border-box;
-  padding: 40px 20px;
+  padding: 40px 20px 20px;
   width: 100%;
   // overflow-x: auto;
   overflow: hidden;
@@ -122,6 +126,10 @@ ol {
     /deep/.form-item {
       color: #92877f;
     }
+
+    /deep/.button {
+      margin-top: 4px;
+    }
   }
 
   &.register {
@@ -129,7 +137,7 @@ ol {
     color: white;
 
     /deep/.form-item {
-      color: #fdae15;
+      color: #fdae15 !important;
     }
   }
 }

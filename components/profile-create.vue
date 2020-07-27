@@ -4,7 +4,7 @@
       <!-- logged-in anonymous user -->
       <form @submit.prevent="validate">
         <div>
-          <TextInput
+          <FormInput
             v-model="email"
             type="email"
             ref="email"
@@ -15,7 +15,7 @@
           />
         </div>
         <div>
-          <TextInput
+          <FormInput
             v-model="password"
             type="password"
             ref="password"
@@ -26,7 +26,7 @@
           />
         </div>
         <div v-if="error">{{ error.message }}</div>
-        <button>create profile</button>
+        <FormSubmit text="create profile" />
       </form>
     </div>
   </section>
@@ -35,11 +35,13 @@
 <script>
 import * as firebase from 'firebase/app'
 import 'firebase/auth'
-import TextInput from '@/components/molecules/input'
+import FormInput from '@/components/molecules/form-input'
+import FormSubmit from '@/components/molecules/form-submit'
 
 export default {
   components: {
-    TextInput,
+    FormInput,
+    FormSubmit,
   },
   data() {
     return {
