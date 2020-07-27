@@ -1,8 +1,8 @@
 <template>
   <div class="site">
     <div class="site-nav">
-      <logo class="logo" />
       <navigation class="nav" />
+      <logo class="logo" />
     </div>
 
     <main class="site-content">
@@ -48,62 +48,10 @@ export default {
 .site {
   padding: 20px;
   display: grid;
-  height: 100%;
+  grid-template-rows: auto 1fr;
   width: 100%;
-  // grid-template-columns: 1fr;
-  // grid-template-rows: auto;
-  @media (min-width: 600px) {
-    grid-template-columns: 1fr 1fr;
-    // grid-template-areas: 'logo nav';
-  }
-
-  // logo and navigation
-  &-nav {
-    display: grid;
-    grid-template-areas: 'nav' 'logo';
-    grid-template-rows: auto;
-    height: 40vmin;
-
-    @media (min-width: 600px) {
-      height: auto;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr auto;
-      grid-template-areas: 'logo' 'nav';
-    }
-
-    .logo {
-      grid-area: logo;
-      @media (min-width: 600px) {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-      }
-    }
-
-    .nav {
-      grid-area: nav;
-      @media (min-width: 600px) {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-      }
-    }
-  }
-
-  &-content {
-    align-self: end;
-
-    @media (min-width: 600px) {
-      align-self: start;
-    }
-  }
 }
 
-.nav {
-  // grid-area: nav;
-}
-
-.login {
-  // grid-area: login;
+.site-content {
 }
 </style>
