@@ -8,13 +8,14 @@
       <form @submit.prevent="validate">
         <div>
           <label for="reset-email">email</label>
-          <input
+          <TextInput
             v-model="email"
             type="email"
-            id="reset-email"
             ref="email"
             placeholder="name@emailaddress.com"
-            autocomplete="username"
+            autocomplete="email"
+            label="email address"
+            theme="light"
           />
         </div>
         <div v-if="error && !success">{{ error.message }}</div>
@@ -35,7 +36,12 @@
 </template>
 
 <script>
+import TextInput from '@/components/molecules/input'
+
 export default {
+  components: {
+    TextInput,
+  },
   data() {
     return {
       email: '',
@@ -46,7 +52,7 @@ export default {
   methods: {
     validate() {
       const emailIsValid =
-        this.$refs.email.value !== '' && this.$refs.email.checkValidity()
+        this.email !== '' && this.$refs.email.$refs.input.checkValidity()
 
       if (emailIsValid) {
         this.resetPassword(this.email)

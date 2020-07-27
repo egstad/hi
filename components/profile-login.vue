@@ -4,23 +4,23 @@
     <div>
       <form @submit.prevent="validate">
         <div>
-          <label for="login-email">email</label>
-          <input
-            v-model="email"
-            type="email"
-            id="login-email"
+          <TextInput
             ref="email"
-            placeholder="name@emailaddress.com"
-            autocomplete="username"
+            v-model="email"
+            label="email address"
+            type="email"
+            placeholder="name@address.com"
+            theme="light"
+            autocomplete="email"
           />
         </div>
         <div>
-          <label for="login-password">password</label>
-          <input
-            v-model="password"
-            type="password"
-            id="login-password"
+          <TextInput
             ref="password"
+            v-model="password"
+            label="password"
+            type="password"
+            placeholder="••••••"
             autocomplete="current-password"
           />
         </div>
@@ -37,12 +37,18 @@
 </template>
 
 <script>
+import TextInput from '@/components/molecules/input'
+
 export default {
+  components: {
+    TextInput,
+  },
   data() {
     return {
       email: '',
       password: '',
       error: '',
+      testInput: '',
     }
   },
   beforeCreate() {
@@ -57,9 +63,10 @@ export default {
     },
     validate() {
       const emailIsValid =
-        this.$refs.email.value !== '' && this.$refs.email.checkValidity()
+        this.email !== '' && this.$refs.email.$refs.input.checkValidity()
+
       const passwordIsValid =
-        this.$refs.password.value !== '' && this.$refs.password.checkValidity()
+        this.password !== '' && this.$refs.password.$refs.input.checkValidity()
 
       if (emailIsValid && passwordIsValid) {
         // SIGN IN WITH EMAIL

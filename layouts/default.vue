@@ -45,6 +45,14 @@ export default {
   font-style: normal;
 }
 
+@font-face {
+  src: url('~static/fonts/neuebit-bold.woff');
+  font-family: 'hi';
+  font-display: fallback;
+  font-weight: bold;
+  font-style: normal;
+}
+
 .site {
   padding: 20px;
   display: grid;
