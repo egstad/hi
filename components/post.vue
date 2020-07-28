@@ -9,16 +9,41 @@ So how's it work?
 -->
 <template>
   <form v-if="$store.state.user.isLoggedIn" @submit.prevent="onSubmit">
+    <table style="border: 1px solid black;width: 200px;text-align: center;">
+      <tr>
+        <td style="border: 1px solid black">
+          <label
+            >note
+            <input type="radio" v-model="postType" value="note" />
+          </label>
+        </td>
+        <td style="border: 1px solid black">
+          <label
+            >link
+            <input type="radio" v-model="postType" value="link" />
+          </label>
+        </td>
+        <td style="border: 1px solid black">
+          <label
+            >image
+            <input type="radio" v-model="postType" value="image" />
+          </label>
+        </td>
+      </tr>
+    </table>
+
     <label>
       let's add a new post
       <input type="text" v-model="title" required /> </label
     ><br />
 
-    <label>
-      attach image?
-      <input type="checkbox" v-model="postHasImage" /> </label
-    ><br />
-    <FileUploader v-if="postHasImage" ref="fileUploader" />
+    <div v-if="postType === 'image'">
+      <PostImageUploader ref="PostImageUploader" />
+    </div>
+
+    <div v-if="postType === 'link'">
+      <PostLinkUploader ref="PostImageUploader" />
+    </div>
 
     <p v-if="error">{{ error }}</p>
     <button>Submit</button>
@@ -27,21 +52,29 @@ So how's it work?
 
 <script>
 import * as firebase from 'firebase/app'
-import FileUploader from '@/components/molecules/post-uploader'
+import PostImageUploader from '@/components/molecules/post-image'
+import PostLinkUploader from '@/components/molecules/post-link'
 export default {
   components: {
-    FileUploader,
+    PostImageUploader,
+    PostLinkUploader,
   },
   data() {
     return {
       title: '',
       error: '',
+      postType: 'note',
       postHasImage: false,
+      postHasLink: false,
+      postImage: null,
+      postLink: null,
+      postData: null,
     }
   },
   mounted() {
     this.$app.$on('post::author', this.authorPost)
-    this.$on('fileUploadedSuccess', this.submitPost)
+    this.$on('imageUploaded', this.onImageUpload)
+    this.$on('linkPreviewReady', this.onLinkPreviewReady)
   },
   methods: {
     async authorPost() {
@@ -54,30 +87,64 @@ export default {
       }
     },
     onSubmit() {
-      if (this.postHasImage) {
-        this.$refs.fileUploader.validateAndUpload()
-      } else {
-        this.submitPost()
+      switch (this.postType) {
+        case 'image':
+          // submits title + image
+          this.$refs.PostImageUploader.validateAndUpload()
+          break
+
+        case 'link':
+          // submits title + link
+          this.submitPost()
+          break
+
+        case 'note':
+          // only submits title
+          this.submitPost()
+          break
+
+        default:
+          console.warn('this.postType was undefined')
+          break
+      }
+
+      // if (this.postType === 'image') {
+      // } else {
+      //   this.submitPost()
+      // }
+    },
+    onImageUpload(imageUrl) {
+      this.postImage = imageUrl
+      this.submitPost()
+    },
+    onLinkPreviewReady(data) {
+      this.postLink = data
+      // this.submitPost()
+    },
+    modelData() {
+      this.postData = {
+        title: this.title,
+        author: this.$store.state.user.uid,
+        created: firebase.firestore.FieldValue.serverTimestamp(),
+        media: {
+          image: this.postImage || '',
+          link: this.postLink || '',
+        },
       }
     },
-    createPost() {},
     async submitPost(imageUrl) {
+      console.log('submitPost')
+      this.modelData()
       await this.$firebase
         .firestore()
         .collection('posts')
-        .add({
-          title: this.title,
-          author: this.$store.state.user.uid,
-          created: firebase.firestore.FieldValue.serverTimestamp(),
-          media: {
-            image: imageUrl || '',
-          },
-        })
+        .add(this.postData)
         .then(docRef => {
           this.title = ''
           console.log('Document written with ID: ', docRef.id)
         })
         .catch(error => {
+          this.error = error
           console.error('Error adding document: ', error)
         })
     },

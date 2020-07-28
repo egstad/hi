@@ -7,9 +7,28 @@
         <p v-if="post.author" style="font-size:16px;">
           author: {{ post.author }}
         </p>
-        <figure v-if="post.media">
-          <img v-if="post.media.image" :src="post.media.image" alt="" />
-        </figure>
+
+        <template v-if="post.media">
+          <figure v-if="post.media.image">
+            <img :src="post.media.image" alt="" />
+          </figure>
+
+          <a
+            v-else-if="post.media.link"
+            :href="post.media.link.url"
+            target="_blank"
+          >
+            <h3 v-if="post.media.link.title">{{ post.media.link.title }}</h3>
+            <p v-if="post.media.link.description">
+              {{ post.media.link.description }}
+            </p>
+            <img
+              v-if="post.media.link.image"
+              :src="post.media.link.image"
+              alt=""
+            />
+          </a>
+        </template>
       </li>
     </ul>
   </div>
