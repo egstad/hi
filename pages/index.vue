@@ -3,7 +3,8 @@
     <post v-show="$store.state.user.isLoggedIn" class="post" />
     <ul>
       <li v-for="(post, postIndex) in posts" :key="postIndex">
-        {{ post.title }}
+        <h2 v-if="post.title">{{ post.title }}</h2>
+        <img v-if="post.media.image" :src="post.media.image" alt="" />
       </li>
     </ul>
   </div>
@@ -23,7 +24,7 @@ export default {
     const data = await context.$firebase
       .firestore()
       .collection('posts')
-      .orderBy('timestamp', 'desc')
+      .orderBy('created', 'desc')
       .get()
 
     return {
@@ -43,18 +44,18 @@ export default {
       this.$firebase
         .firestore()
         .collection('posts')
-        .orderBy('timestamp', 'desc')
+        .orderBy('created', 'desc')
         .onSnapshot(snapshot => {
           snapshot.docChanges().forEach(change => {
             if (change.type === 'added') {
               this.posts = snapshot.docs.map(doc => doc.data())
             }
-            // if (change.type === 'modified') {
-            //   console.log('Modified city: ', change.doc.data())
-            // }
-            // if (change.type === 'removed') {
-            //   console.log('Removed city: ', change.doc.data())
-            // }
+            if (change.type === 'modified') {
+              console.log('Modified city: ', change.doc.data())
+            }
+            if (change.type === 'removed') {
+              console.log('Removed city: ', change.doc.data())
+            }
           })
         })
     },

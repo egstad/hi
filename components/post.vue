@@ -33,8 +33,11 @@ export default {
         .collection('posts')
         .add({
           title: this.title,
+          media: {
+            image: '//placehold.it/400',
+          },
           // timestamp: https://maye.pwafire.org/articles/using-timestamp-to-filter-and-order-firebase-cloud-firestore-documents/
-          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          created: firebase.firestore.FieldValue.serverTimestamp(),
         })
         .then(docRef => {
           console.log('Document written with ID: ', docRef.id)
