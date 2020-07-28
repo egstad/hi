@@ -23,10 +23,11 @@ const app = !firebase.apps.length
 export const auth = firebase.auth()
 export const DB = firebase.database()
 export const StoreDB = firebase.firestore()
+
 // export default firebase
 export default (context, inject) => {
-  // Inject $hello(msg) in Vue, context and store.
+  // Inject our firebase app's instance into Nuxt
+  // Accessible via `this.$firebase` or `$firebase`
   inject('firebase', app)
-  // For Nuxt <= 2.12, also add 👇
   context.$firebase = app
 }

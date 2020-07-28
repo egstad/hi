@@ -4,7 +4,12 @@
     <ul>
       <li v-for="(post, postIndex) in posts" :key="postIndex">
         <h2 v-if="post.title">{{ post.title }}</h2>
-        <img v-if="post.media.image" :src="post.media.image" alt="" />
+        <p v-if="post.author" style="font-size:16px;">
+          author: {{ post.author }}
+        </p>
+        <figure v-if="post.media">
+          <img v-if="post.media.image" :src="post.media.image" alt="" />
+        </figure>
       </li>
     </ul>
   </div>
