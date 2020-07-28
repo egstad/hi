@@ -3,19 +3,13 @@
     <post v-show="$store.state.user.isLoggedIn" class="post" />
     <ul>
       <li v-for="(post, postIndex) in posts" :key="postIndex">
-        <hr />
-        <h1>{{ post.title }}</h1>
-        <img :src="post.media.asset" alt="" />
-        <table style="font-size: 14px">
-          <tr>
-            <td>author</td>
-            <td>{{ post.author }}</td>
-          </tr>
-          <tr>
-            <td>tag</td>
-            <td>{{ post.tag }}</td>
-          </tr>
-        </table>
+        <h2 v-if="post.title">{{ post.title }}</h2>
+        <p v-if="post.author" style="font-size:16px;">
+          author: {{ post.author }}
+        </p>
+        <figure v-if="post.media">
+          <img v-if="post.media.image" :src="post.media.image" alt="" />
+        </figure>
       </li>
     </ul>
   </div>
@@ -55,18 +49,18 @@ export default {
       this.$firebase
         .firestore()
         .collection('posts')
-        .orderBy('timestamp', 'desc')
+        .orderBy('created', 'desc')
         .onSnapshot(snapshot => {
           snapshot.docChanges().forEach(change => {
             if (change.type === 'added') {
               this.posts = snapshot.docs.map(doc => doc.data())
             }
-            // if (change.type === 'modified') {
-            //   console.log('Modified city: ', change.doc.data())
-            // }
-            // if (change.type === 'removed') {
-            //   console.log('Removed city: ', change.doc.data())
-            // }
+            if (change.type === 'modified') {
+              console.log('Modified city: ', change.doc.data())
+            }
+            if (change.type === 'removed') {
+              console.log('Removed city: ', change.doc.data())
+            }
           })
         })
     },

@@ -1,31 +1,47 @@
+<!--------------------------------------------------------------------------------------
+POST
+This component is a post creation form. In the future, users can add a title, image, url,
+and more. But for now, it's just a title and image.
+
+So how's it work?
+1. If an image exists, it's uploaded first. If it errors out, the post isn't created.
+2. Once the image is successfully uploaded (fileUploadedSuccess), let' create the post
+---------------------------------------------------------------------------------------->
 <template>
-  <form v-if="$store.state.user.isLoggedIn" @submit.prevent="beginSubmission">
-    <h1>let's add a new post</h1>
-    <input type="text" v-model="title" required />
-    <FileUpload ref="file" />
+  <form v-if="$store.state.user.isLoggedIn" @submit.prevent="onSubmit">
+    <label>
+      let's add a new post
+      <input type="text" v-model="title" required /> </label
+    ><br />
+
+    <label>
+      attach image?
+      <input type="checkbox" v-model="postHasImage" /> </label
+    ><br />
+    <FileUploader v-if="postHasImage" ref="fileUploader" />
+
+    <p v-if="error">{{ error }}</p>
     <button>Submit</button>
   </form>
 </template>
 
 <script>
 import * as firebase from 'firebase/app'
-import FileUpload from '@/components/molecules/post-uploader'
+import FileUploader from '@/components/molecules/post-uploader'
 export default {
   components: {
-    FileUpload,
+    FileUploader,
   },
   data() {
     return {
       title: '',
-      asset: '',
+      error: '',
+      postHasImage: false,
     }
   },
   mounted() {
     this.$app.$on('post::author', this.authorPost)
-    this.$on('fileUploadedSuccess', val => {
-      this.asset = val
-      this.submitPost()
-    })
+    this.$on('fileUploadedSuccess', this.submitPost)
   },
   methods: {
     async authorPost() {
@@ -37,33 +53,28 @@ export default {
         await this.$store.dispatch('user/loginAnonymously')
       }
     },
-    beginSubmission() {
-      const attachedFile = this.$refs.file.$refs.fileInput.value !== ''
-      // if has file?
-      if (attachedFile) {
-        this.uploadImage()
+    onSubmit() {
+      if (this.postHasImage) {
+        this.$refs.fileUploader.validateAndUpload()
       } else {
         this.submitPost()
       }
     },
-    uploadImage() {
-      this.$refs.file.validateAndUpload()
-    },
-    submitPost() {
-      this.$firebase
+    createPost() {},
+    async submitPost(imageUrl) {
+      await this.$firebase
         .firestore()
         .collection('posts')
         .add({
           title: this.title,
           author: this.$store.state.user.uid,
           created: firebase.firestore.FieldValue.serverTimestamp(),
-          tag: '',
           media: {
-            type: 'text',
-            asset: this.asset,
+            image: imageUrl || '',
           },
         })
         .then(docRef => {
+          this.title = ''
           console.log('Document written with ID: ', docRef.id)
         })
         .catch(error => {

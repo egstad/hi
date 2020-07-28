@@ -21,17 +21,23 @@ export default {
       file: null,
       metadata: null,
       error: null,
-      assetUrl: null,
       fileMax: 1000000, // megabyte
       fileTypes: ['image/gif', 'image/jpeg', 'image/png', 'image/webp'],
       errorMessage: {
         fileTooBig: "try uploading an image that's smaller than 1mb",
         wrongFormat: "sorry, that image format isn't supported",
+        noFile: 'try selecting an image next time, babe',
       },
     }
   },
   methods: {
     validateAndUpload(event) {
+      this.error = null
+      if (this.$refs.fileInput.value === '') {
+        this.error = this.errorMessage.noFile
+        return
+      }
+
       // get file
       this.file = this.$refs.fileInput.files[0]
       this.metadata = { contentType: this.file.type }
@@ -115,12 +121,18 @@ export default {
         },
         () => {
           // Upload completed successfully, now we can get the download URL
-          uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-            this.assetUrl = downloadURL
-            this.$parent.$emit('fileUploadedSuccess', this.assetUrl)
+          uploadTask.snapshot.ref.getDownloadURL().then(imageUrl => {
+            this.resetUploader()
+            this.$parent.$emit('fileUploadedSuccess', imageUrl)
           })
         }
       )
+    },
+    resetUploader() {
+      this.file = null
+      this.metadata = null
+      this.error = null
+      this.$refs.progress.value = 0
     },
   },
 }
