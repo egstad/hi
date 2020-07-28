@@ -1,4 +1,4 @@
-<!--------------------------------------------------------------------------------------
+<!--
 POST
 This component is a post creation form. In the future, users can add a title, image, url,
 and more. But for now, it's just a title and image.
@@ -6,7 +6,7 @@ and more. But for now, it's just a title and image.
 So how's it work?
 1. If an image exists, it's uploaded first. If it errors out, the post isn't created.
 2. Once the image is successfully uploaded (fileUploadedSuccess), let' create the post
----------------------------------------------------------------------------------------->
+-->
 <template>
   <form v-if="$store.state.user.isLoggedIn" @submit.prevent="onSubmit">
     <label>
