@@ -1,21 +1,31 @@
 <template>
-  <form v-if="$store.state.user.isLoggedIn" @submit.prevent="submitPost">
+  <form v-if="$store.state.user.isLoggedIn" @submit.prevent="beginSubmission">
     <h1>let's add a new post</h1>
-    <input type="text" v-model="title" />
+    <input type="text" v-model="title" required />
+    <FileUpload ref="file" />
     <button>Submit</button>
   </form>
 </template>
 
 <script>
 import * as firebase from 'firebase/app'
+import FileUpload from '@/components/molecules/post-uploader'
 export default {
+  components: {
+    FileUpload,
+  },
   data() {
     return {
       title: '',
+      asset: '',
     }
   },
   mounted() {
     this.$app.$on('post::author', this.authorPost)
+    this.$on('fileUploadedSuccess', val => {
+      this.asset = val
+      this.submitPost()
+    })
   },
   methods: {
     async authorPost() {
@@ -27,14 +37,31 @@ export default {
         await this.$store.dispatch('user/loginAnonymously')
       }
     },
+    beginSubmission() {
+      const attachedFile = this.$refs.file.$refs.fileInput.value !== ''
+      // if has file?
+      if (attachedFile) {
+        this.uploadImage()
+      } else {
+        this.submitPost()
+      }
+    },
+    uploadImage() {
+      this.$refs.file.validateAndUpload()
+    },
     submitPost() {
       this.$firebase
         .firestore()
         .collection('posts')
         .add({
           title: this.title,
-          // timestamp: https://maye.pwafire.org/articles/using-timestamp-to-filter-and-order-firebase-cloud-firestore-documents/
-          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          author: this.$store.state.user.uid,
+          created: firebase.firestore.FieldValue.serverTimestamp(),
+          tag: '',
+          media: {
+            type: 'text',
+            asset: this.asset,
+          },
         })
         .then(docRef => {
           console.log('Document written with ID: ', docRef.id)

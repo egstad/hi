@@ -3,7 +3,19 @@
     <post v-show="$store.state.user.isLoggedIn" class="post" />
     <ul>
       <li v-for="(post, postIndex) in posts" :key="postIndex">
-        {{ post.title }}
+        <hr />
+        <h1>{{ post.title }}</h1>
+        <img :src="post.media.asset" alt="" />
+        <table style="font-size: 14px">
+          <tr>
+            <td>author</td>
+            <td>{{ post.author }}</td>
+          </tr>
+          <tr>
+            <td>tag</td>
+            <td>{{ post.tag }}</td>
+          </tr>
+        </table>
       </li>
     </ul>
   </div>
@@ -23,7 +35,7 @@ export default {
     const data = await context.$firebase
       .firestore()
       .collection('posts')
-      .orderBy('timestamp', 'desc')
+      .orderBy('created', 'desc')
       .get()
 
     return {
