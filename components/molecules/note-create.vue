@@ -38,11 +38,11 @@ So how's it work?
     ><br />
 
     <div v-if="postType === 'image'">
-      <PostImageUploader ref="PostImageUploader" />
+      <PostImageUploader ref="image" />
     </div>
 
     <div v-if="postType === 'link'">
-      <PostLinkUploader ref="PostImageUploader" />
+      <PostLinkUploader ref="link" />
     </div>
 
     <p v-if="error">{{ error }}</p>
@@ -90,7 +90,7 @@ export default {
       switch (this.postType) {
         case 'image':
           // submits title + image
-          this.$refs.PostImageUploader.validateAndUpload()
+          this.$refs.image.validateAndUpload()
           break
 
         case 'link':
@@ -113,13 +113,31 @@ export default {
       //   this.submitPost()
       // }
     },
+    onSubmitComplete(docRef) {
+      // reset image
+      if (this.$refs.image) {
+        this.$refs.image.reset()
+      }
+      // reset link
+      if (this.$refs.link) {
+        this.$refs.link.reset()
+      }
+      // reset note
+      this.title = ''
+      this.postType = 'note'
+
+      console.log('Document written with ID: ', docRef.id)
+    },
+    onSubmitError(error) {
+      this.error = error
+      console.error('Error adding document: ', error)
+    },
     onImageUpload(imageUrl) {
       this.postImage = imageUrl
       this.submitPost()
     },
     onLinkPreviewReady(data) {
       this.postLink = data
-      // this.submitPost()
     },
     modelData() {
       this.postData = {
@@ -133,19 +151,19 @@ export default {
       }
     },
     async submitPost(imageUrl) {
-      console.log('submitPost')
+      // create data
       this.modelData()
+
+      // push data to firebase
       await this.$firebase
         .firestore()
         .collection('posts')
         .add(this.postData)
         .then(docRef => {
-          this.title = ''
-          console.log('Document written with ID: ', docRef.id)
+          this.onSubmitComplete(docRef)
         })
         .catch(error => {
-          this.error = error
-          console.error('Error adding document: ', error)
+          this.onSubmitError(error)
         })
     },
   },

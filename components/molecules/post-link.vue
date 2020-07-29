@@ -14,6 +14,7 @@
       <FormSubmit
         v-if="linkIsFormatted"
         text="add link"
+        type="button"
         @click.native.stop="fetchLinkPreview()"
       />
     </template>
@@ -41,9 +42,7 @@ export default {
     return {
       apiKey: '922bdfb9544ae6d6d87664139e5c4042',
       link: null,
-      linkType: null,
       linkIsFormatted: false,
-      linkWorks: false,
       linkIsValid: false,
       linkPreview: null,
       error: null,
@@ -70,6 +69,13 @@ export default {
       if (this.linkIsFormatted) {
         this.linkIsValid = true
       }
+    },
+    reset() {
+      this.link = null
+      this.linkIsFormatted = false
+      this.linkIsValid = false
+      this.linkPreview = false
+      this.error = null
     },
     async fetchLinkPreview() {
       await this.$axios

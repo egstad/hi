@@ -5,6 +5,7 @@
       type="file"
       value="upload"
       accept=".jpg, .jpeg, .png, .gif, .webp"
+      required
     />
     <progress ref="progress" value="0" max="100">0%</progress>
     <p v-if="error">{{ error }}</p>
@@ -122,13 +123,12 @@ export default {
         () => {
           // Upload completed successfully, now we can get the download URL
           uploadTask.snapshot.ref.getDownloadURL().then(imageUrl => {
-            this.resetUploader()
             this.$parent.$emit('imageUploaded', imageUrl)
           })
         }
       )
     },
-    resetUploader() {
+    reset() {
       this.file = null
       this.metadata = null
       this.error = null
