@@ -1,26 +1,22 @@
 <template>
   <div>
-    <post v-show="$store.state.user.isLoggedIn" class="post" />
+    <CreateNote v-show="$store.state.user.isLoggedIn" class="post" />
     <ul>
-      <li v-for="(post, postIndex) in posts" :key="postIndex">
-        <h2 v-if="post.title">{{ post.title }}</h2>
-        <p v-if="post.author" style="font-size:16px;">
-          author: {{ post.author }}
-        </p>
-        <figure v-if="post.media">
-          <img v-if="post.media.image" :src="post.media.image" alt="" />
-        </figure>
+      <li v-for="(note, noteIndex) in notes" :key="noteIndex">
+        <Note :title="note.title" :author="note.author" :media="note.media" />
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-import post from '@/components/post'
+import CreateNote from '@/components/molecules/note-create'
+import Note from '@/components/molecules/note'
 
 export default {
   components: {
-    post,
+    CreateNote,
+    Note,
   },
   async asyncData(context) {
     // are we athenticated?
@@ -33,12 +29,7 @@ export default {
       .get()
 
     return {
-      posts: data.docs.map(doc => doc.data()),
-    }
-  },
-  data() {
-    return {
-      posts: null,
+      notes: data.docs.map(doc => doc.data()),
     }
   },
   mounted() {
