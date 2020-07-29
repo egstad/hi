@@ -28,7 +28,7 @@
 table {
   width: 100%;
   border: 1px solid black;
-  margin-bottom: 20px;
+  margin-bottom: var(--grid-gutter);
 }
 tr {
   border-bottom: 1px solid #000;

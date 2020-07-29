@@ -14,8 +14,8 @@
 <script>
 import * as firebase from 'firebase/app'
 
-import navigation from '@/components/nav'
-import logo from '@/components/logo'
+import navigation from '@/components/molecules/site-nav'
+import logo from '@/components/molecules/site-logo'
 export default {
   components: {
     navigation,
@@ -54,7 +54,7 @@ export default {
 }
 
 .site {
-  padding: 20px;
+  padding: var(--grid-gutter);
   display: grid;
   grid-template-rows: auto 1fr;
   width: 100%;

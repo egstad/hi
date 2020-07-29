@@ -53,11 +53,11 @@
 </template>
 
 <script>
-import ProfileLogin from '@/components/profile-login'
-import ProfileLogout from '@/components/profile-logout'
-import ProfileActions from '@/components/profile-actions'
-import ProfileCreate from '@/components/profile-create'
-import ProfileReset from '@/components/profile-reset'
+import ProfileLogin from '@/components/organisms/profile-login'
+import ProfileLogout from '@/components/organisms/profile-logout'
+import ProfileActions from '@/components/organisms/profile-actions'
+import ProfileCreate from '@/components/organisms/profile-create'
+import ProfileReset from '@/components/organisms/profile-reset'
 export default {
   components: {
     ProfileLogin,
@@ -83,18 +83,18 @@ h2 {
 ol {
   list-style-type: decimal;
   list-style-position: inside;
-  // padding-left: 20px;
+  // padding-left: var(--grid-gutter);
 }
 
 .box-wrap {
   width: 100%;
   display: grid;
-  grid-gap: 20px;
+  grid-gap: var(--grid-gutter);
 
   @media (min-width: 700px) {
     height: 100%;
     display: grid;
-    grid-gap: 20px;
+    grid-gap: var(--grid-gutter);
     align-items: end;
     grid-template-columns: repeat(2, 1fr);
   }
@@ -107,9 +107,9 @@ ol {
 .box {
   background: blue;
   color: white;
-  border-radius: 11px;
+  border-radius: var(--note-radius);
   box-sizing: border-box;
-  padding: 40px 20px 20px;
+  padding: 40px var(--grid-gutter) var(--grid-gutter);
   width: 100%;
   // overflow-x: auto;
   overflow: hidden;

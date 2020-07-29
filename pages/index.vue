@@ -1,22 +1,18 @@
 <template>
-  <div>
+  <div class="site-wrapper">
     <CreateNote v-show="$store.state.user.isLoggedIn" class="post" />
-    <ul>
-      <li v-for="(note, noteIndex) in notes" :key="noteIndex">
-        <Note :title="note.title" :author="note.author" :media="note.media" />
-      </li>
-    </ul>
+    <Notes :notes="notes" />
   </div>
 </template>
 
 <script>
-import CreateNote from '@/components/molecules/note-create'
-import Note from '@/components/molecules/note'
+import CreateNote from '@/components/organisms/note-create'
+import Notes from '@/components/templates/notes'
 
 export default {
   components: {
     CreateNote,
-    Note,
+    Notes,
   },
   async asyncData(context) {
     // are we athenticated?
@@ -44,13 +40,15 @@ export default {
         .onSnapshot(snapshot => {
           snapshot.docChanges().forEach(change => {
             if (change.type === 'added') {
-              this.posts = snapshot.docs.map(doc => doc.data())
+              this.notes = snapshot.docs.map(doc => doc.data())
             }
             if (change.type === 'modified') {
-              console.log('Modified city: ', change.doc.data())
+              this.notes = snapshot.docs.map(doc => doc.data())
+              console.log('Modified: ', change.doc.data())
             }
             if (change.type === 'removed') {
-              console.log('Removed city: ', change.doc.data())
+              this.notes = snapshot.docs.map(doc => doc.data())
+              console.log('Removed: ', change.doc.data())
             }
           })
         })
@@ -60,7 +58,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-li {
-  font-size: calc(1em + 1vw);
+.site-wrapper {
+  height: 100%;
 }
 </style>

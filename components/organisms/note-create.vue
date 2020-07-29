@@ -69,6 +69,7 @@ export default {
       postImage: null,
       postLink: null,
       postData: null,
+      postRef: null,
     }
   },
   mounted() {
@@ -113,7 +114,7 @@ export default {
       //   this.submitPost()
       // }
     },
-    onSubmitComplete(docRef) {
+    onSubmitComplete() {
       // reset image
       if (this.$refs.image) {
         this.$refs.image.reset()
@@ -125,8 +126,6 @@ export default {
       // reset note
       this.title = ''
       this.postType = 'note'
-
-      console.log('Document written with ID: ', docRef.id)
     },
     onSubmitError(error) {
       this.error = error
@@ -140,10 +139,18 @@ export default {
       this.postLink = data
     },
     modelData() {
+      // create a doc reference before we set/add it
+      // we'll use it so we can edit/delete item later on...
+      this.postRef = this.$firebase
+        .firestore()
+        .collection('posts')
+        .doc()
+
       this.postData = {
         title: this.title,
         author: this.$store.state.user.uid,
         created: firebase.firestore.FieldValue.serverTimestamp(),
+        id: this.postRef.id,
         media: {
           image: this.postImage || '',
           link: this.postLink || '',
@@ -158,9 +165,10 @@ export default {
       await this.$firebase
         .firestore()
         .collection('posts')
-        .add(this.postData)
-        .then(docRef => {
-          this.onSubmitComplete(docRef)
+        .doc(this.postData.id)
+        .set(this.postData)
+        .then(() => {
+          this.onSubmitComplete()
         })
         .catch(error => {
           this.onSubmitError(error)

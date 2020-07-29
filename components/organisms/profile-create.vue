@@ -114,7 +114,7 @@ label {
 
 input {
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: var(--grid-gutter);
   appearance: none;
   border: 1px solid black;
   border-radius: 1px;

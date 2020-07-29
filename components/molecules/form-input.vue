@@ -47,7 +47,6 @@ export default {
 
 <style lang="scss" scoped>
 $indent: 15px;
-$radius: 8px;
 
 $light: white;
 $dark: black;
@@ -71,10 +70,10 @@ $trans: 200ms ease-out;
     font-size: 32px;
     line-height: 44px;
     padding: 3px $indent;
-    border-radius: $radius;
+    border-radius: var(--note-radius);
     outline: none;
     letter-spacing: 0.04em;
-    margin-bottom: 20px;
+    margin-bottom: var(--grid-gutter);
     border: 0;
 
     &::placeholder {

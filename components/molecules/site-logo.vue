@@ -25,7 +25,8 @@ h1 {
   font-size: 130px;
   line-height: 0.6;
   text-indent: -0.036em;
-  margin-right: 20px;
+  margin-right: var(--grid-gutter);
+  font-weight: bold;
 }
 
 h2 span {

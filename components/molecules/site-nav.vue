@@ -21,12 +21,12 @@
 <style lang="scss" scoped>
 ul {
   display: flex;
-  // padding: 20px;
+  // padding: var(--grid-gutter);
   margin-bottom: 40px;
 
   @media (min-width: 700px) {
     position: fixed;
-    top: 20px;
+    top: var(--grid-gutter);
     right: 0;
   }
 }
