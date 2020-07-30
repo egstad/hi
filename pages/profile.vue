@@ -1,6 +1,6 @@
 <template>
   <section class="box-wrap">
-    <div class="box" v-if="$store.state.user.isAnon">
+    <div class="rect" v-if="$store.state.user.isAnon">
       <h2>it's nice to see you.</h2>
       <p>
         while having an account has some perks, you don't one to participate.
@@ -14,30 +14,34 @@
       <p>if you would like you sign up, create an account</p>
     </div>
 
-    <div class="box login" v-if="!$store.state.user.isLoggedIn">
-      <h2>login</h2>
-      <br />
-      <ProfileLogin />
-    </div>
+    <ProfileLogin
+      v-if="!$store.state.user.isLoggedIn"
+      ref="login"
+      class="rect login"
+    />
 
-    <div class="box" v-if="$store.state.user.isLoggedIn">
+    <!-- <div class="rect" v-if="$store.state.user.isLoggedIn">
       <h2>profile</h2>
       <br />
       <ProfileLogout />
       <ProfileActions />
-    </div>
+    </div> -->
+    <aside class="wtf">
+      <header>
+        <h3 class="t-headline">wtf<br />is<br />this?</h3>
+      </header>
+      <svg viewBox="0 0 43 43" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="21.5" cy="21.5" r="21.5" />
+      </svg>
+    </aside>
 
-    <div
-      class="box register"
+    <ProfileCreate
+      class="rect register"
       v-if="!$store.state.user.isLoggedIn || $store.state.user.isAnon"
-    >
-      <h2>create a profile</h2>
-      <br />
-      <ProfileCreate />
-    </div>
+    />
 
     <div
-      class="box"
+      class="rect"
       v-if="$store.state.user.isLoggedIn && !$store.state.user.isAnon"
     >
       <h2>reset password</h2>
@@ -54,15 +58,15 @@
 
 <script>
 import ProfileLogin from '@/components/organisms/profile-login'
-import ProfileLogout from '@/components/organisms/profile-logout'
-import ProfileActions from '@/components/organisms/profile-actions'
+// import ProfileLogout from '@/components/organisms/profile-logout'
+// import ProfileActions from '@/components/organisms/profile-actions'
 import ProfileCreate from '@/components/organisms/profile-create'
 import ProfileReset from '@/components/organisms/profile-reset'
 export default {
   components: {
     ProfileLogin,
-    ProfileLogout,
-    ProfileActions,
+    // ProfileLogout,
+    // ProfileActions,
     ProfileCreate,
     ProfileReset,
   },
@@ -91,54 +95,117 @@ ol {
   display: grid;
   grid-gap: var(--grid-gutter);
 
-  @media (min-width: 700px) {
+  @media (min-width: 560px) {
+    // grid-template-columns: repeat(auto-fill, minmax(min-content, 500px));
     height: 100%;
-    display: grid;
-    grid-gap: var(--grid-gutter);
     align-items: end;
-    grid-template-columns: repeat(2, 1fr);
+    justify-content: center;
+    // grid-template-columns: 1fr 1fr;
   }
 
-  @media (min-width: 1400px) {
-    grid-template-columns: repeat(4, 1fr);
+  @media (min-width: 1200px) {
+    justify-content: start;
+    grid-template-columns: 1fr 1fr 1fr;
+
+    .rect {
+      max-width: none;
+    }
+  }
+
+  @media (min-width: 1600px) {
+    grid-template-columns: repeat(auto-fill, minmax(min-content, 500px));
   }
 }
 
-.box {
-  background: blue;
+.rect {
+  background: #0f68ed;
   color: white;
-  border-radius: var(--note-radius);
-  box-sizing: border-box;
+  border-radius: calc(var(--note-radius) * 2);
   padding: 40px var(--grid-gutter) var(--grid-gutter);
   width: 100%;
-  // overflow-x: auto;
-  overflow: hidden;
+  max-width: 560px;
 
-  @media (min-width: 600px) {
-    width: auto;
-    height: auto;
+  /deep/header {
+    margin-bottom: calc(var(--grid-gutter) * 4);
+    margin-bottom: clamp(
+      calc(var(--grid-gutter) * 4),
+      10vw,
+      calc(var(--grid-gutter) * 6)
+    );
+  }
+  /deep/.text-wrap {
+    padding: 0 calc(var(--grid-gutter) * 0.75);
   }
 
   &.login {
-    background: #92877f;
+    background: #504e4d;
     color: white;
 
     /deep/.form-item {
-      color: #92877f;
-    }
-
-    /deep/.button {
-      margin-top: 4px;
+      color: #504e4d;
     }
   }
 
   &.register {
-    background: #fdae15;
+    background: #0f68ed;
     color: white;
 
     /deep/.form-item {
-      color: #fdae15 !important;
+      color: #0f68ed;
     }
+
+    /deep/.button {
+      color: #0f68ed;
+    }
+  }
+}
+
+/deep/.contextual {
+  transition: height 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  height: 0;
+  overflow: hidden;
+
+  &.is-expanded {
+    pointer-events: auto;
+    height: calc(var(--input-height) + var(--grid-gutter));
+
+    .button {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+  }
+}
+
+.wtf {
+  animation: rotate 33s ease-in-out infinite;
+  position: relative;
+  color: white;
+  text-align: center;
+
+  svg {
+    display: block;
+    fill: #f09e00;
+  }
+
+  header {
+    position: absolute;
+    transform: translate3d(-50%, -50%, 0);
+    top: 50%;
+    left: 50%;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  90% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

@@ -1,7 +1,6 @@
 import * as firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
-import 'firebase/database'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -21,7 +20,6 @@ const app = !firebase.apps.length
   : null
 
 export const auth = firebase.auth()
-export const DB = firebase.database()
 export const StoreDB = firebase.firestore()
 
 // export default firebase

@@ -20,7 +20,6 @@
   margin-top: calc(var(--grid-gutter) * 4);
 
   @media (min-width: 800px) {
-    grid-auto-rows: min-content;
     grid-template-columns: 1fr 1fr;
   }
 

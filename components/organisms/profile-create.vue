@@ -1,32 +1,46 @@
 <template>
   <section>
+    <div class="text-wrap">
+      <header>
+        <h2 class="t-headline">create a profile</h2>
+      </header>
+      <p>
+        we don’t know you, but we love you just the way you are. stay anonymous
+        if you’d like. however, if you’d like to tie a name to your notes, sign
+        up!
+      </p>
+    </div>
+
     <div>
       <!-- logged-in anonymous user -->
       <form @submit.prevent="validate">
-        <div>
-          <FormInput
-            v-model="email"
-            type="email"
-            ref="email"
-            placeholder="name@address.com"
-            label="email address"
-            theme="light"
-            autocomplete="email"
-          />
-        </div>
-        <div>
-          <FormInput
-            v-model="password"
-            type="password"
-            ref="password"
-            placeholder="••••••"
-            label="password"
-            theme="light"
-            autocomplete="current-password"
-          />
-        </div>
+        <FormInput
+          v-model="email"
+          type="email"
+          ref="email"
+          placeholder="name@address.com"
+          label="email address"
+          theme="light"
+          autocomplete="email"
+          @input="onInput('email', $event)"
+          @keydown.native.space.prevent
+        />
+
+        <FormInput
+          v-model="password"
+          type="password"
+          ref="password"
+          placeholder="••••••"
+          label="password"
+          theme="light"
+          @input="onInput('password', $event)"
+          autocomplete="current-password"
+        />
         <div v-if="error">{{ error.message }}</div>
-        <FormSubmit text="create profile" />
+
+        <div class="contextual button" :class="{ 'is-expanded': showButtons }">
+          <FormSubmit text="create profile" />
+        </div>
       </form>
     </div>
   </section>
@@ -48,6 +62,7 @@ export default {
       email: '',
       password: '',
       error: '',
+      showButtons: false,
     }
   },
   methods: {
@@ -103,22 +118,30 @@ export default {
           this.error = error
         })
     },
+    onInput() {
+      if ((this.email !== '') & (this.password !== '')) {
+        this.showButtons = true
+      } else {
+        this.showButtons = false
+      }
+    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-label {
-  display: block;
+$label-height: 28px;
+
+.text-wrap {
+  margin-bottom: var(--grid-gutter);
 }
 
-input {
-  width: 100%;
-  margin-bottom: var(--grid-gutter);
-  appearance: none;
-  border: 1px solid black;
-  border-radius: 1px;
-  padding: 10px;
-  font-size: 44px;
+// factor label into height here
+.contextual.input.is-expanded {
+  height: calc(var(--input-height) + var(--grid-gutter) + #{$label-height});
+}
+
+.contextual.button .button {
+  margin-top: var(--grid-gutter);
 }
 </style>

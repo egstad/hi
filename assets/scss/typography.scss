@@ -1,0 +1,8 @@
+$t-headline: clamp(3em, 5vw, 3.5em);
+$t-input: 33px;
+
+
+.t-headline {
+  font-size: $t-headline;
+  line-height: 0.75;
+}

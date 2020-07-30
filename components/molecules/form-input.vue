@@ -54,12 +54,13 @@ $dark: black;
 $trans: 200ms ease-out;
 
 .form-item {
+  padding-top: var(--grid-gutter);
   .label {
     font-size: 16px;
     text-transform: uppercase;
     display: block;
     font-weight: bold;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.125em;
     padding: 6px $indent;
   }
 
@@ -67,13 +68,12 @@ $trans: 200ms ease-out;
     appearance: none;
     transition: background $trans, color $trans;
     width: 100%;
-    font-size: 32px;
-    line-height: 44px;
-    padding: 3px $indent;
+    font-size: $t-input;
+    line-height: var(--input-height);
+    padding: 0 $indent;
     border-radius: var(--note-radius);
     outline: none;
     letter-spacing: 0.04em;
-    margin-bottom: var(--grid-gutter);
     border: 0;
 
     &::placeholder {
@@ -100,7 +100,7 @@ $trans: 200ms ease-out;
         background: rgba($light, 0.2);
 
         &::placeholder {
-          color: rgba($light, 0.4);
+          color: rgba($light, 0.6);
         }
 
         &:hover {
@@ -118,6 +118,38 @@ $trans: 200ms ease-out;
           &::placeholder {
             transition: none;
             color: inherit;
+          }
+        }
+      }
+    }
+    &--dark {
+      .label {
+        color: $dark;
+      }
+
+      .input {
+        color: $dark;
+        background: rgba($dark, 0.1);
+
+        &::placeholder {
+          color: rgba($dark, 0.6);
+        }
+
+        &:hover {
+          background: rgba($dark, 0.15);
+
+          &::placeholder {
+            color: $dark;
+          }
+        }
+
+        &:focus {
+          background: rgba($dark, 0.2);
+          color: $dark;
+
+          &::placeholder {
+            transition: none;
+            color: $dark;
           }
         }
       }

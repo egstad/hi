@@ -1,37 +1,38 @@
 <template>
   <section>
+    <header class="text-wrap">
+      <h2 class="t-headline">login</h2>
+    </header>
     <!-- login user -->
-    <div>
-      <form @submit.prevent="validate" id="login">
-        <div>
-          <FormInput
-            ref="email"
-            v-model="email"
-            label="email address"
-            type="email"
-            placeholder="name@address.com"
-            autocomplete="email"
-          />
-        </div>
-        <div>
-          <FormInput
-            ref="password"
-            v-model="password"
-            label="password"
-            type="password"
-            placeholder="••••••"
-            autocomplete="current-password"
-          />
-        </div>
-        <div v-if="error">{{ error.message }}</div>
-      </form>
-      <div class="buttons">
-        <FormSubmit @click.native="validate" form="login" text="login" />
-        <FormSubmit
-          text="stay anon"
-          @click.native="$store.dispatch('user/loginAnonymously')"
-        />
-      </div>
+    <form @submit.prevent="validate" id="login">
+      <FormInput
+        ref="email"
+        v-model="email"
+        label="email address"
+        type="email"
+        placeholder="name@address.com"
+        autocomplete="email"
+        @input="onInput"
+        @keydown.native.space.prevent
+      />
+      <FormInput
+        ref="password"
+        v-model="password"
+        label="password"
+        type="password"
+        placeholder="••••••"
+        autocomplete="current-password"
+        @input="onInput"
+      />
+      <div v-if="error">{{ error.message }}</div>
+    </form>
+
+    <div class="contextual buttons" :class="{ 'is-expanded': showButtons }">
+      <FormSubmit @click.native="validate" form="login" text="login" />
+      <FormSubmit
+        text="anon"
+        @click.native="$store.dispatch('user/loginAnonymously')"
+      />
     </div>
   </section>
 </template>
@@ -51,13 +52,8 @@ export default {
       password: '',
       error: '',
       testInput: '',
+      showButtons: false,
     }
-  },
-  beforeCreate() {
-    this.$app.$on('login/error', this.updateError)
-  },
-  beforeDestroy() {
-    // this.$app.$off('login/error', this.updateError)
   },
   methods: {
     updateError(err) {
@@ -73,6 +69,13 @@ export default {
       if (emailIsValid && passwordIsValid) {
         // SIGN IN WITH EMAIL
         this.loginByEmail(this.email, this.password)
+      }
+    },
+    onInput() {
+      if ((this.email !== '') & (this.password !== '')) {
+        this.showButtons = true
+      } else {
+        this.showButtons = false
       }
     },
     async loginByEmail(email, password) {
@@ -97,28 +100,27 @@ export default {
 
 <style lang="scss" scoped>
 /deep/.button {
-  color: #92877f;
+  color: #504e4d;
 }
 
 .buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 4px;
+  grid-gap: 1px;
+  pointer-events: none;
 
-  @media (min-width: 700px) {
-    grid-template-columns: 1fr;
-  }
+  .button {
+    margin-top: var(--grid-gutter);
+    transition: opacity 300ms ease-in-out;
+    // transform: translate3d(0, -4em, 0);
+    opacity: 0;
 
-  @media (min-width: 800px) {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  @media (min-width: 1400px) {
-    grid-template-columns: 1fr;
-  }
-
-  @media (min-width: 1600px) {
-    grid-template-columns: 1fr 1fr;
+    &:first-of-type {
+      border-radius: var(--note-radius) 0 0 var(--note-radius);
+    }
+    &:last-of-type {
+      border-radius: 0 var(--note-radius) var(--note-radius) 0;
+    }
   }
 }
 </style>

@@ -16,6 +16,7 @@
             autocomplete="email"
             label="email address"
             theme="light"
+            @keydown.native.space.prevent
           />
         </div>
         <div v-if="error && !success">{{ error.message }}</div>
