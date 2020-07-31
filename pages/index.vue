@@ -15,9 +15,6 @@ export default {
     Notes,
   },
   async asyncData(context) {
-    // are we athenticated?
-    context.store.dispatch('user/authenticate')
-
     const data = await context.$firebase
       .firestore()
       .collection('posts')

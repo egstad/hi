@@ -70,9 +70,6 @@ export default {
     ProfileCreate,
     ProfileReset,
   },
-  async asyncData(context) {
-    await context.store.dispatch('user/authenticate')
-  },
 }
 </script>
 
