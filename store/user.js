@@ -29,11 +29,6 @@ export const actions = {
   // Because sometimes being unknown is freeing...
   async loginAnonymously({ dispatch }) {
     await this.$firebase.auth().signInAnonymously()
-
-    // remember me
-    // await this.$firebase
-    //   .auth()
-    //   .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     dispatch('authenticate')
   },
 
@@ -44,7 +39,7 @@ export const actions = {
       if (user) {
         commit('login', user)
       } else {
-        // dispatch('logout')
+        dispatch('logout')
       }
     })
   },

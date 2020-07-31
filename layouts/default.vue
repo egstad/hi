@@ -21,17 +21,39 @@ export default {
     navigation,
     logo,
   },
-  async beforeCreate() {
-    // await this.$store.dispatch('user/authenticate')
-    // remember me!
-    // await this.$firebase
-    //   .auth()
-    //   .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  beforeMount() {
+    window.localStorage.removeItem('user')
+    this.handleAuth()
+  },
+  methods: {
+    async handleAuth() {
+      /*
+        Let's talk about logins...
+        1. Out of the box, no one is logged in. Everyone is anonymous
+        2. If they aren't logged-in, we create an anon account for them with firebase
+        3. The UID is then saved for them
+      */
 
-    // forget me!
-    await this.$firebase
-      .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.SESSION)
+      // is there a stored user UID?
+      const storedUser = window.localStorage.user
+        ? JSON.parse(window.localStorage.user)
+        : null
+
+      // if so, log them in
+      if (storedUser) {
+        await this.$store.commit('user/login', storedUser)
+      }
+      // otherwise, let's log them into an anon account and write their uid to localstorage
+      else {
+        await this.$store.dispatch('user/loginAnonymously')
+
+        const user = {
+          isAnon: this.$store.state.user.isAnon,
+          uid: this.$store.state.user.uid,
+        }
+        await localStorage.setItem('user', JSON.stringify(user))
+      }
+    },
   },
 }
 </script>

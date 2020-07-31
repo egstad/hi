@@ -16,7 +16,7 @@ export default {
   },
   async asyncData(context) {
     // are we athenticated?
-    context.store.dispatch('user/authenticate')
+    // context.store.dispatch('user/authenticate')
 
     const data = await context.$firebase
       .firestore()
