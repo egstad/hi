@@ -9,7 +9,7 @@
 
       <template v-else-if="type === 'text'">
         <div class="attachment text">
-          <p class="">{{ title }}</p>
+          <NoteText :body="title" :link="title" />
         </div>
       </template>
 
@@ -29,13 +29,18 @@
       </template> -->
 
       <footer class="utils">
-        <p class="icon">
-          <span class="-hidden">tag name</span>
-          <span>☂</span>
+        <p class="icon" :class="{ opaque: iconsAreOpaque || type === 'image' }">
+          <span class="-hidden">note type: {{ type }}</span>
+          <span class="svg"><Icon type="default"/></span>
         </p>
-        <button class="icon" v-if="userCanEdit" @click="deletePost(docId)">
+        <button
+          class="icon"
+          v-if="userCanEdit"
+          @click="deletePost(docId)"
+          :class="{ opaque: iconsAreOpaque || type === 'image' }"
+        >
           <span class="-hidden">delete note</span>
-          <span>☓</span>
+          <span class="svg"><Icon type="close"/></span>
         </button>
       </footer>
     </article>
@@ -43,7 +48,7 @@
 </template>
 
 <style lang="scss" scoped>
-$icon-size: 54px;
+$icon-size: 44px;
 
 .note {
   position: relative;
@@ -69,6 +74,11 @@ $icon-size: 54px;
 
   &:hover {
     z-index: 2;
+
+    .icon {
+      background-color: rgba(white, 0.7);
+      backdrop-filter: blur(5px);
+    }
   }
 
   .title {
@@ -94,14 +104,23 @@ $icon-size: 54px;
     position: relative;
     top: 0;
     left: 0;
+    padding: calc(var(--grid-gutter) * 0.5);
     width: $icon-size;
     height: $icon-size;
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    background: rgba(white, 0.7);
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(0px);
     border-radius: var(--note-radius-child);
+
+    transition: background-color 300ms ease-in-out,
+      backdrop-filter 100ms ease-in-out;
+    background-color: rgba(white, 0);
+
+    &.opaque {
+      background-color: rgba(white, 0.7);
+      backdrop-filter: blur(5px);
+    }
   }
 
   // this hides descriptions
@@ -176,22 +195,28 @@ $icon-size: 54px;
       height: 100%;
     }
   }
-  &.text {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    padding: calc(var(--grid-gutter));
-    display: flex;
-    align-items: flex-end;
-    background: var(--note-color-default);
-  }
+  // &.text {
+  //   position: absolute;
+  //   top: 0;
+  //   left: 0;
+  //   height: 100%;
+  //   width: 100%;
+  //   padding: calc(var(--grid-gutter));
+  //   display: flex;
+  //   align-items: flex-end;
+  //   background: var(--note-color-default);
+  // }
 }
 </style>
 
 <script>
+import Icon from '@/components/atoms/icons'
+import NoteText from '@/components/molecules/note-text'
 export default {
+  components: {
+    Icon,
+    NoteText,
+  },
   props: {
     title: {
       type: String,
@@ -216,6 +241,7 @@ export default {
       type: null,
       newTitle: null,
       isExpanded: false,
+      iconsAreOpaque: false,
     }
   },
   computed: {
@@ -225,8 +251,19 @@ export default {
   },
   beforeMount() {
     this.setType()
+    this.$on('setIconOpacity', this.onIconOpacity)
+  },
+  beforeDestroy() {
+    this.$off('setIconOpacity', this.onIconOpacity)
   },
   methods: {
+    onIconOpacity(state) {
+      if (state === 'show') {
+        this.iconsAreOpaque = true
+      } else if (state === 'hide') {
+        this.iconsAreOpaque = false
+      }
+    },
     setType() {
       if (this.media.image !== '') {
         this.type = 'image'
