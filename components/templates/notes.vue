@@ -16,7 +16,6 @@
 .notes {
   display: grid;
   grid-gap: var(--grid-gutter);
-  height: 100%;
   margin-top: calc(var(--grid-gutter) * 4);
   grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
 }
