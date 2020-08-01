@@ -1,5 +1,5 @@
 <template>
-  <li class="note" :class="type" ref="note">
+  <li class="note" :class="(type, `tag--${tag}`)" ref="note">
     <article class="content">
       <template v-if="type === 'image'">
         <figure class="attachment image">
@@ -29,12 +29,15 @@
       </template> -->
 
       <footer class="utils">
-        <p class="icon" :class="{ opaque: iconsAreOpaque || type === 'image' }">
+        <p
+          class="icon tag"
+          :class="{ opaque: iconsAreOpaque || type === 'image' }"
+        >
           <span class="-hidden">note type: {{ type }}</span>
-          <span class="svg"><Icon type="default"/></span>
+          <span class="svg"><Icon :type="tag"/></span>
         </p>
         <button
-          class="icon"
+          class="icon delete"
           v-if="userCanEdit"
           @click="deletePost(docId)"
           :class="{ opaque: iconsAreOpaque || type === 'image' }"
@@ -48,15 +51,15 @@
 </template>
 
 <style lang="scss" scoped>
-$icon-size: 44px;
+$icon-size: 48px;
 
 .note {
   position: relative;
-  background: var(--note-background);
   color: var(--note-foreground);
   overflow: hidden;
   padding: var(--grid-gutter) !important;
   border-radius: var(--note-radius);
+  background-color: var(--note-default-bg);
 
   .content {
     // makes it a perfect square
@@ -70,20 +73,30 @@ $icon-size: 44px;
     }
   }
 
-  // wraps content
-
   &:hover {
-    z-index: 2;
-
     .icon {
       background-color: rgba(white, 0.7);
       backdrop-filter: blur(5px);
     }
   }
 
-  .title {
-    font-size: 44px;
-    margin-bottom: calc(var(--grid-gutter) * 0.6);
+  &.tag {
+    &--curious {
+      background: var(--note-curious-bg);
+      color: var(--note-curious-fg);
+    }
+    &--cute {
+      background: var(--note-cute-bg);
+      color: var(--note-cute-fg);
+    }
+    &--sad {
+      background: var(--note-sad-bg);
+      color: var(--note-sad-fg);
+    }
+    &--encouraging {
+      background: var(--note-encouraging-bg);
+      color: var(--note-encouraging-fg);
+    }
   }
 }
 
@@ -117,9 +130,34 @@ $icon-size: 44px;
       backdrop-filter 100ms ease-in-out;
     background-color: rgba(white, 0);
 
+    &:hover,
+    &:focus {
+      background-color: rgba(white, 1);
+      svg {
+        transform: translate3d(0, 0, 0) rotate(90deg);
+      }
+    }
+
     &.opaque {
       background-color: rgba(white, 0.7);
       backdrop-filter: blur(5px);
+    }
+
+    &.tag {
+      pointer-events: none;
+    }
+
+    &.delete {
+      svg {
+        transition: transform 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transform: translate(0, 0, 0) rotate(0deg);
+      }
+
+      &:hover {
+        svg {
+          transform: translate3d(0, 0, 0) rotate(90deg);
+        }
+      }
     }
   }
 
@@ -227,6 +265,10 @@ export default {
       required: true,
     },
     docId: {
+      type: String,
+      required: true,
+    },
+    tag: {
       type: String,
       required: true,
     },

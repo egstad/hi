@@ -4,7 +4,11 @@
     :class="{ 'is-scrollable': isScrollable }"
     ref="container"
   >
-    <p class="body" :class="{ large: body.length < 40 }" ref="body">
+    <p
+      class="body"
+      :class="{ lg: body.length < 40, xl: body.length < 20 }"
+      ref="body"
+    >
       <span>{{ body }}</span>
     </p>
     <a href="#" v-if="link" class="link">http://egstad.com/</a>
@@ -22,16 +26,21 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  background: var(--note-color-default);
+  overflow-y: auto;
 
   &.is-scrollable {
-    overflow-y: auto;
+    padding-top: calc(var(--grid-gutter) * 4);
   }
 }
 
-.large {
+.lg {
   font-size: 175%;
   line-height: 0.8;
+}
+
+.xl {
+  font-size: 250%;
+  line-height: 0.65;
 }
 
 .body {

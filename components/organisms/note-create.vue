@@ -32,10 +32,22 @@ So how's it work?
       </tr>
     </table>
 
-    <label>
-      let's add a new post
-      <input type="text" v-model="title" required /> </label
-    ><br />
+    <FormTextarea
+      v-model="title"
+      ref="title"
+      placeholder="dear internet diary..."
+      label="your note"
+      :max="titleMaxChars"
+      theme="dark"
+      autocomplete="off"
+    />
+    <FormSelect
+      v-model="postTag"
+      ref="tag"
+      :options="postTags"
+      label="note type"
+      theme="dark"
+    />
 
     <div v-if="postType === 'image'">
       <PostImageUploader ref="image" />
@@ -52,16 +64,22 @@ So how's it work?
 
 <script>
 import * as firebase from 'firebase/app'
+// import FormInput from '@/components/molecules/form-input'
+import FormTextarea from '@/components/molecules/form-textarea'
+import FormSelect from '@/components/molecules/form-select'
 import PostImageUploader from '@/components/molecules/post-image'
 import PostLinkUploader from '@/components/molecules/post-link'
 export default {
   components: {
     PostImageUploader,
     PostLinkUploader,
+    FormTextarea,
+    FormSelect,
   },
   data() {
     return {
       title: '',
+      titleMaxChars: 200,
       error: '',
       postType: 'note',
       postHasImage: false,
@@ -70,6 +88,15 @@ export default {
       postLink: null,
       postData: null,
       postRef: null,
+      postTag: 'none',
+      postTags: [
+        { value: 'none', message: '¶ - general' },
+        { value: 'encouraging', message: '♥ - encouraging' },
+        { value: 'cute', message: '☃️ - cute' },
+        { value: 'sad', message: '☔ - cathartic' },
+        { value: 'nostalgic', message: '✨ - nostalgic' },
+        { value: 'curious', message: '?  - curious' },
+      ],
     }
   },
   mounted() {
@@ -151,11 +178,14 @@ export default {
         author: this.$store.state.user.uid,
         created: firebase.firestore.FieldValue.serverTimestamp(),
         id: this.postRef.id,
+        tag: this.postTag || '',
         media: {
           image: this.postImage || '',
           link: this.postLink || '',
         },
       }
+
+      console.log(this.postData)
     },
     async submitPost(imageUrl) {
       // create data

@@ -7,6 +7,7 @@
         :media="note.media"
         :doc-id="note.id"
         :key="noteIndex"
+        :tag="note.tag || 'none'"
       />
     </template>
   </ul>
