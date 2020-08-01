@@ -18,16 +18,7 @@
   grid-gap: var(--grid-gutter);
   height: 100%;
   margin-top: calc(var(--grid-gutter) * 4);
-
-  @media (min-width: 800px) {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  @media (min-width: 1400px) {
-    grid-auto-rows: auto;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    align-items: start;
-  }
+  grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
 }
 </style>
 

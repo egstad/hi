@@ -1,50 +1,71 @@
 <template>
   <li class="note" :class="type" ref="note">
-    <article>
-      <div>
-        <header>
-          <h2 class="title">{{ title }}</h2>
-        </header>
+    <article class="content">
+      <template v-if="type === 'image'">
+        <figure class="attachment image">
+          <img :src="media.image" alt="" />
+        </figure>
+      </template>
 
-        <button v-if="userCanEdit" @click="deletePost(docId)">Delete</button>
-      </div>
+      <template v-else-if="type === 'text'">
+        <div class="attachment text">
+          <p class="">{{ title }}</p>
+        </div>
+      </template>
 
-      <!-- Image Note -->
-      <div class="attachments" :class="{ expanded: isExpanded, type }">
-        <template v-if="media.image">
-          <figure class="attachment image">
-            <img :src="media.image" alt="" />
+      <!-- <template v-else-if="media.link">
+        <a class="attachment link" :href="media.link.url" target="_blank">
+          <figure v-if="media.link.image">
+            <img :src="media.link.image" alt="" />
           </figure>
-        </template>
 
-        <!-- Link Embed Note -->
-        <template v-else-if="media.link">
-          <a class="attachment link" :href="media.link.url" target="_blank">
-            <figure v-if="media.link.image">
-              <img :src="media.link.image" alt="" />
-            </figure>
+          <p v-if="media.link.title" class="link-title">
+            {{ media.link.title }}
+          </p>
+          <p v-if="media.link.description" class="link-description">
+            {{ media.link.description }}
+          </p>
+        </a>
+      </template> -->
 
-            <p v-if="media.link.title" class="link-title">
-              {{ media.link.title }}
-            </p>
-            <p v-if="media.link.description" class="link-description">
-              {{ media.link.description }}
-            </p>
-          </a>
-        </template>
-      </div>
+      <footer class="utils">
+        <p class="icon">
+          <span class="-hidden">tag name</span>
+          <span>☂</span>
+        </p>
+        <button class="icon" v-if="userCanEdit" @click="deletePost(docId)">
+          <span class="-hidden">delete note</span>
+          <span>☓</span>
+        </button>
+      </footer>
     </article>
   </li>
 </template>
 
 <style lang="scss" scoped>
+$icon-size: 54px;
+
 .note {
   position: relative;
   background: var(--note-background);
   color: var(--note-foreground);
-  border-radius: var(--note-radius);
   overflow: hidden;
   padding: var(--grid-gutter) !important;
+  border-radius: var(--note-radius);
+
+  .content {
+    // makes it a perfect square
+    &::before {
+      content: '';
+      display: block;
+      width: 0;
+      padding-bottom: 100%;
+      grid-row: 1 / 1;
+      grid-column: 1 / 1;
+    }
+  }
+
+  // wraps content
 
   &:hover {
     z-index: 2;
@@ -53,6 +74,48 @@
   .title {
     font-size: 44px;
     margin-bottom: calc(var(--grid-gutter) * 0.6);
+  }
+}
+
+.utils {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: calc(var(--grid-gutter) * 0.5);
+  font-size: $icon-size;
+  line-height: $icon-size;
+  display: flex;
+  justify-content: space-between;
+
+  .icon {
+    appearance: none;
+    border: 0;
+    position: relative;
+    top: 0;
+    left: 0;
+    width: $icon-size;
+    height: $icon-size;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(white, 0.7);
+    backdrop-filter: blur(5px);
+    border-radius: var(--note-radius-child);
+  }
+
+  // this hides descriptions
+  // while keeping them accessible for screen readers
+  .-hidden {
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    position: absolute !important;
+    white-space: nowrap;
+    width: 1px;
   }
 }
 
@@ -88,11 +151,41 @@
     }
   }
   &.image {
-    img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    &::before {
+      content: '';
       display: block;
+      background: rgba(black, 0.1);
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: auto;
+      height: 100%;
+      pointer-events: none;
     }
+
+    img {
+      object-fit: cover;
+      // display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  &.text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    padding: calc(var(--grid-gutter));
+    display: flex;
+    align-items: flex-end;
+    background: var(--note-color-default);
   }
 }
 </style>
