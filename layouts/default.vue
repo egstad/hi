@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import * as firebase from 'firebase/app'
+// import * as firebase from 'firebase/app'
 
 import navigation from '@/components/molecules/site-nav'
 import logo from '@/components/molecules/site-logo'
@@ -82,6 +82,5 @@ export default {
   width: 100%;
 }
 
-.site-content {
-}
+// .site-content {}
 </style>
