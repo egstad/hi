@@ -1,5 +1,5 @@
 <template>
-  <li class="note" :class="(type, `tag--${tag}`)" ref="note">
+  <li class="note" :class="(`type--${type}`, `tag--${tag}`)" ref="note">
     <article class="content">
       <template v-if="type === 'image'">
         <figure class="attachment image">
@@ -7,10 +7,18 @@
         </figure>
       </template>
 
+      <template v-if="type === 'embed'">
+        <NoteEmbed
+          class="attachment embed"
+          type="?"
+          :embed="media.embed"
+          :body="title"
+          :link="link"
+        />
+      </template>
+
       <template v-else-if="type === 'text'">
-        <div class="attachment text">
-          <NoteText :body="title" :link="title" />
-        </div>
+        <NoteText :body="title" :link="link" class="attachment text" />
       </template>
 
       <!-- <template v-else-if="media.link">
@@ -51,8 +59,6 @@
 </template>
 
 <style lang="scss" scoped>
-$icon-size: 48px;
-
 .note {
   position: relative;
   color: var(--note-foreground);
@@ -106,8 +112,8 @@ $icon-size: 48px;
   left: 0;
   width: 100%;
   padding: calc(var(--grid-gutter) * 0.5);
-  font-size: $icon-size;
-  line-height: $icon-size;
+  font-size: var(--note-icon-size);
+  line-height: var(--note-icon-size);
   display: flex;
   justify-content: space-between;
 
@@ -118,8 +124,8 @@ $icon-size: 48px;
     top: 0;
     left: 0;
     padding: calc(var(--grid-gutter) * 0.5);
-    width: $icon-size;
-    height: $icon-size;
+    width: var(--note-icon-size);
+    height: var(--note-icon-size);
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -250,15 +256,26 @@ $icon-size: 48px;
 <script>
 import Icon from '@/components/atoms/icons'
 import NoteText from '@/components/molecules/note-text'
+import NoteEmbed from '@/components/molecules/note-embed'
 export default {
   components: {
     Icon,
     NoteText,
+    NoteEmbed,
   },
   props: {
     title: {
       type: String,
       required: true,
+    },
+    type: {
+      type: String,
+      required: true,
+    },
+    link: {
+      type: String,
+      required: false,
+      default: null,
     },
     author: {
       type: String,
@@ -280,7 +297,6 @@ export default {
   },
   data() {
     return {
-      type: null,
       newTitle: null,
       isExpanded: false,
       iconsAreOpaque: false,
@@ -292,8 +308,8 @@ export default {
     },
   },
   beforeMount() {
-    this.setType()
     this.$on('setIconOpacity', this.onIconOpacity)
+    console.log(this.media)
   },
   beforeDestroy() {
     this.$off('setIconOpacity', this.onIconOpacity)
@@ -304,15 +320,6 @@ export default {
         this.iconsAreOpaque = true
       } else if (state === 'hide') {
         this.iconsAreOpaque = false
-      }
-    },
-    setType() {
-      if (this.media.image !== '') {
-        this.type = 'image'
-      } else if (this.media.link !== '') {
-        this.type = 'link'
-      } else {
-        this.type = 'text'
       }
     },
     async deletePost() {

@@ -5,18 +5,21 @@
         v-model="link"
         type="url"
         ref="link"
-        placeholder="https://website.com"
-        label="url address"
+        placeholder="link a site, video, or image..."
+        label="add a link"
         theme="dark"
         autocomplete="off"
         @input="validate()"
       />
-      <FormSubmit
+      <div v-if="linkIsFormatted">
+        <div class="link-preview" v-html="linkEmbed"></div>
+      </div>
+      <!-- <FormSubmit
         v-if="linkIsFormatted"
         text="add link"
         type="button"
         @click.native.stop="fetchLinkPreview()"
-      />
+      /> -->
     </template>
     <div class="link-preview" v-else>
       <a :href="linkPreview.url">
@@ -32,16 +35,17 @@
 
 <script>
 import FormInput from '@/components/molecules/form-input'
-import FormSubmit from '@/components/molecules/form-submit'
+// import FormSubmit from '@/components/molecules/form-submit'
 export default {
   components: {
     FormInput,
-    FormSubmit,
+    // FormSubmit,
   },
   data() {
     return {
       apiKey: '922bdfb9544ae6d6d87664139e5c4042',
       link: null,
+      linkEmbed: null,
       linkIsFormatted: false,
       linkIsValid: false,
       linkPreview: null,
@@ -63,15 +67,33 @@ export default {
       this.linkIsFormatted = !!pattern.test(this.link)
     },
     validate() {
+      // 1. is it actually a link? be real, dude.
       this.checkLinkFormat()
-
+      // 2. is it a video? is it an image? is it just a link?
+      this.handleEmbed()
       // if link is formatted, let's double check that this link is real
-      if (this.linkIsFormatted) {
-        this.linkIsValid = true
+      this.linkIsValid = !!this.linkIsFormatted
+    },
+    handleEmbed() {
+      let input = this.link
+      const isYoutube = this.link.includes('youtube.com')
+
+      // https://www.youtube.com/watch?v=HrBhuzHHlhQ
+      if (isYoutube) {
+        const pattern = /(?:http?s?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(\S+)/g
+        if (pattern.test(input)) {
+          const replacement =
+            '<iframe src="https://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>'
+          input = input.replace(pattern, replacement)
+          // For start time, turn get param & into ?
+          input = input.replace('&amp;t=', '?t=')
+        }
+        this.linkEmbed = input
       }
     },
     reset() {
       this.link = null
+      this.linkEmbed = null
       this.linkIsFormatted = false
       this.linkIsValid = false
       this.linkPreview = false
@@ -99,7 +121,11 @@ export default {
 .link-preview {
   background: white;
   max-width: 500px;
+  border-radius: var(--note-radius);
+  overflow: hidden;
+  display: flex;
 
+  iframe,
   img {
     display: block;
     width: 100%;

@@ -13,6 +13,7 @@
         :value="value"
         :placeholder="placeholder"
         :class="`textarea`"
+        :required="required"
         @input="$emit('input', $event.target.value)"
       ></textarea>
     </label>
@@ -27,9 +28,10 @@ export default {
       required: false,
       default: '',
     },
-    type: {
-      type: String,
-      required: true,
+    required: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
     placeholder: {
       type: String,

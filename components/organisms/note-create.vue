@@ -14,19 +14,19 @@ So how's it work?
         <td style="border: 1px solid black">
           <label
             >note
-            <input type="radio" v-model="postType" value="note" />
+            <input type="radio" v-model="postToggle" value="note" />
           </label>
         </td>
         <td style="border: 1px solid black">
           <label
             >link
-            <input type="radio" v-model="postType" value="link" />
+            <input type="radio" v-model="postToggle" value="link" />
           </label>
         </td>
         <td style="border: 1px solid black">
           <label
             >image
-            <input type="radio" v-model="postType" value="image" />
+            <input type="radio" v-model="postToggle" value="image" />
           </label>
         </td>
       </tr>
@@ -40,7 +40,9 @@ So how's it work?
       :max="titleMaxChars"
       theme="dark"
       autocomplete="off"
+      required
     />
+    <PostLinkUploader ref="link" />
     <FormSelect
       v-model="postTag"
       ref="tag"
@@ -49,11 +51,11 @@ So how's it work?
       theme="dark"
     />
 
-    <div v-if="postType === 'image'">
+    <div v-if="postToggle === 'image'">
       <PostImageUploader ref="image" />
     </div>
 
-    <div v-if="postType === 'link'">
+    <div v-if="postToggle === 'link'">
       <PostLinkUploader ref="link" />
     </div>
 
@@ -73,6 +75,7 @@ export default {
   components: {
     PostImageUploader,
     PostLinkUploader,
+    // FormInput,
     FormTextarea,
     FormSelect,
   },
@@ -81,7 +84,8 @@ export default {
       title: '',
       titleMaxChars: 200,
       error: '',
-      postType: 'note',
+      postType: null,
+      postToggle: 'note',
       postHasImage: false,
       postHasLink: false,
       postImage: null,
@@ -115,7 +119,7 @@ export default {
       }
     },
     onSubmit() {
-      switch (this.postType) {
+      switch (this.postToggle) {
         case 'image':
           // submits title + image
           this.$refs.image.validateAndUpload()
@@ -132,11 +136,11 @@ export default {
           break
 
         default:
-          console.warn('this.postType was undefined')
+          console.warn('this.postToggle was undefined')
           break
       }
 
-      // if (this.postType === 'image') {
+      // if (this.postToggle === 'image') {
       // } else {
       //   this.submitPost()
       // }
@@ -147,12 +151,12 @@ export default {
         this.$refs.image.reset()
       }
       // reset link
-      if (this.$refs.link) {
+      if (this.$refs.link.linkEmbed) {
         this.$refs.link.reset()
       }
       // reset note
       this.title = ''
-      this.postType = 'note'
+      this.postToggle = 'note'
     },
     onSubmitError(error) {
       this.error = error
@@ -165,7 +169,18 @@ export default {
     onLinkPreviewReady(data) {
       this.postLink = data
     },
+    setType() {
+      if (!this.postImage && !this.$refs.link.linkEmbed) {
+        this.postType = 'text'
+      } else if (this.postImage && !this.$refs.link.linkEmbed) {
+        this.postType = 'image'
+      } else if (!this.postImage && this.$refs.link.linkEmbed) {
+        this.postType = 'embed'
+      }
+    },
     modelData() {
+      this.setType()
+
       // create a doc reference before we set/add it
       // we'll use it so we can edit/delete item later on...
       this.postRef = this.$firebase
@@ -175,17 +190,17 @@ export default {
 
       this.postData = {
         title: this.title,
+        type: this.postType,
         author: this.$store.state.user.uid,
         created: firebase.firestore.FieldValue.serverTimestamp(),
         id: this.postRef.id,
-        tag: this.postTag || '',
+        tag: this.postTag || null,
+        link: this.$refs.link.link || null,
         media: {
-          image: this.postImage || '',
-          link: this.postLink || '',
+          embed: this.$refs.link.linkEmbed || null,
+          image: this.postImage || null,
         },
       }
-
-      console.log(this.postData)
     },
     async submitPost(imageUrl) {
       // create data
