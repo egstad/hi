@@ -1,7 +1,7 @@
 <template>
   <figure>
     <div></div>
-    <div class="wrapper" v-html="embed"></div>
+    <div class="wrapper" v-html="embed.source"></div>
     <!-- <figcaption>
       <p class="body">{{ body }}</p>
       <a class="t-link" :href="link" target="_blank">{{ link }}</a>
@@ -17,7 +17,7 @@ export default {
       required: true,
     },
     embed: {
-      type: String,
+      type: Object,
       required: true,
     },
     link: {

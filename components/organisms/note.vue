@@ -309,7 +309,6 @@ export default {
   },
   beforeMount() {
     this.$on('setIconOpacity', this.onIconOpacity)
-    console.log(this.media)
   },
   beforeDestroy() {
     this.$off('setIconOpacity', this.onIconOpacity)
