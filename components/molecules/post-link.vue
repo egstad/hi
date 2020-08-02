@@ -11,8 +11,8 @@
         autocomplete="off"
         @input="validate()"
       />
-      <div v-if="linkIsFormatted">
-        <div class="link-preview" v-html="linkEmbed"></div>
+      <div v-if="linkEmbed">
+        <div class="link-preview" v-html="linkEmbed.source"></div>
       </div>
       <!-- <FormSubmit
         v-if="linkIsFormatted"
@@ -76,19 +76,56 @@ export default {
     },
     handleEmbed() {
       let input = this.link
-      const isYoutube = this.link.includes('youtube.com')
+      let replacement = null
+      let type = null
+      /* eslint-disable */
+      const isYoutube = /(?:http?s?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(\S+)/g
+      const isVimeo = /(?:http?s?:\/\/)?(?:www\.)?(?:vimeo\.com)\/?(\S+)/g
+      const isLinkedVideo = /([-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?(?:webm|mp4|ogv))/gi
+      const isLinkedImage = /([-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?(?:jpg|jpeg|gif|png))/gi
+      /* eslint-enable */
 
-      // https://www.youtube.com/watch?v=HrBhuzHHlhQ
-      if (isYoutube) {
-        const pattern = /(?:http?s?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(\S+)/g
-        if (pattern.test(input)) {
-          const replacement =
+      switch (true) {
+        case isYoutube.test(input):
+          // https://www.youtube.com/watch?v=Ya0dS63YTnU
+          replacement =
             '<iframe src="https://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>'
-          input = input.replace(pattern, replacement)
+          input = input.replace(isYoutube, replacement)
           // For start time, turn get param & into ?
           input = input.replace('&amp;t=', '?t=')
-        }
-        this.linkEmbed = input
+          type = 'youtube'
+          break
+
+        case isVimeo.test(input):
+          // https://vimeo.com/441172521
+          replacement =
+            '<iframe src="//player.vimeo.com/video/$1" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>'
+          input = input.replace(isVimeo, replacement)
+          type = 'vimeo'
+          break
+
+        case isLinkedVideo.test(input):
+          // https://res.cloudinary.com/instrument-com/video/upload/q_75:qmax_45/homepage/dot_com_loop_v1_2_mckh3o.webm
+          replacement = '<video controls src="$1"></video>'
+          input = input.replace(isLinkedVideo, replacement)
+          this.linkEmbed = input
+          type = 'video'
+          break
+
+        case isLinkedImage.test(input):
+          replacement = '<img src="$1" />'
+          input = input.replace(isLinkedImage, replacement)
+          this.linkEmbed = input
+          type = 'image'
+          break
+
+        default:
+          break
+      }
+
+      this.linkEmbed = {
+        source: input,
+        type,
       }
     },
     reset() {
