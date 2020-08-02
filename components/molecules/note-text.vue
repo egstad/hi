@@ -6,12 +6,12 @@
   >
     <p
       class="body"
-      :class="{ lg: body.length < 40, xl: body.length < 20 }"
+      :class="{ lg: body.length < 40, xl: body.length < 10 }"
       ref="body"
     >
       <span>{{ body }}</span>
     </p>
-    <a href="#" v-if="link" class="link">http://egstad.com/</a>
+    <a :href="link" target="_blank" v-if="link" class="t-link">{{ link }}</a>
   </div>
 </template>
 
@@ -25,7 +25,7 @@
   padding: calc(var(--grid-gutter));
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   overflow-y: auto;
 
   &.is-scrollable {
@@ -34,13 +34,16 @@
 }
 
 .lg {
-  font-size: 175%;
+  font-size: 200%;
   line-height: 0.8;
 }
 
 .xl {
-  font-size: 250%;
+  font-size: 300%;
   line-height: 0.65;
+  line-height: 0.8;
+  align-items: center !important;
+  justify-content: center;
 }
 
 .body {
@@ -48,19 +51,6 @@
   display: flex;
   align-items: flex-end;
   width: 100%;
-}
-
-.link {
-  display: block;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-decoration: none;
-  font-size: 16px !important;
-  line-height: 1;
-  padding-top: calc(var(--grid-gutter) * 0.6);
-  color: inherit;
 }
 </style>
 

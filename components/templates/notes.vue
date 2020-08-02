@@ -3,11 +3,13 @@
     <template v-for="(note, noteIndex) in notes">
       <Note
         :title="note.title"
+        :type="note.type"
         :author="note.author"
         :media="note.media"
         :doc-id="note.id"
         :key="noteIndex"
         :tag="note.tag || 'none'"
+        :link="note.link"
       />
     </template>
   </ul>
