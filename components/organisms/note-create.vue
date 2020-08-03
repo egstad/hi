@@ -8,76 +8,100 @@ So how's it work?
 2. Once the image is successfully uploaded (fileUploadedSuccess), let' create the post
 -->
 <template>
-  <form v-if="$store.state.user.isLoggedIn" @submit.prevent="onSubmit">
-    <table style="border: 1px solid black;width: 200px;text-align: center;">
-      <tr>
-        <td style="border: 1px solid black">
-          <label
-            >note
-            <input type="radio" v-model="postToggle" value="note" />
-          </label>
-        </td>
-        <td style="border: 1px solid black">
-          <label
-            >link
-            <input type="radio" v-model="postToggle" value="link" />
-          </label>
-        </td>
-        <td style="border: 1px solid black">
-          <label
-            >image
-            <input type="radio" v-model="postToggle" value="image" />
-          </label>
-        </td>
-      </tr>
-    </table>
+  <section class="writing">
+    <header>
+      <h2 class="t-headline">new note</h2>
+    </header>
 
-    <FormTextarea
-      v-model="title"
-      ref="title"
-      placeholder="dear internet diary..."
-      label="your note"
-      :max="titleMaxChars"
-      theme="dark"
-      autocomplete="off"
-      required
-    />
-    <PostLinkUploader ref="link" />
-    <FormSelect
-      v-model="postTag"
-      ref="tag"
-      :options="postTags"
-      label="note type"
-      theme="dark"
-    />
+    <form v-if="$store.state.user.isLoggedIn" @submit.prevent="onSubmit">
+      <FormTextarea
+        v-model="title"
+        ref="title"
+        placeholder="dear internet diary..."
+        label="write message"
+        :max="titleMaxChars"
+        theme="dark"
+        autocomplete="off"
+        required
+      />
 
-    <div v-if="postToggle === 'image'">
-      <PostImageUploader ref="image" />
-    </div>
+      <FormRadio
+        :options="postTagOptions"
+        v-model="postTag"
+        label="select a tag"
+        name="tag"
+        theme="dark"
+        ref="tag"
+      />
 
-    <div v-if="postToggle === 'link'">
-      <PostLinkUploader ref="link" />
-    </div>
+      <FormRadio
+        :options="postAttachmentOptions"
+        v-model="postAttachment"
+        label="attachment (optional)"
+        name="attachment"
+        theme="dark"
+        ref="attachment"
+      />
 
-    <p v-if="error">{{ error }}</p>
-    <button>Submit</button>
-  </form>
+      <div v-if="postAttachment === 'link'">
+        <PostLinkUploader ref="link" required />
+      </div>
+
+      <!-- <FormSelect
+        :options="postTagOptions"
+        v-model="postTag"
+        ref="tag"
+        label="note type"
+        theme="dark"
+      /> -->
+
+      <div v-if="postAttachment === 'image'">
+        <PostImageUploader ref="image" />
+      </div>
+
+      <p v-if="error">{{ error }}</p>
+      <FormSubmit text="add note" theme="dark" />
+    </form>
+  </section>
 </template>
+
+<style lang="scss" scoped>
+.writing {
+  background: #eeeeee;
+  border-radius: var(--note-radius);
+  padding: calc(var(--grid-gutter));
+  width: 100%;
+  max-width: 400px;
+
+  header {
+    padding: calc(var(--grid-gutter) * 1) calc(var(--grid-gutter) * 0.75)
+      calc(var(--grid-gutter) * 3);
+  }
+
+  .button {
+    margin-top: var(--grid-gutter);
+  }
+}
+</style>
 
 <script>
 import * as firebase from 'firebase/app'
 // import FormInput from '@/components/molecules/form-input'
 import FormTextarea from '@/components/molecules/form-textarea'
-import FormSelect from '@/components/molecules/form-select'
+import FormRadio from '@/components/molecules/form-radio'
+// import FormSelect from '@/components/molecules/form-select'
+import FormSubmit from '@/components/molecules/form-submit'
 import PostImageUploader from '@/components/molecules/post-image'
 import PostLinkUploader from '@/components/molecules/post-link'
 export default {
   components: {
     PostImageUploader,
     PostLinkUploader,
+    FormRadio,
+    FormSubmit,
     // FormInput,
     FormTextarea,
-    FormSelect,
+    // FormSelect,
   },
   data() {
     return {
@@ -85,21 +109,27 @@ export default {
       titleMaxChars: 200,
       error: '',
       postType: null,
-      postToggle: 'note',
+
       postHasImage: false,
       postHasLink: false,
       postImage: null,
       postLink: null,
       postData: null,
       postRef: null,
+      postAttachment: 'null',
+      postAttachmentOptions: [
+        { value: 'null', message: 'none' },
+        { value: 'link', message: 'link' },
+        { value: 'image', message: 'image' },
+      ],
       postTag: 'none',
-      postTags: [
-        { value: 'none', message: '¶ - general' },
-        { value: 'encouraging', message: '♥ - encouraging' },
-        { value: 'cute', message: '☃️ - cute' },
-        { value: 'sad', message: '☔ - cathartic' },
-        { value: 'nostalgic', message: '✨ - nostalgic' },
-        { value: 'curious', message: '?  - curious' },
+      postTagOptions: [
+        { value: 'none', message: '¶' },
+        { value: 'encouraging', message: '♥' },
+        { value: 'cute', message: '☃️' },
+        { value: 'sad', message: '☔' },
+        { value: 'nostalgic', message: '✨' },
+        { value: 'curious', message: '?' },
       ],
     }
   },
@@ -119,7 +149,7 @@ export default {
       }
     },
     onSubmit() {
-      switch (this.postToggle) {
+      switch (this.postAttachment) {
         case 'image':
           // submits title + image
           this.$refs.image.validateAndUpload()
@@ -130,33 +160,37 @@ export default {
           this.submitPost()
           break
 
-        case 'note':
+        case 'null':
           // only submits title
           this.submitPost()
           break
 
         default:
-          console.warn('this.postToggle was undefined')
+          console.warn('this.postAttachment was undefined')
           break
       }
 
-      // if (this.postToggle === 'image') {
+      // if (this.postAttachment === 'image') {
       // } else {
       //   this.submitPost()
       // }
     },
     onSubmitComplete() {
-      // reset image
-      if (this.$refs.image) {
-        this.$refs.image.reset()
-      }
-      // reset link
-      if (this.$refs.link.linkEmbed) {
-        this.$refs.link.reset()
-      }
       // reset note
       this.title = ''
-      this.postToggle = 'note'
+      this.postAttachment = 'link'
+      this.postImage = null
+      this.postAttachment = 'null'
+      this.postTag = 'none'
+
+      this.$refs.tag.reset()
+      this.$refs.attachment.reset()
+
+      if (this.$refs.image) {
+        this.$refs.image.reset()
+      } else if (this.$refs.link) {
+        this.$refs.link.reset()
+      }
     },
     onSubmitError(error) {
       this.error = error
@@ -170,12 +204,12 @@ export default {
       this.postLink = data
     },
     setType() {
-      if (!this.postImage && !this.$refs.link.linkEmbed) {
-        this.postType = 'text'
-      } else if (this.postImage && !this.$refs.link.linkEmbed) {
+      if (this.postImage) {
         this.postType = 'image'
-      } else if (!this.postImage && this.$refs.link.linkEmbed) {
-        this.postType = 'embed'
+      } else if (this.$refs.link) {
+        this.postType = 'link'
+      } else {
+        this.postType = 'text'
       }
     },
     modelData() {
@@ -195,9 +229,9 @@ export default {
         created: firebase.firestore.FieldValue.serverTimestamp(),
         id: this.postRef.id,
         tag: this.postTag || null,
-        link: this.$refs.link.link || null,
+        link: this.$refs.link ? this.$refs.link.link : null,
         media: {
-          embed: this.$refs.link.linkEmbed || null,
+          embed: this.$refs.link ? this.$refs.link.linkEmbed : null,
           image: this.postImage || null,
         },
       }

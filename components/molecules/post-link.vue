@@ -10,6 +10,7 @@
         theme="dark"
         autocomplete="off"
         @input="validate()"
+        required
       />
       <div v-if="linkEmbed">
         <div class="link-preview" v-html="linkEmbed.source"></div>

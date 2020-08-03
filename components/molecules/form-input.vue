@@ -8,6 +8,7 @@
         :value="value"
         :placeholder="placeholder"
         :class="`input input--${type}`"
+        :required="required"
         @input="$emit('input', $event.target.value)"
       />
     </label>
@@ -41,6 +42,11 @@ export default {
       required: false,
       default: 'light',
     },
+    required: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
 }
 </script>
@@ -66,12 +72,11 @@ $trans: 200ms ease-out;
 
   .input {
     appearance: none;
-    transition: background $trans, color $trans;
     width: 100%;
     font-size: $t-input;
     line-height: var(--input-height);
     padding: 0 $indent;
-    border-radius: var(--note-radius);
+    border-radius: var(--note-radius-child);
     outline: none;
     letter-spacing: 0.04em;
     border: 0;
@@ -85,73 +90,6 @@ $trans: 200ms ease-out;
 
       &::placeholder {
         opacity: 0.3;
-      }
-    }
-  }
-
-  &.theme {
-    &--light {
-      .label {
-        color: $light;
-      }
-
-      .input {
-        color: $light;
-        background: rgba($light, 0.2);
-
-        &::placeholder {
-          color: rgba($light, 0.6);
-        }
-
-        &:hover {
-          background: rgba($light, 0.3);
-
-          &::placeholder {
-            color: $light;
-          }
-        }
-
-        &:focus {
-          background: rgba($light, 0.8);
-          color: inherit;
-
-          &::placeholder {
-            transition: none;
-            color: inherit;
-          }
-        }
-      }
-    }
-    &--dark {
-      .label {
-        color: $dark;
-      }
-
-      .input {
-        color: $dark;
-        background: rgba($dark, 0.1);
-
-        &::placeholder {
-          color: rgba($dark, 0.6);
-        }
-
-        &:hover {
-          background: rgba($dark, 0.15);
-
-          &::placeholder {
-            color: $dark;
-          }
-        }
-
-        &:focus {
-          background: rgba($dark, 0.2);
-          color: $dark;
-
-          &::placeholder {
-            transition: none;
-            color: $dark;
-          }
-        }
       }
     }
   }

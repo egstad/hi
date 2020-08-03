@@ -17,7 +17,7 @@
         />
       </template>
 
-      <template v-else-if="type === 'text'">
+      <template v-else>
         <NoteText :body="title" :link="link" class="attachment text" />
       </template>
 
@@ -111,7 +111,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  padding: calc(var(--grid-gutter) * 0.5);
+  padding: calc(var(--grid-gutter));
   font-size: var(--note-icon-size);
   line-height: var(--note-icon-size);
   display: flex;

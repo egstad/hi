@@ -20,6 +20,10 @@ header {
   @media (min-width: 500px) {
     justify-content: normal;
   }
+
+  @media (max-width: 400px) {
+    flex-direction: column;
+  }
 }
 h1 {
   font-size: 130px;

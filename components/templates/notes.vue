@@ -20,7 +20,10 @@
   display: grid;
   grid-gap: var(--grid-gutter);
   margin-top: calc(var(--grid-gutter) * 4);
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
 }
 </style>
 

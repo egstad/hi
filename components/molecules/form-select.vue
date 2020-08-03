@@ -33,11 +33,6 @@ export default {
       required: false,
       default: '',
     },
-    value: {
-      type: String,
-      required: false,
-      default: '',
-    },
     options: {
       type: Array,
       required: true,
@@ -54,11 +49,6 @@ export default {
 <style lang="scss" scoped>
 $indent: 15px;
 
-$light: white;
-$dark: black;
-
-$trans: 200ms ease-out;
-
 .form-item {
   position: relative;
   padding-top: var(--grid-gutter);
@@ -74,18 +64,18 @@ $trans: 200ms ease-out;
   .select {
     position: relative;
     appearance: none;
-    transition: background $trans, color $trans;
+    transition: background $form-trans, color $form-trans;
     width: 100%;
     font-size: $t-input;
     line-height: var(--input-height);
     padding: 0 $indent;
-    border-radius: var(--note-radius);
+    border-radius: var(--note-radius-child);
     outline: none;
     letter-spacing: 0.04em;
     border: 0;
 
     &::placeholder {
-      transition: color $trans;
+      transition: color $form-trans;
     }
 
     &.input--password {
@@ -111,27 +101,27 @@ $trans: 200ms ease-out;
   &.theme {
     &--light {
       .label {
-        color: $light;
+        color: $form-light;
       }
 
       .select {
-        color: $light;
-        background: rgba($light, 0.2);
+        color: $form-light;
+        background: rgba($form-light, 0.2);
 
         &::placeholder {
-          color: rgba($light, 0.6);
+          color: rgba($form-light, 0.6);
         }
 
         &:hover {
-          background: rgba($light, 0.3);
+          background: rgba($form-light, 0.3);
 
           &::placeholder {
-            color: $light;
+            color: $form-light;
           }
         }
 
         &:focus {
-          background: rgba($light, 0.8);
+          background: rgba($form-light, 0.8);
           color: inherit;
 
           &::placeholder {
@@ -143,32 +133,32 @@ $trans: 200ms ease-out;
     }
     &--dark {
       .label {
-        color: $dark;
+        color: $form-dark;
       }
 
       .select {
-        color: $dark;
-        background: rgba($dark, 0.1);
+        color: $form-dark;
+        background: rgba($form-dark, 0.1);
 
         &::placeholder {
-          color: rgba($dark, 0.6);
+          color: rgba($form-dark, 0.6);
         }
 
         &:hover {
-          background: rgba($dark, 0.15);
+          background: rgba($form-dark, 0.15);
 
           &::placeholder {
-            color: $dark;
+            color: $form-dark;
           }
         }
 
         &:focus {
-          background: rgba($dark, 0.2);
-          color: $dark;
+          background: rgba($form-dark, 0.2);
+          color: $form-dark;
 
           &::placeholder {
             transition: none;
-            color: $dark;
+            color: $form-dark;
           }
         }
       }

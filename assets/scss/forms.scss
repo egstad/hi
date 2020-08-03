@@ -1,0 +1,34 @@
+$form-dark : black;
+$form-light : white;
+$form-trans: 200ms ease-out;
+
+
+.input {
+  transition: background-color $form-trans, color $form-trans, box-shadow $form-trans;
+  background-color: rgba($form-dark, 0.08);
+  color: $form-dark;
+
+  &::placeholder {
+    color: rgba($form-dark, 0.6);
+  }
+
+  &:hover {
+    background-color: rgba($form-dark, 0.15);
+
+    &::placeholder {
+      color: $form-dark;
+    }
+  }
+
+  &:focus {
+    box-shadow: inset 0 0 0 2px black, inset 0 0 0 4px white;
+    background-color: rgba($form-dark, 0.08);
+    color: $form-dark;
+
+    &::placeholder {
+      transition: none;
+      color: $form-dark;
+    }
+  }
+}
+

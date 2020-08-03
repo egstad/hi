@@ -12,7 +12,7 @@
         :maxlength="max"
         :value="value"
         :placeholder="placeholder"
-        :class="`textarea`"
+        class="textarea input"
         :required="required"
         @input="$emit('input', $event.target.value)"
       ></textarea>
@@ -77,16 +77,16 @@ $trans: 200ms ease-out;
   }
 
   .textarea {
+    vertical-align: top;
     appearance: none;
-    resize: vertical;
-    transition: background $trans, color $trans;
+    resize: none;
     width: 100%;
     min-height: calc(var(--input-height) * 2);
     max-height: 300px;
     font-size: $t-input;
     line-height: 1;
     padding: calc(var(--grid-gutter) * 0.5) $indent;
-    border-radius: var(--note-radius);
+    border-radius: var(--note-radius-child);
     outline: none;
     letter-spacing: 0.04em;
     border: 0;
@@ -96,71 +96,71 @@ $trans: 200ms ease-out;
     }
   }
 
-  &.theme {
-    &--light {
-      .label {
-        color: $light;
-      }
+  // &.theme {
+  //   &--light {
+  //     .label {
+  //       color: $light;
+  //     }
 
-      .textarea {
-        color: $light;
-        background: rgba($light, 0.2);
+  //     .textarea {
+  //       color: $light;
+  //       background: rgba($light, 0.2);
 
-        &::placeholder {
-          color: rgba($light, 0.6);
-        }
+  //       &::placeholder {
+  //         color: rgba($light, 0.6);
+  //       }
 
-        &:hover {
-          background: rgba($light, 0.3);
+  //       &:hover {
+  //         background: rgba($light, 0.3);
 
-          &::placeholder {
-            color: $light;
-          }
-        }
+  //         &::placeholder {
+  //           color: $light;
+  //         }
+  //       }
 
-        &:focus {
-          background: rgba($light, 0.8);
-          color: inherit;
+  //       &:focus {
+  //         background: rgba($light, 0.8);
+  //         color: inherit;
 
-          &::placeholder {
-            transition: none;
-            color: inherit;
-          }
-        }
-      }
-    }
-    &--dark {
-      .label {
-        color: $dark;
-      }
+  //         &::placeholder {
+  //           transition: none;
+  //           color: inherit;
+  //         }
+  //       }
+  //     }
+  //   }
+  //   &--dark {
+  //     .label {
+  //       color: $dark;
+  //     }
 
-      .textarea {
-        color: $dark;
-        background: rgba($dark, 0.1);
+  //     .textarea {
+  //       color: $dark;
+  //       background: rgba($dark, 0.05);
 
-        &::placeholder {
-          color: rgba($dark, 0.6);
-        }
+  //       &::placeholder {
+  //         color: rgba($dark, 0.6);
+  //       }
 
-        &:hover {
-          background: rgba($dark, 0.15);
+  //       &:hover {
+  //         background: rgba($dark, 0.1);
 
-          &::placeholder {
-            color: $dark;
-          }
-        }
+  //         &::placeholder {
+  //           color: $dark;
+  //         }
+  //       }
 
-        &:focus {
-          background: rgba($dark, 0.2);
-          color: $dark;
+  //       &:focus {
+  //         background: rgba($dark, 0.15);
+  //         color: $dark;
 
-          &::placeholder {
-            transition: none;
-            color: $dark;
-          }
-        }
-      }
-    }
-  }
+  //         &::placeholder {
+  //           transition: none;
+  //           color: $dark;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 }
 </style>

@@ -1,10 +1,10 @@
 :root {
-  --grid-gutter: 20px;
+  --grid-gutter: 15px;
   --input-height: 60px;
   --note-background: #fff;
   --note-foreground: #000;
-  --note-radius: 21px;
-  --note-radius-child: 14px;
+  --note-radius: 32px;
+  --note-radius-child: 18px;
   --note-icon-size: 54px;
 
   --note-default-bg: #FFEC87;
@@ -21,4 +21,6 @@
 
   --note-cute-bg: #E1EAEC;
   --note-cute-fg: #3B3201;
+
+  --timing-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }

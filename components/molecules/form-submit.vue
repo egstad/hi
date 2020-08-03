@@ -1,5 +1,5 @@
 <template>
-  <button :class="`button button--${theme}`">
+  <button :class="`input button button--${theme}`">
     <span class="text">{{ text }}</span>
     <span class="icon">→</span>
   </button>
@@ -25,44 +25,45 @@ export default {
 <style lang="scss" scoped>
 $indent: 15px;
 
-$light: white;
-$dark: black;
-
-$trans: 200ms ease-out;
-
 .button {
   appearance: none;
-  transition: background $trans;
   width: 100%;
   font-size: $t-input !important;
   line-height: var(--input-height);
   padding: 0 $indent;
-  border-radius: var(--note-radius);
+  border-radius: var(--note-radius-child);
   outline: none;
   letter-spacing: 0.04em;
   border: 0;
   text-align: left;
 
-  .icon {
-    display: inline-block;
-    transition: transform $trans;
-  }
-
-  &--light {
-    background: rgba($light, 0.7);
+  &.input {
+    background-color: rgba($form-dark, 1);
+    color: $form-light;
 
     &:hover {
-      background: rgba($light, 1);
+      background-color: rgba($form-dark, 1);
     }
 
     &:hover,
     &:focus {
-      background: rgba($light, 1);
+      background-color: rgba($form-dark, 1);
+      color: $form-light;
+      cursor: pointer;
 
       .icon {
         transform: translate3d($indent/2, 0, 0);
       }
     }
+
+    &:focus {
+      box-shadow: inset 0 0 0 2px black, inset 0 0 0 4px white;
+    }
   }
+}
+
+.icon {
+  display: inline-block;
+  transition: transform $form-trans;
 }
 </style>
