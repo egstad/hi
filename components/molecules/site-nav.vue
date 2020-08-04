@@ -12,6 +12,14 @@
         logout
       </button>
     </li>
+    <li>
+      <button @click="$store.dispatch('theme/setTheme', 'dark')">
+        dark
+      </button>
+      <button @click="$store.dispatch('theme/setTheme', 'light')">
+        light
+      </button>
+    </li>
   </ul>
 </template>
 

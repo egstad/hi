@@ -117,7 +117,7 @@ ol {
 .rect {
   background: #0f68ed;
   color: white;
-  border-radius: calc(var(--note-radius) * 2);
+  border-radius: var(--note-radius);
   padding: 40px var(--grid-gutter) var(--grid-gutter);
   width: 100%;
   max-width: 560px;

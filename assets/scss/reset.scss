@@ -166,7 +166,8 @@ html {
   font-family: 'hi';
   font-size: 1.5em;
   letter-spacing: 0.05em;
-  background: #ffffff;
+  background: var(--primary);
+  color: var(--secondary);
 }
 
 html,

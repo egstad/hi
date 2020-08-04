@@ -1,11 +1,18 @@
 :root {
   --grid-gutter: 15px;
   --input-height: 60px;
-  --note-background: #fff;
-  --note-foreground: #000;
   --note-radius: 32px;
   --note-radius-child: 18px;
   --note-icon-size: 54px;
+
+  --timing-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+
+.theme-light {
+  --primary: white;
+  --secondary: rgb(43, 41, 41);
+  --tertiary: rgb(255, 255, 255);
 
   --note-default-bg: #FFEC87;
   --note-default-fg: #3C3201;
@@ -21,6 +28,26 @@
 
   --note-cute-bg: #E1EAEC;
   --note-cute-fg: #3B3201;
+}
 
-  --timing-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+.theme-dark {
+  --primary: rgb(36, 36, 36);
+  --secondary: rgb(215, 211, 211);
+  --tertiary: rgb(50, 49, 49);
+
+  --note-default-bg: #FFEC87;
+  --note-default-fg: #3C3201;
+
+  --note-encouraging-bg: #FFBBD3;
+  --note-encouraging-fg: #720037;
+
+  --note-sad-bg: #BAEEFE;
+  --note-sad-fg: #013A7D;
+
+  --note-curious-bg: #DED3FF;
+  --note-curious-fg: #1B0FA0;
+
+  --note-cute-bg: #E1EAEC;
+  --note-cute-fg: #3B3201;
 }

@@ -6,7 +6,11 @@
   >
     <p
       class="body"
-      :class="{ lg: body.length < 40, xl: body.length < 10 }"
+      :class="{
+        lg: body.length < 40,
+        xl: body.length < 10,
+        xx: body.length < 6,
+      }"
       ref="body"
     >
       <span>{{ body }}</span>
@@ -42,6 +46,12 @@
   font-size: 300%;
   line-height: 0.65;
   line-height: 0.8;
+  align-items: center !important;
+  justify-content: center;
+}
+
+.xx {
+  font-size: 500%;
   align-items: center !important;
   justify-content: center;
 }

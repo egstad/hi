@@ -67,9 +67,15 @@ So how's it work?
 
 <style lang="scss" scoped>
 .writing {
-  background: #eeeeee;
+  margin: 0 auto;
+  background: var(--tertiary);
   border-radius: var(--note-radius);
   padding: calc(var(--grid-gutter));
+  box-shadow: 0px 45px 123px rgba(black, 0.07),
+    0px 25.8654px 57.5993px rgba(black, 0.0444941),
+    0px 12.4704px 34.8483px rgba(black, 0.0340904),
+    0px 4.35011px 18.7879px rgba(black, 0.0210947);
+
   width: 100%;
   max-width: 400px;
 

@@ -22,6 +22,7 @@ export default {
   beforeMount() {
     window.localStorage.removeItem('user')
     this.handleAuth()
+    this.$store.dispatch('theme/init')
   },
   methods: {
     async handleAuth() {
