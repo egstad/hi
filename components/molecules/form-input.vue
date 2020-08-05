@@ -53,14 +53,11 @@ export default {
 
 <style lang="scss" scoped>
 $indent: 15px;
-
-$light: white;
-$dark: black;
-
 $trans: 200ms ease-out;
 
 .form-item {
   padding-top: var(--grid-gutter);
+
   .label {
     font-size: 16px;
     text-transform: uppercase;

@@ -67,8 +67,10 @@ So how's it work?
 
 <style lang="scss" scoped>
 .writing {
+  transition: background-color 700ms ease-in-out, color 700ms ease-in-out;
   margin: 0 auto;
-  background: var(--tertiary);
+  background: rgba(var(--tertiary), 1);
+  color: rgba(var(--secondary), 1);
   border-radius: var(--note-radius);
   padding: calc(var(--grid-gutter));
   box-shadow: 0px 45px 123px rgba(black, 0.07),

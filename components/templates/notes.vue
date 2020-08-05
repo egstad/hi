@@ -1,17 +1,16 @@
 <template>
   <ul class="notes">
-    <template v-for="(note, noteIndex) in notes">
-      <Note
-        :title="note.title"
-        :type="note.type"
-        :author="note.author"
-        :media="note.media"
-        :doc-id="note.id"
-        :key="noteIndex"
-        :tag="note.tag || 'none'"
-        :link="note.link"
-      />
-    </template>
+    <Note
+      v-for="(note, noteIndex) in notes"
+      :title="note.title"
+      :type="note.type"
+      :author="note.author"
+      :media="note.media"
+      :doc-id="note.id"
+      :key="noteIndex"
+      :tag="note.tag || 'none'"
+      :link="note.link"
+    />
   </ul>
 </template>
 
@@ -22,6 +21,7 @@
   margin-top: calc(var(--grid-gutter) * 4);
 
   @media (min-width: 600px) {
+    grid-gap: calc(var(--grid-gutter) * 2);
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   }
 }

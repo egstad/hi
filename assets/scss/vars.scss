@@ -10,9 +10,9 @@
 
 
 .theme-light {
-  --primary: white;
-  --secondary: rgb(43, 41, 41);
-  --tertiary: rgb(255, 255, 255);
+  --primary: 255, 255, 255;
+  --secondary: 43, 41, 41;
+  --tertiary: 255, 255, 255;
 
   --note-default-bg: #FFEC87;
   --note-default-fg: #3C3201;
@@ -32,22 +32,22 @@
 
 
 .theme-dark {
-  --primary: rgb(36, 36, 36);
-  --secondary: rgb(215, 211, 211);
-  --tertiary: rgb(50, 49, 49);
+  --primary: 16, 16, 16;
+  --secondary: 215, 211, 211;
+  --tertiary: 50, 49, 49;
 
-  --note-default-bg: #FFEC87;
-  --note-default-fg: #3C3201;
+  --note-default-bg: #4F3D11;
+  --note-default-fg: #FFEC87;
 
-  --note-encouraging-bg: #FFBBD3;
-  --note-encouraging-fg: #720037;
+  --note-encouraging-bg: #501316;
+  --note-encouraging-fg: #FFBBD3;
 
-  --note-sad-bg: #BAEEFE;
-  --note-sad-fg: #013A7D;
+  --note-sad-bg: #103969;
+  --note-sad-fg: #BAEEFE;
 
-  --note-curious-bg: #DED3FF;
-  --note-curious-fg: #1B0FA0;
+  --note-curious-bg: #3E1764;
+  --note-curious-fg: #DED3FF;
 
-  --note-cute-bg: #E1EAEC;
-  --note-cute-fg: #3B3201;
+  --note-cute-bg: #3F3D3C;
+  --note-cute-fg: #C2BEBB;
 }

@@ -16,7 +16,7 @@ header {
   display: flex;
   margin-bottom: 80px;
   justify-content: space-between;
-  color: var(--foreground);
+  color: rgba(var(--secondary), 1);
 
   @media (min-width: 500px) {
     justify-content: normal;

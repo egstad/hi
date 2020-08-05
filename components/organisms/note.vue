@@ -1,13 +1,23 @@
 <template>
-  <li class="note" :class="(`type--${type}`, `tag--${tag}`)" ref="note">
+  <li
+    class="note"
+    :class="(`type--${type}`, `tag--${tag}`)"
+    ref="note"
+    :style="
+      `transform:rotate(${Math.random() *
+        3 *
+        (Math.random() * 2 < 1 ? 1 : -0.5)}deg)`
+    "
+  >
     <article class="content">
+      <pre>{{ type }}</pre>
       <template v-if="type === 'image'">
         <figure class="attachment image">
           <img :src="media.image" alt="" />
         </figure>
       </template>
 
-      <template v-if="type === 'embed'">
+      <template v-else-if="type === 'link'">
         <NoteEmbed
           class="attachment embed"
           type="?"
@@ -17,11 +27,8 @@
         />
       </template>
 
-      <template v-else>
-        <NoteText :body="title" :link="link" class="attachment text" />
-      </template>
-
-      <!-- <template v-else-if="media.link">
+      <!-- <template v-else-if="type === 'link'">
+        <pre>{{ media }}</pre>
         <a class="attachment link" :href="media.link.url" target="_blank">
           <figure v-if="media.link.image">
             <img :src="media.link.image" alt="" />
@@ -35,6 +42,10 @@
           </p>
         </a>
       </template> -->
+
+      <template v-else>
+        <NoteText :body="title" :link="link" class="attachment text" />
+      </template>
 
       <footer class="utils">
         <p
@@ -65,7 +76,9 @@
   overflow: hidden;
   padding: var(--grid-gutter) !important;
   border-radius: var(--note-radius);
+  transition: background-color 700ms ease-in-out, color 700ms ease-in-out;
   background-color: var(--note-default-bg);
+  color: var(--note-default-fg);
 
   .content {
     // makes it a perfect square
@@ -81,27 +94,52 @@
 
   &:hover {
     .icon {
-      background-color: rgba(white, 0.7);
-      backdrop-filter: blur(5px);
+      background-color: rgba(var(--primary), 1);
     }
   }
 
   &.tag {
+    &--none {
+      background: var(--note-default-bg);
+      color: var(--note-default-fg);
+
+      /deep/path {
+        fill: var(--note-default-fg);
+      }
+    }
     &--curious {
       background: var(--note-curious-bg);
       color: var(--note-curious-fg);
+
+      /deep/path {
+        fill: var(--note-curious-fg);
+      }
     }
+    &--nostalgic,
     &--cute {
       background: var(--note-cute-bg);
       color: var(--note-cute-fg);
+      fill: var(--note-cute-fg);
+
+      /deep/path {
+        fill: var(--note-cute-fg);
+      }
     }
     &--sad {
       background: var(--note-sad-bg);
       color: var(--note-sad-fg);
+
+      /deep/path {
+        fill: var(--note-sad-fg);
+      }
     }
     &--encouraging {
       background: var(--note-encouraging-bg);
       color: var(--note-encouraging-fg);
+
+      /deep/path {
+        fill: var(--note-encouraging-fg);
+      }
     }
   }
 }
@@ -121,6 +159,7 @@
     appearance: none;
     border: 0;
     position: relative;
+    overflow: hidden;
     top: 0;
     left: 0;
     padding: calc(var(--grid-gutter) * 0.5);
@@ -129,24 +168,13 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(0px);
+    backdrop-filter: blur(5px);
     border-radius: var(--note-radius-child);
-
-    transition: background-color 300ms ease-in-out,
-      backdrop-filter 100ms ease-in-out;
-    background-color: rgba(white, 0);
-
-    &:hover,
-    &:focus {
-      background-color: rgba(white, 1);
-      svg {
-        transform: translate3d(0, 0, 0) rotate(90deg);
-      }
-    }
+    background-color: rgba(var(--primary), 0);
+    transition: background-color 400ms ease-in-out;
 
     &.opaque {
-      background-color: rgba(white, 0.7);
-      backdrop-filter: blur(5px);
+      background: rgba(var(--primary), 1);
     }
 
     &.tag {
@@ -160,6 +188,7 @@
       }
 
       &:hover {
+        cursor: pointer;
         svg {
           transform: translate3d(0, 0, 0) rotate(90deg);
         }
