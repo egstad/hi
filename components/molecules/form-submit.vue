@@ -38,17 +38,17 @@ $indent: 15px;
   text-align: left;
 
   &.input {
-    background-color: rgba($form-dark, 1);
-    color: $form-light;
+    background-color: rgba(var(--secondary), 0.75);
+    color: rgba(var(--primary), 1);
 
     &:hover {
-      background-color: rgba($form-dark, 1);
+      background-color: rgba(var(--secondary), 1);
     }
 
     &:hover,
     &:focus {
-      background-color: rgba($form-dark, 1);
-      color: $form-light;
+      background-color: rgba(var(--secondary), 1);
+      color: rgba(var(--primary), 1);
       cursor: pointer;
 
       .icon {

@@ -166,8 +166,9 @@ html {
   font-family: 'hi';
   font-size: 1.5em;
   letter-spacing: 0.05em;
-  background: var(--primary);
-  color: var(--secondary);
+  transition: background-color 700ms ease-in-out, color 700ms ease-in-out;
+  background-color: rgba(var(--primary), 1);
+  color: rgba(var(--secondary), 1);
 }
 
 html,

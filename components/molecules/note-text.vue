@@ -37,30 +37,31 @@
   }
 }
 
-.lg {
-  font-size: 200%;
-  line-height: 0.8;
-}
-
-.xl {
-  font-size: 300%;
-  line-height: 0.65;
-  line-height: 0.8;
-  align-items: center !important;
-  justify-content: center;
-}
-
-.xx {
-  font-size: 500%;
-  align-items: center !important;
-  justify-content: center;
-}
-
 .body {
   flex: 1 1;
   display: flex;
   align-items: flex-end;
   width: 100%;
+  font-size: 150%;
+
+  &.lg {
+    font-size: 200%;
+    line-height: 0.8;
+  }
+
+  &.xl {
+    font-size: 300%;
+    line-height: 0.65;
+    line-height: 0.8;
+    align-items: center !important;
+    justify-content: center;
+  }
+
+  &.xx {
+    font-size: 500%;
+    align-items: center !important;
+    justify-content: center;
+  }
 }
 </style>
 

@@ -1,33 +1,34 @@
+// var(--secondary) : black;
 $form-dark : black;
 $form-light : white;
-$form-trans: 200ms ease-out;
+$form-trans: 350ms ease-out;
 
 
 .input {
   transition: background-color $form-trans, color $form-trans, box-shadow $form-trans;
-  background-color: rgba($form-dark, 0.08);
-  color: $form-dark;
+  background-color: rgba(var(--secondary), 0.08);
+  color: rgba(var(--secondary), 1);
 
   &::placeholder {
-    color: rgba($form-dark, 0.6);
+    color: rgba(var(--secondary), 0.6);
   }
 
   &:hover {
-    background-color: rgba($form-dark, 0.15);
+    background-color: rgba(var(--secondary), 0.15);
 
     &::placeholder {
-      color: $form-dark;
+      color: rgba(var(--secondary), 1);
     }
   }
 
   &:focus {
-    box-shadow: inset 0 0 0 2px black, inset 0 0 0 4px white;
-    background-color: rgba($form-dark, 0.08);
-    color: $form-dark;
+    box-shadow: inset 0 0 0 2px rgba(var(--primary), 1), inset 0 0 0 4px rgba(var(--secondary), 0.7);
+    background-color: rgba(var(--secondary), 0.08);
+    color: rgba(var(--secondary), 1);
 
     &::placeholder {
       transition: none;
-      color: $form-dark;
+      color: rgba(var(--secondary), 1);
     }
   }
 }

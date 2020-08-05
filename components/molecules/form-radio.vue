@@ -84,19 +84,21 @@ $indent: 15px;
   width: 100%;
 
   &:hover + .radio-option {
-    background-color: rgba($form-dark, 0.15);
+    background-color: rgba(var(--secondary), 0.2);
+    cursor: pointer;
   }
 
   &:checked + .radio-option {
-    background-color: rgba($form-dark, 0.6);
-    color: $form-light;
+    background-color: rgba(var(--secondary), 0.75);
+    color: rgba(var(--primary), 1);
   }
 
   &:active + .radio-option,
   &:focus + .radio-option {
-    box-shadow: inset 0 0 0 2px $form-dark, inset 0 0 0 4px $form-light;
-    background-color: $form-dark;
-    color: $form-light;
+    box-shadow: inset 0 0 0 2px rgba(var(--secondary), 1),
+      inset 0 0 0 4px rgba(var(--primary), 1);
+    background-color: rgba(var(--secondary), 1);
+    color: rgba(var(--primary), 1);
   }
 
   .radio-option {
@@ -104,8 +106,8 @@ $indent: 15px;
       box-shadow $form-trans;
     display: block;
     text-align: center;
-    background-color: rgba($form-dark, 0.08);
-    color: $form-dark;
+    background-color: rgba(var(--secondary), 0.08);
+    color: rgba(var(--secondary), 1);
   }
 
   &:first-child .radio-option {
