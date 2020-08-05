@@ -21,6 +21,7 @@
   margin-top: calc(var(--grid-gutter) * 4);
 
   @media (min-width: 600px) {
+    grid-gap: calc(var(--grid-gutter) * 2);
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   }
 }

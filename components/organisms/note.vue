@@ -5,7 +5,7 @@
     ref="note"
     :style="
       `transform:rotate(${Math.random() *
-        6 *
+        3 *
         (Math.random() * 2 < 1 ? 1 : -0.5)}deg)`
     "
   >
