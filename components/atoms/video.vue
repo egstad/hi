@@ -1,6 +1,6 @@
 <template>
   <form @submit.stop.prevent="fetchMetaData">
-    <input type="url" v-model="url" />
+    <input type="url" v-model="link" @keyup="validate" />
     <pre style="color:magenta">{{ query }}</pre>
     <div v-if="data" style="color:magenta">
       <h1>{{ data.openGraph.title }}</h1>
@@ -16,7 +16,10 @@ export default {
     return {
       video: null,
       data: null,
-      url: '',
+      link: '',
+      linkIsFormatted: '',
+      keyupTimeout: null,
+      keyupTimeoutDuration: 500,
       // mine
       // 78eb2bba-ef9f-4e8c-be19-4d6bbff0d3e1
       // more
@@ -27,15 +30,43 @@ export default {
   computed: {
     query() {
       return `https://opengraph.io/api/1.1/site/${encodeURIComponent(
-        this.url
+        this.link
       )}?app_id=${this.id}`
     },
   },
   mounted() {},
   methods: {
+    validate() {
+      clearTimeout(this.keyupTimeout)
+
+      this.keyupTimeout = setTimeout(() => {
+        this.checkLinkFormat()
+      }, this.keyupTimeoutDuration)
+    },
+    checkLinkFormat() {
+      const pattern = new RegExp(
+        '^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+          '(\\#[-a-z\\d_]*)?$',
+        'i'
+      )
+
+      this.linkIsFormatted = !!pattern.test(this.link)
+
+      if (this.linkIsFormatted) {
+        this.fetchMetaData()
+      }
+    },
     async fetchMetaData() {
-      const data = await this.$axios.$get(this.query)
-      this.data = data
+      await this.$axios
+        .$get(this.query)
+        .then(response => {
+          this.data = response
+        })
+        .catch(error => console.log(error))
     },
   },
 }

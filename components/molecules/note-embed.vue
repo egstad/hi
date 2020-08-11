@@ -1,30 +1,21 @@
 <template>
-  <figure>
-    <div></div>
+  <figure class="embed">
     <div class="wrapper" v-html="embed.source"></div>
-    <!-- <figcaption>
-      <p class="body">{{ body }}</p>
-      <a class="t-link" :href="link" target="_blank">{{ link }}</a>
-    </figcaption> -->
+    <figcaption>
+      <p class="body">{{ message }}</p>
+      <a class="t-link" :href="embed.link" target="_blank">{{ embed.link }}</a>
+    </figcaption>
   </figure>
 </template>
 
 <script>
 export default {
   props: {
-    type: {
-      type: String,
-      required: true,
-    },
     embed: {
       type: Object,
       required: true,
     },
-    link: {
-      type: String,
-      required: true,
-    },
-    body: {
+    message: {
       type: String,
       required: true,
     },
@@ -42,6 +33,10 @@ export default {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: calc(var(--grid-gutter) + var(--note-icon-size)) auto;
+}
+
+.wrapper {
+  grid-row: 2;
 }
 
 /deep/iframe {

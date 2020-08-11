@@ -28,7 +28,7 @@ So how's it work?
       <FormRadio
         :options="postTagOptions"
         v-model="postTag"
-        label="select a tag"
+        label="choose tag"
         name="tag"
         theme="dark"
         ref="tag"
@@ -37,7 +37,7 @@ So how's it work?
       <FormRadio
         :options="postAttachmentOptions"
         v-model="postAttachment"
-        label="attachment (optional)"
+        label="add attachment"
         name="attachment"
         theme="dark"
         ref="attachment"
@@ -126,17 +126,17 @@ export default {
       postRef: null,
       postAttachment: 'null',
       postAttachmentOptions: [
-        { value: 'null', message: 'none' },
+        { value: 'none', message: 'nope', defaultChecked: true },
         { value: 'link', message: 'link' },
         { value: 'image', message: 'image' },
       ],
       postTag: 'none',
       postTagOptions: [
-        { value: 'none', message: '¶' },
-        { value: 'encouraging', message: '♥' },
+        { value: 'default', message: '¶', defaultChecked: true },
+        { value: 'love', message: '♥' },
         { value: 'cute', message: '☃️' },
         { value: 'sad', message: '☔' },
-        { value: 'nostalgic', message: '✨' },
+        { value: 'sparkle', message: '✨' },
         { value: 'curious', message: '?' },
       ],
     }
@@ -227,20 +227,20 @@ export default {
       // we'll use it so we can edit/delete item later on...
       this.postRef = this.$firebase
         .firestore()
-        .collection('posts')
+        .collection('notes')
         .doc()
 
       this.postData = {
-        title: this.title,
+        message: this.title,
         type: this.postType,
         author: this.$store.state.user.uid,
         created: firebase.firestore.FieldValue.serverTimestamp(),
         id: this.postRef.id,
         tag: this.postTag || null,
-        link: this.$refs.link ? this.$refs.link.link : null,
         media: {
-          embed: this.$refs.link ? this.$refs.link.linkEmbed : null,
+          link: this.$refs.link ? this.$refs.link.link : null,
           image: this.postImage || null,
+          embed: this.$refs.link ? this.$refs.link.linkEmbed : null,
         },
       }
     },
@@ -251,7 +251,7 @@ export default {
       // push data to firebase
       await this.$firebase
         .firestore()
-        .collection('posts')
+        .collection('notes')
         .doc(this.postData.id)
         .set(this.postData)
         .then(() => {

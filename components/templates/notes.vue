@@ -1,16 +1,6 @@
 <template>
   <ul class="notes">
-    <Note
-      v-for="(note, noteIndex) in notes"
-      :title="note.title"
-      :type="note.type"
-      :author="note.author"
-      :media="note.media"
-      :doc-id="note.id"
-      :key="noteIndex"
-      :tag="note.tag || 'none'"
-      :link="note.link"
-    />
+    <Note v-for="(note, noteIndex) in notes" :key="noteIndex" :note="note" />
   </ul>
 </template>
 

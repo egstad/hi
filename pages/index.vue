@@ -17,7 +17,7 @@ export default {
   async asyncData(context) {
     const data = await context.$firebase
       .firestore()
-      .collection('posts')
+      .collection('notes')
       .orderBy('created', 'desc')
       .get()
 
@@ -32,7 +32,7 @@ export default {
     watchData() {
       this.$firebase
         .firestore()
-        .collection('posts')
+        .collection('notes')
         .orderBy('created', 'desc')
         .onSnapshot(snapshot => {
           snapshot.docChanges().forEach(change => {

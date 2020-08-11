@@ -8,7 +8,6 @@
   --timing-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-
 .theme-light {
   --primary: 255, 255, 255;
   --secondary: 43, 41, 41;
@@ -17,17 +16,20 @@
   --note-default-bg: #FFEC87;
   --note-default-fg: #3C3201;
 
-  --note-encouraging-bg: #FFBBD3;
-  --note-encouraging-fg: #720037;
+  --note-love-bg: #FFBBD3;
+  --note-love-fg: #720037;
+
+  --note-cute-bg: #E1EAEC;
+  --note-cute-fg: #3B3201;
 
   --note-sad-bg: #BAEEFE;
   --note-sad-fg: #013A7D;
 
+  --note-sparkle-bg: #FFEC87;
+  --note-sparkle-fg: #3C3201;
+
   --note-curious-bg: #DED3FF;
   --note-curious-fg: #1B0FA0;
-
-  --note-cute-bg: #E1EAEC;
-  --note-cute-fg: #3B3201;
 }
 
 
@@ -39,15 +41,19 @@
   --note-default-bg: #4F3D11;
   --note-default-fg: #FFEC87;
 
-  --note-encouraging-bg: #501316;
-  --note-encouraging-fg: #FFBBD3;
+  --note-love-bg: #501316;
+  --note-love-fg: #FFBBD3;
+
+  --note-cute-bg: #3F3D3C;
+  --note-cute-fg: #C2BEBB;
 
   --note-sad-bg: #103969;
   --note-sad-fg: #BAEEFE;
 
+  --note-sparkle-bg: #4F3D11;
+  --note-sparkle-fg: #FFEC87;
+
   --note-curious-bg: #3E1764;
   --note-curious-fg: #DED3FF;
 
-  --note-cute-bg: #3F3D3C;
-  --note-cute-fg: #C2BEBB;
 }

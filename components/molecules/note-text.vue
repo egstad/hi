@@ -5,17 +5,16 @@
     ref="container"
   >
     <p
-      class="body"
+      class="message"
       :class="{
-        lg: body.length < 40,
-        xl: body.length < 10,
-        xx: body.length < 6,
+        lg: message.length < 40,
+        xl: message.length < 10,
+        xx: message.length < 6,
       }"
-      ref="body"
+      ref="message"
     >
-      <span>{{ body }}</span>
+      <span>{{ message }}</span>
     </p>
-    <a :href="link" target="_blank" v-if="link" class="t-link">{{ link }}</a>
   </div>
 </template>
 
@@ -37,7 +36,7 @@
   }
 }
 
-.body {
+.message {
   flex: 1 1;
   display: flex;
   align-items: flex-end;
@@ -68,14 +67,9 @@
 <script>
 export default {
   props: {
-    body: {
+    message: {
       type: String,
       required: true,
-    },
-    link: {
-      type: String,
-      required: false,
-      default: '',
     },
   },
   data() {
@@ -85,7 +79,7 @@ export default {
   },
   mounted() {
     const container = this.$refs.container.getBoundingClientRect().height
-    const entry = this.$refs.body.getBoundingClientRect().height
+    const entry = this.$refs.message.getBoundingClientRect().height
 
     if (entry > container) {
       // make scrollable
