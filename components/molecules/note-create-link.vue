@@ -157,7 +157,7 @@ export default {
     },
     async fetchLinkPreview() {
       const image = await this.$axios
-        .get(`http://api.linkpreview.net/?key=${this.apiKey}&q=${this.link}`)
+        .get(`https://api.linkpreview.net/?key=${this.apiKey}&q=${this.link}`)
         .then(res => {
           if (res.status === 200) {
             // this.linkPreview = res.data
