@@ -15,7 +15,7 @@
           :value="option.value"
           @input="$emit('input', $event.target.value)"
           ref="radio"
-          :checked="optionIndex === 0"
+          :checked="option.defaultChecked"
         />
         <label class="radio-option" :for="option.value">
           <span>{{ option.message }}</span>
@@ -54,7 +54,11 @@ export default {
   },
   methods: {
     reset() {
-      this.$refs.radio[0].checked = true
+      this.options.find((option, index) => {
+        if (option.defaultChecked) {
+          this.$refs.radio[index].checked = true
+        }
+      })
     },
   },
 }
@@ -107,6 +111,7 @@ $indent: 15px;
     display: block;
     text-align: center;
     background-color: rgba(var(--secondary), 0.08);
+    border-right: 1px solid rgba(var(--secondary), 0.08);
     color: rgba(var(--secondary), 1);
   }
 

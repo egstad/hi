@@ -1,70 +1,27 @@
 <template>
-  <li
-    class="note"
-    :class="(`type--${type}`, `tag--${tag}`)"
-    ref="note"
-    :style="
-      `transform:rotate(${Math.random() *
-        3 *
-        (Math.random() * 2 < 1 ? 1 : -0.5)}deg)`
-    "
-  >
+  <li class="note" :class="(`type--${type}`, `tag--${tag}`)" ref="note">
     <article class="content">
-      <pre>{{ type }}</pre>
+      <!-- <pre>{{ type }}</pre> -->
+
       <template v-if="type === 'image'">
-        <figure class="attachment image">
-          <img :src="media.image" alt="" />
-        </figure>
+        <NoteImage :image="image" :message="message" />
       </template>
 
       <template v-else-if="type === 'link'">
-        <NoteEmbed
-          class="attachment embed"
-          type="?"
-          :embed="media.embed"
-          :body="title"
-          :link="link"
-        />
+        <NoteEmbed :embed="embed" :message="message" />
       </template>
-
-      <!-- <template v-else-if="type === 'link'">
-        <pre>{{ media }}</pre>
-        <a class="attachment link" :href="media.link.url" target="_blank">
-          <figure v-if="media.link.image">
-            <img :src="media.link.image" alt="" />
-          </figure>
-
-          <p v-if="media.link.title" class="link-title">
-            {{ media.link.title }}
-          </p>
-          <p v-if="media.link.description" class="link-description">
-            {{ media.link.description }}
-          </p>
-        </a>
-      </template> -->
 
       <template v-else>
-        <NoteText :body="title" :link="link" class="attachment text" />
+        <NoteText :message="message" />
       </template>
 
-      <footer class="utils">
-        <p
-          class="icon tag"
-          :class="{ opaque: iconsAreOpaque || type === 'image' }"
-        >
-          <span class="-hidden">note type: {{ type }}</span>
-          <span class="svg"><Icon :type="tag"/></span>
-        </p>
-        <button
-          class="icon delete"
-          v-if="userCanEdit"
-          @click="deletePost(docId)"
-          :class="{ opaque: iconsAreOpaque || type === 'image' }"
-        >
-          <span class="-hidden">delete note</span>
-          <span class="svg"><Icon type="close"/></span>
-        </button>
-      </footer>
+      <NoteUtilities
+        :is-opaque="iconsAreOpaque"
+        :tag="tag"
+        :type="type"
+        :author="author"
+        :note-id="noteId"
+      />
     </article>
   </li>
 </template>
@@ -93,11 +50,12 @@
   }
 
   &:hover {
-    .icon {
+    /deep/.icon {
       background-color: rgba(var(--primary), 1);
     }
   }
 
+  // default, love, cute, sad, sparkle, curious
   &.tag {
     &--none {
       background: var(--note-default-bg);
@@ -107,15 +65,14 @@
         fill: var(--note-default-fg);
       }
     }
-    &--curious {
-      background: var(--note-curious-bg);
-      color: var(--note-curious-fg);
+    &--love {
+      background: var(--note-love-bg);
+      color: var(--note-love-fg);
 
       /deep/path {
-        fill: var(--note-curious-fg);
+        fill: var(--note-love-fg);
       }
     }
-    &--nostalgic,
     &--cute {
       background: var(--note-cute-bg);
       color: var(--note-cute-fg);
@@ -133,207 +90,100 @@
         fill: var(--note-sad-fg);
       }
     }
-    &--encouraging {
-      background: var(--note-encouraging-bg);
-      color: var(--note-encouraging-fg);
+    &--sparkle {
+      background: var(--note-curious-bg);
+      color: var(--note-curious-fg);
 
       /deep/path {
-        fill: var(--note-encouraging-fg);
+        fill: var(--note-curious-fg);
+      }
+    }
+    &--curious {
+      background: var(--note-curious-bg);
+      color: var(--note-curious-fg);
+
+      /deep/path {
+        fill: var(--note-curious-fg);
       }
     }
   }
-}
-
-.utils {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding: calc(var(--grid-gutter));
-  font-size: var(--note-icon-size);
-  line-height: var(--note-icon-size);
-  display: flex;
-  justify-content: space-between;
-
-  .icon {
-    appearance: none;
-    border: 0;
-    position: relative;
-    overflow: hidden;
-    top: 0;
-    left: 0;
-    padding: calc(var(--grid-gutter) * 0.5);
-    width: var(--note-icon-size);
-    height: var(--note-icon-size);
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(5px);
-    border-radius: var(--note-radius-child);
-    background-color: rgba(var(--primary), 0);
-    transition: background-color 400ms ease-in-out;
-
-    &.opaque {
-      background: rgba(var(--primary), 1);
-    }
-
-    &.tag {
-      pointer-events: none;
-    }
-
-    &.delete {
-      svg {
-        transition: transform 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        transform: translate(0, 0, 0) rotate(0deg);
-      }
-
-      &:hover {
-        cursor: pointer;
-        svg {
-          transform: translate3d(0, 0, 0) rotate(90deg);
-        }
-      }
-    }
-  }
-
-  // this hides descriptions
-  // while keeping them accessible for screen readers
-  .-hidden {
-    clip: rect(1px, 1px, 1px, 1px);
-    clip-path: inset(50%);
-    height: 1px;
-    margin: 0;
-    overflow: hidden;
-    padding: 0;
-    position: absolute !important;
-    white-space: nowrap;
-    width: 1px;
-  }
-}
-
-// .attachments {
-//   transition: max-height 400ms ease-in-out;
-//   height: 0;
-//   overflow: hidden;
-
-//   &.expanded {
-//     height: auto;
-//   }
-// }
-
-.attachment {
-  &.link {
-    color: inherit;
-    text-decoration: none;
-
-    img {
-      border-radius: calc(var(--note-radius-child));
-      margin-bottom: calc(var(--grid-gutter));
-      overflow: hidden;
-    }
-
-    .link-title {
-      font-weight: bold;
-      font-size: 24px;
-      margin-bottom: calc(var(--grid-gutter) * 0.25);
-    }
-
-    .link-description {
-      margin-bottom: calc(var(--grid-gutter) * 0.5);
-    }
-  }
-  &.image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-
-    &::before {
-      content: '';
-      display: block;
-      background: rgba(black, 0.1);
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
-    img {
-      object-fit: cover;
-      // display: block;
-      width: 100%;
-      height: 100%;
-    }
-  }
-  // &.text {
-  //   position: absolute;
-  //   top: 0;
-  //   left: 0;
-  //   height: 100%;
-  //   width: 100%;
-  //   padding: calc(var(--grid-gutter));
-  //   display: flex;
-  //   align-items: flex-end;
-  //   background: var(--note-color-default);
-  // }
 }
 </style>
 
 <script>
-import Icon from '@/components/atoms/icons'
 import NoteText from '@/components/molecules/note-text'
 import NoteEmbed from '@/components/molecules/note-embed'
+import NoteImage from '@/components/molecules/note-image'
+import NoteUtilities from '@/components/molecules/note-utilities'
 export default {
   components: {
-    Icon,
     NoteText,
     NoteEmbed,
+    NoteImage,
+    NoteUtilities,
   },
   props: {
-    title: {
-      type: String,
-      required: true,
-    },
-    type: {
-      type: String,
-      required: true,
-    },
-    link: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    author: {
-      type: String,
-      required: true,
-    },
-    docId: {
-      type: String,
-      required: true,
-    },
-    tag: {
-      type: String,
-      required: true,
-    },
-    media: {
+    note: {
       type: Object,
-      required: false,
-      default: null,
+      required: true,
     },
   },
   data() {
     return {
       newTitle: null,
       isExpanded: false,
-      iconsAreOpaque: false,
     }
   },
   computed: {
-    userCanEdit() {
-      return this.$store.state.user.uid === this.author
+    iconsAreOpaque() {
+      if (
+        this.type === 'image' ||
+        (this.type === 'link' && this.embed.thumbnail)
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
+    // @string
+    // @returns: none, link, image
+    type() {
+      return this.note.type
+    },
+    // @string
+    // @returns: main message from note
+    message() {
+      return this.note.message
+    },
+    // @string
+    // @returns: default, love, cute, sad, sparkle, curious
+    tag() {
+      return this.note.tag
+    },
+    // @string
+    // @returns: a unique id for the author
+    author() {
+      return this.note.author
+    },
+    // @string
+    // @returns: a bunch of random letters and numbers
+    noteId() {
+      return this.note.id
+    },
+    // @string
+    // @returns: a url attached to the note
+    link() {
+      return this.note.media.link
+    },
+    // @string
+    // @returns: a firebase url to the uploaded image
+    image() {
+      return this.note.media.image
+    },
+    // @string
+    // @returns: an embed attached to the note
+    embed() {
+      return this.note.media.embed
     },
   },
   beforeMount() {
@@ -349,19 +199,6 @@ export default {
       } else if (state === 'hide') {
         this.iconsAreOpaque = false
       }
-    },
-    async deletePost() {
-      await this.$firebase
-        .firestore()
-        .collection('posts')
-        .doc(this.docId)
-        .delete()
-        .then(() => {
-          console.log('note deleted')
-        })
-        .catch(error => {
-          console.log("sorry, the note couldn't be deleted", error)
-        })
     },
   },
 }
