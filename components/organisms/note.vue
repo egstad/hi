@@ -138,7 +138,10 @@ export default {
     iconsAreOpaque() {
       if (
         this.type === 'image' ||
-        (this.type === 'link' && this.embed.thumbnail)
+        (this.type === 'link' && this.embed.thumbnail) ||
+        (this.type === 'link' &&
+          this.embed.type === 'video' &&
+          this.embed.embed)
       ) {
         return true
       } else {
