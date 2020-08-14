@@ -6,21 +6,18 @@
     </div>
 
     <main class="site-content">
-      <vid />
       <nuxt />
     </main>
   </div>
 </template>
 
 <script>
-import vid from '@/components/atoms/video'
 import navigation from '@/components/molecules/site-nav'
 import logo from '@/components/molecules/site-logo'
 export default {
   components: {
     navigation,
     logo,
-    vid,
   },
   beforeMount() {
     window.localStorage.removeItem('user')

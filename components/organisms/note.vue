@@ -1,7 +1,7 @@
 <template>
   <li class="note" :class="(`type--${type}`, `tag--${tag}`)" ref="note">
     <article class="content">
-      <pre>{{ type }}</pre>
+      <!-- <pre>{{ type }}</pre> -->
 
       <template v-if="type === 'image'">
         <NoteImage :image="image" :message="message" />
@@ -16,7 +16,7 @@
       </template>
 
       <NoteUtilities
-        :is-opaque="iconsAreOpaque || type === 'image'"
+        :is-opaque="iconsAreOpaque"
         :tag="tag"
         :type="type"
         :author="author"
@@ -132,10 +132,19 @@ export default {
     return {
       newTitle: null,
       isExpanded: false,
-      iconsAreOpaque: false,
     }
   },
   computed: {
+    iconsAreOpaque() {
+      if (
+        this.type === 'image' ||
+        (this.type === 'link' && this.embed.thumbnail)
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
     // @string
     // @returns: none, link, image
     type() {

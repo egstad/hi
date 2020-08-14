@@ -44,19 +44,11 @@ So how's it work?
       />
 
       <div v-if="postAttachment === 'link'">
-        <PostLinkUploader ref="link" required />
+        <NoteLinkUploader ref="link" required />
       </div>
 
-      <!-- <FormSelect
-        :options="postTagOptions"
-        v-model="postTag"
-        ref="tag"
-        label="note type"
-        theme="dark"
-      /> -->
-
       <div v-if="postAttachment === 'image'">
-        <PostImageUploader ref="image" />
+        <NoteImageUploader ref="image" />
       </div>
 
       <p v-if="error">{{ error }}</p>
@@ -99,12 +91,12 @@ import FormTextarea from '@/components/molecules/form-textarea'
 import FormRadio from '@/components/molecules/form-radio'
 // import FormSelect from '@/components/molecules/form-select'
 import FormSubmit from '@/components/molecules/form-submit'
-import PostImageUploader from '@/components/molecules/post-image'
-import PostLinkUploader from '@/components/molecules/post-link'
+import NoteImageUploader from '@/components/molecules/note-create-image'
+import NoteLinkUploader from '@/components/molecules/note-create-link'
 export default {
   components: {
-    PostImageUploader,
-    PostLinkUploader,
+    NoteImageUploader,
+    NoteLinkUploader,
     FormRadio,
     FormSubmit,
     // FormInput,

@@ -1,6 +1,6 @@
 <template>
   <div class="link">
-    <template v-if="!linkPreview">
+    <template>
       <FormInput
         v-model="link"
         type="url"
@@ -9,26 +9,25 @@
         label="add a link"
         theme="dark"
         autocomplete="off"
-        @input="validate()"
+        @input="validate"
         required
       />
-      <div v-if="linkEmbed">
-        <div class="link-preview" v-html="linkEmbed.source"></div>
-      </div>
-      <!-- <FormSubmit
-        v-if="linkIsFormatted"
-        text="add link"
-        type="button"
-        @click.native.stop="fetchLinkPreview()"
-      /> -->
+      <template v-if="linkEmbed">
+        <div class="preview thumbnail" v-if="linkEmbed.thumbnail">
+          <img :src="linkEmbed.thumbnail" alt="" />
+        </div>
+
+        <div
+          class="preview embed"
+          v-else-if="linkEmbed.embed"
+          v-html="linkEmbed.embed"
+        ></div>
+
+        <div v-else>
+          there's no preview image for that, but we'll include the link 4 u
+        </div>
+      </template>
     </template>
-    <div class="link-preview" v-else>
-      <a :href="linkPreview.url">
-        <h3 v-if="linkPreview.title">{{ linkPreview.title }}</h3>
-        <p v-if="linkPreview.description">{{ linkPreview.description }}</p>
-        <img v-if="linkPreview.image" :src="linkPreview.image" />
-      </a>
-    </div>
 
     <p v-if="error">{{ error }}</p>
   </div>
@@ -36,11 +35,9 @@
 
 <script>
 import FormInput from '@/components/molecules/form-input'
-// import FormSubmit from '@/components/molecules/form-submit'
 export default {
   components: {
     FormInput,
-    // FormSubmit,
   },
   data() {
     return {
@@ -50,6 +47,8 @@ export default {
       linkIsFormatted: false,
       linkIsValid: false,
       linkPreview: null,
+      keyupTimeout: null,
+      keyupTimeoutDuration: 500,
       error: null,
     }
   },
@@ -66,19 +65,35 @@ export default {
       )
 
       this.linkIsFormatted = !!pattern.test(this.link)
+
+      // not valid? cool. hide the previews
+      if (!this.linkIsFormatted) {
+        this.linkPreview = null
+        this.linkEmbed = null
+      }
     },
     validate() {
-      // 1. is it actually a link? be real, dude.
-      this.checkLinkFormat()
-      // 2. is it a video? is it an image? is it just a link?
-      this.handleEmbed()
+      clearTimeout(this.keyupTimeout)
+
+      this.keyupTimeout = setTimeout(() => {
+        // 1. is it actually a link? be real, dude.
+        this.checkLinkFormat()
+
+        // 2. is it a video? is it an image? is it just a link?
+        if (this.linkIsFormatted) {
+          this.handleEmbed()
+        }
+      }, this.keyupTimeoutDuration)
+
+      // this.handleEmbed()
       // if link is formatted, let's double check that this link is real
-      this.linkIsValid = !!this.linkIsFormatted
+      // this.linkIsValid = !!this.linkIsFormatted
     },
-    handleEmbed() {
+    async handleEmbed() {
       let input = this.link
       let replacement = null
       let type = null
+      const thumbnail = await this.fetchLinkPreview()
       /* eslint-disable */
       const isYoutube = /(?:http?s?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(\S+)/g
       const isVimeo = /(?:http?s?:\/\/)?(?:www\.)?(?:vimeo\.com)\/?(\S+)/g
@@ -99,6 +114,7 @@ export default {
 
         case isVimeo.test(input):
           // https://vimeo.com/441172521
+          console.log('vimeo')
           replacement =
             '<iframe src="//player.vimeo.com/video/$1" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>'
           input = input.replace(isVimeo, replacement)
@@ -107,25 +123,27 @@ export default {
 
         case isLinkedVideo.test(input):
           // https://res.cloudinary.com/instrument-com/video/upload/q_75:qmax_45/homepage/dot_com_loop_v1_2_mckh3o.webm
-          replacement = '<video controls src="$1"></video>'
+          replacement = '<video controls muted autoplay loop src="$1"></video>'
           input = input.replace(isLinkedVideo, replacement)
-          this.linkEmbed = input
           type = 'video'
           break
 
         case isLinkedImage.test(input):
           replacement = '<img src="$1" />'
           input = input.replace(isLinkedImage, replacement)
-          this.linkEmbed = input
           type = 'image'
           break
 
         default:
+          type = 'website'
+          input = null
           break
       }
 
       this.linkEmbed = {
-        source: input,
+        source: this.link,
+        embed: input,
+        thumbnail,
         type,
       }
     },
@@ -138,18 +156,25 @@ export default {
       this.error = null
     },
     async fetchLinkPreview() {
-      await this.$axios
+      const image = await this.$axios
         .get(`http://api.linkpreview.net/?key=${this.apiKey}&q=${this.link}`)
         .then(res => {
           if (res.status === 200) {
-            console.log('got it')
-            this.linkPreview = res.data
-            this.$parent.$emit('linkPreviewReady', this.linkPreview)
+            // this.linkPreview = res.data
+            return res.data.image
+            // this.linkEmbed = null
+            // this.linkEmbed = {
+            //   source: this.link,
+            //   embed: `<img src="${res.data.image}" />`,
+            //   type: 'image',
+            // }
           } else {
             console.log('failed')
             this.error = 'sorry, we cant find a preview image for that'
           }
         })
+
+      return image
     },
   },
 }

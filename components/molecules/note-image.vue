@@ -31,7 +31,7 @@ export default {
   &::before {
     content: '';
     display: block;
-    background: rgba(black, 0.1);
+    background: rgba(black, 0.05);
     position: absolute;
     top: 0;
     left: 0;
