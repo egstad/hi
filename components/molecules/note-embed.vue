@@ -59,6 +59,8 @@ export default {
 <style lang="scss" scoped>
 .embed {
   position: absolute;
+  overflow: hidden;
+  border-radius: var(--note-radius);
   top: 0;
   left: 0;
   height: 100%;
@@ -70,25 +72,6 @@ export default {
 
 .wrapper {
   grid-row: 2;
-}
-
-/deep/iframe {
-  display: block;
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-}
-
-figcaption {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  width: 100%;
-  padding: 0 var(--grid-gutter) var(--grid-gutter);
-
-  * > {
-    min-width: 0;
-  }
 }
 
 .body {
