@@ -50,8 +50,9 @@
   }
 
   &:hover {
-    /deep/.icon {
-      background-color: rgba(var(--primary), 1);
+    /deep/.note__utilities {
+      opacity: 1;
+      pointer-events: auto;
     }
   }
 
@@ -60,52 +61,34 @@
     &--none {
       background: var(--note-default-bg);
       color: var(--note-default-fg);
-
-      /deep/path {
-        fill: var(--note-default-fg);
-      }
     }
     &--love {
       background: var(--note-love-bg);
       color: var(--note-love-fg);
-
-      /deep/path {
-        fill: var(--note-love-fg);
-      }
     }
     &--cute {
       background: var(--note-cute-bg);
       color: var(--note-cute-fg);
       fill: var(--note-cute-fg);
-
-      /deep/path {
-        fill: var(--note-cute-fg);
-      }
     }
     &--sad {
       background: var(--note-sad-bg);
       color: var(--note-sad-fg);
-
-      /deep/path {
-        fill: var(--note-sad-fg);
-      }
     }
     &--sparkle {
       background: var(--note-curious-bg);
       color: var(--note-curious-fg);
-
-      /deep/path {
-        fill: var(--note-curious-fg);
-      }
     }
     &--curious {
       background: var(--note-curious-bg);
       color: var(--note-curious-fg);
-
-      /deep/path {
-        fill: var(--note-curious-fg);
-      }
     }
+  }
+
+  /deep/.note__utilities {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease-out;
   }
 }
 </style>
@@ -135,18 +118,23 @@ export default {
     }
   },
   computed: {
-    iconsAreOpaque() {
-      if (
-        this.type === 'image' ||
-        (this.type === 'link' && this.embed.thumbnail) ||
-        (this.type === 'link' &&
-          this.embed.type === 'video' &&
-          this.embed.embed)
-      ) {
-        return true
-      } else {
+    iconsAreOpaque: {
+      get() {
         return false
-      }
+      },
+      set() {
+        if (
+          this.type === 'image' ||
+          (this.type === 'link' && this.embed.thumbnail) ||
+          (this.type === 'link' &&
+            this.embed.type === 'video' &&
+            this.embed.embed)
+        ) {
+          return true
+        } else {
+          return false
+        }
+      },
     },
     // @string
     // @returns: none, link, image

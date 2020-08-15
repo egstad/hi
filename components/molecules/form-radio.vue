@@ -111,7 +111,6 @@ $indent: 15px;
     display: block;
     text-align: center;
     background-color: rgba(var(--secondary), 0.08);
-    border-right: 1px solid rgba(var(--secondary), 0.08);
     color: rgba(var(--secondary), 1);
   }
 

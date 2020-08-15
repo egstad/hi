@@ -160,20 +160,11 @@ export default {
           this.submitPost()
           break
 
-        case 'null':
+        default:
           // only submits title
           this.submitPost()
           break
-
-        default:
-          console.warn('this.postAttachment was undefined')
-          break
       }
-
-      // if (this.postAttachment === 'image') {
-      // } else {
-      //   this.submitPost()
-      // }
     },
     onSubmitComplete() {
       // reset note

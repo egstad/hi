@@ -1,5 +1,5 @@
 <template>
-  <footer class="utils">
+  <footer class="note__utilities" :class="`tag--${type}`">
     <p class="icon tag" :class="{ opaque: isOpaque }">
       <span class="-hidden">note type: {{ type }}</span>
       <span class="svg"><Icon :type="tag"/></span>
@@ -17,7 +17,7 @@
 </template>
 
 <style lang="scss" scoped>
-.utils {
+.note__utilities {
   position: absolute;
   top: 0;
   left: 0;
@@ -81,6 +81,34 @@
     position: absolute !important;
     white-space: nowrap;
     width: 1px;
+  }
+}
+
+.tag {
+  &--none .icon {
+    background: var(--note-default-bg);
+    color: var(--note-default-fg);
+  }
+  &--love .icon {
+    background: var(--note-love-bg);
+    color: var(--note-love-fg);
+  }
+  &--cute .icon {
+    background: var(--note-cute-bg);
+    color: var(--note-cute-fg);
+    fill: var(--note-cute-fg);
+  }
+  &--sad .icon {
+    background: var(--note-sad-bg);
+    color: var(--note-sad-fg);
+  }
+  &--sparkle .icon {
+    background: var(--note-curious-bg);
+    color: var(--note-curious-fg);
+  }
+  &--curious .icon {
+    background: var(--note-curious-bg);
+    color: var(--note-curious-fg);
   }
 }
 </style>
