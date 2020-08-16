@@ -27,7 +27,7 @@
   display: grid;
   grid-gap: var(--grid-gutter);
   margin-top: calc(var(--grid-gutter) * 4);
-  grid-gap: calc(var(--grid-gutter) * 2);
+  grid-gap: calc(var(--grid-gutter));
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
 
   &.is-draggable {
