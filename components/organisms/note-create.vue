@@ -225,6 +225,10 @@ export default {
           image: this.postImage || null,
           embed: this.$refs.link ? this.$refs.link.linkEmbed : null,
         },
+        coords: {
+          x: Math.round(Math.random() * (window.innerWidth - 500)),
+          y: Math.round(Math.random() * 400),
+        },
       }
     },
     async submitPost(imageUrl) {

@@ -22,9 +22,12 @@
       </div>
     </template>
 
+    <pre>{{ embed }}</pre>
+
     <template v-if="embed.type === 'image'">
-      <div class="thumbnail image" v-if="embed.thumbnail">
-        <img :src="embed.thumbnail" alt="" />
+      <div class="thumbnail image">
+        <img v-if="embed.thumbnail" :src="embed.thumbnail" alt="" />
+        <img v-else-if="embed.source" :src="embed.source" alt="" />
       </div>
     </template>
 
