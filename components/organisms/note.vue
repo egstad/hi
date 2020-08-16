@@ -100,7 +100,7 @@
 <script>
 import gsap from 'gsap'
 import { Draggable } from 'gsap/Draggable'
-import { InertiaPlugin } from 'gsap/InertiaPlugin.js'
+import { InertiaPlugin } from '@/plugins/inertia'
 import NoteText from '@/components/molecules/note-text'
 import NoteEmbed from '@/components/molecules/note-embed'
 import NoteImage from '@/components/molecules/note-image'
