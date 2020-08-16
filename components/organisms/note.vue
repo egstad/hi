@@ -100,13 +100,13 @@
 <script>
 import gsap from 'gsap'
 import { Draggable } from 'gsap/Draggable'
+import { InertiaPlugin } from 'gsap/InertiaPlugin.js'
 import NoteText from '@/components/molecules/note-text'
 import NoteEmbed from '@/components/molecules/note-embed'
 import NoteImage from '@/components/molecules/note-image'
 import NoteUtilities from '@/components/molecules/note-utilities'
-import * as Inertia from '@/plugins/inertia'
 
-gsap.registerPlugin(Draggable, Inertia)
+gsap.registerPlugin(Draggable, InertiaPlugin)
 
 export default {
   components: {
@@ -320,7 +320,7 @@ export default {
     },
     draggableInit() {
       if (this.$store.state.notes.areDraggable) {
-        let notes
+        // let notes
         this.draggableInstance = Draggable.create(this.$refs.note, {
           type: 'x,y',
           edgeResistance: 0.5,
@@ -330,34 +330,34 @@ export default {
             // add dragging class
             this.$refs.note.classList.add('is-dragging')
             // fetch all that aren't being dragged
-            notes = document.querySelectorAll('.note:not(.is-dragging)')
+            // notes = document.querySelectorAll('.note:not(.is-dragging)')
             // animate
             gsap.to(this.$refs.note, 0.1, {
               scale: 1.05,
               rotation: 0,
             })
           },
-          onDrag: () => {
-            let i = notes.length
-            let multiplier = 1
-            const self = this.draggableInstance[0]
+          // onDrag: () => {
+          //   let i = notes.length
+          //   let multiplier = 1
+          //   const self = this.draggableInstance[0]
 
-            while (--i > -1) {
-              if (self.hitTest(notes[i], '20%')) {
-                multiplier++
+          //   while (--i > -1) {
+          //     if (self.hitTest(notes[i], '20%')) {
+          //       multiplier++
 
-                gsap.to(notes[i], {
-                  scale: '1.0' + multiplier * 2,
-                  duration: 0.2,
-                })
-              } else {
-                gsap.to(this.$refs.note, {
-                  scale: 1,
-                  duration: 0.2,
-                })
-              }
-            }
-          },
+          //       gsap.to(notes[i], {
+          //         scale: '1.0' + multiplier * 2,
+          //         duration: 0.2,
+          //       })
+          //     } else {
+          //       gsap.to(this.$refs.note, {
+          //         scale: 1,
+          //         duration: 0.2,
+          //       })
+          //     }
+          //   }
+          // },
           onDragEnd: e => {
             // remove dragging class
             this.$refs.note.classList.remove('is-dragging')
@@ -366,14 +366,12 @@ export default {
               scale: 1.0,
               rotation: this.rotation,
             })
-
-            // this.updateCoords(self.endX, self.endY)
           },
-          onThrowComplete: e => {
-            const self = this.draggableInstance[0]
-            // tell firebase
-            this.updateCoords(self.endX, self.endY)
-          },
+          // onThrowComplete: e => {
+          //   const self = this.draggableInstance[0]
+          //   // tell firebase
+          //   this.updateCoords(self.endX, self.endY)
+          // },
         })
         this.moveNote()
       }

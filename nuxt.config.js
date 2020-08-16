@@ -28,7 +28,7 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/firebase.js', '~/plugins/inertia.js'],
+  plugins: ['~/plugins/firebase.js'],
   /*
    ** Nuxt.js dev-modules
    */
@@ -68,6 +68,6 @@ export default {
      ** You can extend webpack config here
      */
     extend(config, ctx) {},
-    transpile: ['gsap', 'Draggable', 'Inertia'],
+    // transpile: ['gsap', 'Draggable'],
   },
 }
