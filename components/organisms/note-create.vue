@@ -203,6 +203,11 @@ export default {
         this.postType = 'text'
       }
     },
+    getRandomInt(min, max) {
+      min = Math.ceil(min)
+      max = Math.floor(max)
+      return (Math.random() * (max - min) + min).toFixed(3)
+    },
     modelData() {
       this.setType()
 
@@ -226,9 +231,10 @@ export default {
           embed: this.$refs.link ? this.$refs.link.linkEmbed : null,
         },
         coords: {
-          x: Math.round(Math.random() * (window.innerWidth - 500)),
-          y: Math.round(Math.random() * 400),
+          x: this.getRandomInt(0, this.$store.state.notes.canvasWidth - 400),
+          y: this.getRandomInt(0, this.$store.state.notes.canvasHeight - 400),
         },
+        rotation: this.getRandomInt(-4, 4),
       }
     },
     async submitPost(imageUrl) {

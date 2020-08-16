@@ -128,6 +128,7 @@ export default {
       newTitle: null,
       isExpanded: false,
       isDraggable: false,
+      isMoving: false,
       draggableInstance: null,
     }
   },
@@ -193,12 +194,23 @@ export default {
     },
     // @object
     // @returns: the coordinates of the note
-    coords() {
-      // only i can move my notes...
-      if (this.author !== this.$store.state.user.uid) {
+    coords(old) {
+      return this.note.coords
+    },
+    // @number
+    // @returns: a random number
+    rotation() {
+      return this.note.rotation
+    },
+  },
+  watch: {
+    coords(newValue, oldValue) {
+      const xChange = newValue.x !== oldValue.x
+      const yChange = newValue.y !== oldValue.y
+
+      if (xChange || yChange) {
         this.moveNote()
       }
-      return this.note.coords
     },
   },
   beforeMount() {
@@ -216,7 +228,6 @@ export default {
   },
   methods: {
     showNote() {
-      const posOrNeg = Math.random() < 0.5 ? -1 : 1
       // stagger animation speeds
       const time = Math.random() * 0.5 + 0.5
 
@@ -230,13 +241,9 @@ export default {
         },
         {
           scale: 1,
-          rotation: (Math.random() * 2 + 2) * posOrNeg,
-          x: this.$store.state.notes.areDraggable
-            ? this.$refs.note.dataset.x
-            : 0,
-          y: this.$store.state.notes.areDraggable
-            ? this.$refs.note.dataset.y
-            : 0,
+          rotation: this.rotation,
+          x: this.$store.state.notes.areDraggable ? this.coords.x : 0,
+          y: this.$store.state.notes.areDraggable ? this.coords.y : 0,
           duration: time,
           onComplete: () => {
             this.moveNote()
@@ -248,22 +255,15 @@ export default {
     deleteNote() {
       const time = Math.random() * 0.5 + 0.5
 
-      gsap.fromTo(
-        this.$refs.note,
-        {
-          scale: 1,
-          rotation: 0,
+      gsap.to(this.$refs.note, {
+        y: this.$store.state.notes.canvasHeight * 2,
+        rotation: `+=${this.getRandomInt(-90, 90)}`,
+        duration: time,
+        ease: 'power4.in',
+        onComplete: () => {
+          this.deleteFromFirebase()
         },
-        {
-          scale: 0,
-          rotation: Math.random() * 10,
-          duration: time,
-          ease: 'power4.in',
-          onComplete: () => {
-            this.deleteFromFirebase()
-          },
-        }
-      )
+      })
     },
     moveNote() {
       // lets make sure there is something to move in the first place
@@ -272,26 +272,23 @@ export default {
         const bounds = document.querySelector('.notes').getBoundingClientRect()
         const self = this.$refs.note.getBoundingClientRect()
         const boundsWidth = bounds.width
+        const boundsHeight = bounds.height
         const selfWidth = self.width
+        const selfHeight = self.height
+        const isOffscreenX = this.note.coords.x + selfWidth > boundsWidth
+        const isOffscreenY = this.note.coords.y + selfHeight > boundsHeight
 
         // is note offscreen?
         // like, what if i create a note on a huge screen and you're on a small one?
         // you wouldn't be able to see it.
-        if (this.note.coords.x + selfWidth > boundsWidth) {
-          gsap.to(this.$refs.note, 1.5, {
-            x: boundsWidth - selfWidth,
-          })
-        } else {
-          // if the coords are on screen, move it there!
-          gsap.to(this.$refs.note, 1.5, {
-            x: this.$refs.note.dataset.x,
-            y: this.$refs.note.dataset.y,
-            ease: 'elastic.out(1, 0.8)',
-          })
-        }
+        gsap.to(this.$refs.note, 1.5, {
+          x: isOffscreenX ? boundsWidth - selfWidth : this.coords.x,
+          y: isOffscreenY ? boundsHeight - selfHeight : this.coords.y,
+          rotation: this.rotation,
+          ease: 'elastic.out(1, 0.8)',
+        })
       }
     },
-
     updateCoords(x, y) {
       this.$firebase
         .firestore()
@@ -304,7 +301,7 @@ export default {
           },
         })
         .then(() => {
-          // console.log('note updated')
+          this.moveNote()
         })
       // .catch(error => {
       //   console.log("sorry, the note couldn't be deleted", error)
@@ -331,39 +328,24 @@ export default {
           edgeResistance: 0.5,
           bounds: '.notes',
           inertia: true,
-          minimumMovement: 5,
-          // onDrag: e => {},
           onDragStart: e => {
-            const posOrNeg = Math.random() < 0.5 ? -1 : 1
             // add dragging class
             this.$refs.note.classList.add('is-dragging')
             // fetch all that aren't being dragged
             notes = document.querySelectorAll('.note:not(.is-dragging)')
-            // tell the app after adding the is-dragging class
-            this.$app.$emit('dragStart')
             // animate
             gsap.to(this.$refs.note, 0.1, {
               scale: 1.05,
-              rotation: (Math.random() * 5 + 5) * posOrNeg,
+              rotation: 0,
             })
           },
-          onDragEnd: e => {
-            const posOrNeg = Math.random() < 0.5 ? -1 : 1
-            const self = this.draggableInstance[0]
+          onDrag: () => {
             let i = notes.length
             let multiplier = 1
-            // tell the app
-            this.$app.$emit('dragEnd', self)
-            // remove dragging class
-            this.$refs.note.classList.remove('is-dragging')
-            // set the dragged item down
-            gsap.to(this.$refs.note, 0.1, {
-              scale: 1,
-              rotation: (Math.random() * 2 + 2) * posOrNeg,
-            })
+            const self = this.draggableInstance[0]
 
             while (--i > -1) {
-              if (self.hitTest(notes[i], '50%')) {
+              if (self.hitTest(notes[i], '20%')) {
                 multiplier++
 
                 gsap.to(notes[i], {
@@ -377,49 +359,24 @@ export default {
                 })
               }
             }
+          },
+          onDragEnd: e => {
+            const self = this.draggableInstance[0]
+            // remove dragging class
+            this.$refs.note.classList.remove('is-dragging')
+            // set the dragged item down
+            gsap.to(this.$refs.note, 0.1, {
+              scale: 1.0,
+              rotation: this.rotation,
+            })
 
-            // update firebase with new coords
             this.updateCoords(self.endX, self.endY)
           },
-
-          // onDrag(e) {
-          //   console.log('drag end')
-          //   let i = draggableEls.length
-          //   while (--i > -1) {
-          //     if (this.hitTest(draggableEls[i], '80%')) {
-          //       // note behind item
-          //       if (draggableEls[i].dataset.behind === 'false') {
-          //         draggableEls[i].dataset.behind = true
-          //         gsap.to(draggableEls[i], 0.2, {
-          //           rotation: Math.random() * 10,
-          //         })
-          //       }
-
-          //       // item
-          //       // gsap.to(this.target, 0.2, {
-          //       //   scale: 0.9,
-          //       // })
-          //     } else {
-          //       // note behind item
-          //       draggableEls[i].dataset.behind = false
-          //       gsap.to(draggableEls[i], 0.2, {
-          //         rotation: 0,
-          //       })
-          //       // // item
-          //       // gsap.to(this.target, 0.2, {
-          //       //   scale: 1,
-          //       // })
-          //     }
-          //   }
-          // },
-          // snap: {
-          //   x(endValue) {
-          //     return Math.round(endValue / 30) * 30
-          //   },
-          //   y(endValue) {
-          //     return Math.round(endValue / 30) * 30
-          //   },
-          // },
+          onThrowComplete: e => {
+            // const self = this.draggableInstance[0]
+            // // tell firebase
+            // this.updateCoords(self.endX, self.endY)
+          },
         })
         this.moveNote()
       }
@@ -452,6 +409,11 @@ export default {
       } else if (state === 'hide') {
         this.iconsAreOpaque = false
       }
+    },
+    getRandomInt(min, max) {
+      min = Math.ceil(min)
+      max = Math.floor(max)
+      return (Math.random() * (max - min) + min).toFixed(3)
     },
   },
 }
