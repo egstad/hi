@@ -7,8 +7,6 @@
     :data-y="coords.y"
   >
     <article class="content">
-      <pre>{{ note.coords.x }},{{ note.coords.y }}</pre>
-
       <template v-if="type === 'image'">
         <NoteImage :image="image" :message="message" />
       </template>
@@ -91,11 +89,11 @@
     }
   }
 
-  /deep/.note__utilities {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 200ms ease-out;
-  }
+  // /deep/.note__utilities {
+  //   opacity: 0;
+  //   pointer-events: none;
+  //   transition: opacity 200ms ease-out;
+  // }
 }
 </style>
 
@@ -241,7 +239,7 @@ export default {
         },
         {
           scale: 1,
-          rotation: this.rotation,
+          rotation: this.$store.state.notes.areDraggable ? this.rotation : 0,
           x: this.$store.state.notes.areDraggable ? this.coords.x : 0,
           y: this.$store.state.notes.areDraggable ? this.coords.y : 0,
           duration: time,
@@ -361,7 +359,6 @@ export default {
             }
           },
           onDragEnd: e => {
-            const self = this.draggableInstance[0]
             // remove dragging class
             this.$refs.note.classList.remove('is-dragging')
             // set the dragged item down
@@ -370,12 +367,12 @@ export default {
               rotation: this.rotation,
             })
 
-            this.updateCoords(self.endX, self.endY)
+            // this.updateCoords(self.endX, self.endY)
           },
           onThrowComplete: e => {
-            // const self = this.draggableInstance[0]
-            // // tell firebase
-            // this.updateCoords(self.endX, self.endY)
+            const self = this.draggableInstance[0]
+            // tell firebase
+            this.updateCoords(self.endX, self.endY)
           },
         })
         this.moveNote()

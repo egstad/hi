@@ -140,12 +140,14 @@ export default {
           break
       }
 
+      console.log('link', this.link)
       this.linkEmbed = {
         source: this.link,
         embed: input,
         thumbnail,
         type,
       }
+      console.log(this.linkEmbed)
     },
     reset() {
       this.link = null
