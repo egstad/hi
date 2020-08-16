@@ -1,8 +1,12 @@
 <template>
-  <li class="note" :class="(`type--${type}`, `tag--${tag}`)" ref="note">
+  <li
+    class="note"
+    :class="(`type--${type}`, `tag--${tag}`)"
+    ref="note"
+    :data-x="coords.x"
+    :data-y="coords.y"
+  >
     <article class="content">
-      <!-- <pre>{{ type }}</pre> -->
-
       <template v-if="type === 'image'">
         <NoteImage :image="image" :message="message" />
       </template>
@@ -85,19 +89,25 @@
     }
   }
 
-  /deep/.note__utilities {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 200ms ease-out;
-  }
+  // /deep/.note__utilities {
+  //   opacity: 0;
+  //   pointer-events: none;
+  //   transition: opacity 200ms ease-out;
+  // }
 }
 </style>
 
 <script>
+import gsap from 'gsap'
+import { Draggable } from 'gsap/Draggable'
 import NoteText from '@/components/molecules/note-text'
 import NoteEmbed from '@/components/molecules/note-embed'
 import NoteImage from '@/components/molecules/note-image'
 import NoteUtilities from '@/components/molecules/note-utilities'
+import * as Inertia from '@/plugins/inertia'
+
+gsap.registerPlugin(Draggable, Inertia)
+
 export default {
   components: {
     NoteText,
@@ -115,6 +125,9 @@ export default {
     return {
       newTitle: null,
       isExpanded: false,
+      isDraggable: false,
+      isMoving: false,
+      draggableInstance: null,
     }
   },
   computed: {
@@ -126,6 +139,7 @@ export default {
         if (
           this.type === 'image' ||
           (this.type === 'link' && this.embed.thumbnail) ||
+          (this.embed && this.embed.type === 'image') ||
           (this.type === 'link' &&
             this.embed.type === 'video' &&
             this.embed.embed)
@@ -176,6 +190,26 @@ export default {
     embed() {
       return this.note.media.embed
     },
+    // @object
+    // @returns: the coordinates of the note
+    coords(old) {
+      return this.note.coords
+    },
+    // @number
+    // @returns: a random number
+    rotation() {
+      return this.note.rotation
+    },
+  },
+  watch: {
+    coords(newValue, oldValue) {
+      const xChange = newValue.x !== oldValue.x
+      const yChange = newValue.y !== oldValue.y
+
+      if (xChange || yChange) {
+        this.moveNote()
+      }
+    },
   },
   beforeMount() {
     this.$on('setIconOpacity', this.onIconOpacity)
@@ -183,13 +217,200 @@ export default {
   beforeDestroy() {
     this.$off('setIconOpacity', this.onIconOpacity)
   },
+  mounted() {
+    this.$app.$on('draggableInit', this.draggableInit)
+    this.$app.$on('draggableDestroy', this.draggableDestroy)
+    this.$on('deleteNote', this.deleteNote)
+    this.draggableInit()
+    this.showNote()
+  },
   methods: {
+    showNote() {
+      // stagger animation speeds
+      const time = Math.random() * 0.5 + 0.5
+
+      gsap.fromTo(
+        this.$refs.note,
+        {
+          scale: 0,
+          rotation: Math.random() * 10,
+          x: 0,
+          y: 0,
+        },
+        {
+          scale: 1,
+          rotation: this.$store.state.notes.areDraggable ? this.rotation : 0,
+          x: this.$store.state.notes.areDraggable ? this.coords.x : 0,
+          y: this.$store.state.notes.areDraggable ? this.coords.y : 0,
+          duration: time,
+          onComplete: () => {
+            this.moveNote()
+          },
+          ease: 'elastic.out(1, 0.8)',
+        }
+      )
+    },
+    deleteNote() {
+      const time = Math.random() * 0.5 + 0.5
+
+      gsap.to(this.$refs.note, {
+        y: this.$store.state.notes.canvasHeight * 2,
+        rotation: `+=${this.getRandomInt(-90, 90)}`,
+        duration: time,
+        ease: 'power4.in',
+        onComplete: () => {
+          this.deleteFromFirebase()
+        },
+      })
+    },
+    moveNote() {
+      // lets make sure there is something to move in the first place
+      if (this.$refs.note && this.draggableInstance) {
+        // these vars are helpful in determining if note is offscreen
+        const bounds = document.querySelector('.notes').getBoundingClientRect()
+        const self = this.$refs.note.getBoundingClientRect()
+        const boundsWidth = bounds.width
+        const boundsHeight = bounds.height
+        const selfWidth = self.width
+        const selfHeight = self.height
+        const isOffscreenX = this.note.coords.x + selfWidth > boundsWidth
+        const isOffscreenY = this.note.coords.y + selfHeight > boundsHeight
+
+        // is note offscreen?
+        // like, what if i create a note on a huge screen and you're on a small one?
+        // you wouldn't be able to see it.
+        gsap.to(this.$refs.note, 1.5, {
+          x: isOffscreenX ? boundsWidth - selfWidth : this.coords.x,
+          y: isOffscreenY ? boundsHeight - selfHeight : this.coords.y,
+          rotation: this.rotation,
+          ease: 'elastic.out(1, 0.8)',
+        })
+      }
+    },
+    updateCoords(x, y) {
+      this.$firebase
+        .firestore()
+        .collection('notes')
+        .doc(this.noteId)
+        .update({
+          coords: {
+            x,
+            y,
+          },
+        })
+        .then(() => {
+          this.moveNote()
+        })
+      // .catch(error => {
+      //   console.log("sorry, the note couldn't be deleted", error)
+      // })
+    },
+    deleteFromFirebase() {
+      this.$firebase
+        .firestore()
+        .collection('notes')
+        .doc(this.noteId)
+        .delete()
+        .then(() => {
+          // console.log('note deleted')
+        })
+        .catch(error => {
+          console.log("sorry, the note couldn't be deleted", error)
+        })
+    },
+    draggableInit() {
+      if (this.$store.state.notes.areDraggable) {
+        let notes
+        this.draggableInstance = Draggable.create(this.$refs.note, {
+          type: 'x,y',
+          edgeResistance: 0.5,
+          bounds: '.notes',
+          inertia: true,
+          onDragStart: e => {
+            // add dragging class
+            this.$refs.note.classList.add('is-dragging')
+            // fetch all that aren't being dragged
+            notes = document.querySelectorAll('.note:not(.is-dragging)')
+            // animate
+            gsap.to(this.$refs.note, 0.1, {
+              scale: 1.05,
+              rotation: 0,
+            })
+          },
+          onDrag: () => {
+            let i = notes.length
+            let multiplier = 1
+            const self = this.draggableInstance[0]
+
+            while (--i > -1) {
+              if (self.hitTest(notes[i], '20%')) {
+                multiplier++
+
+                gsap.to(notes[i], {
+                  scale: '1.0' + multiplier * 2,
+                  duration: 0.2,
+                })
+              } else {
+                gsap.to(this.$refs.note, {
+                  scale: 1,
+                  duration: 0.2,
+                })
+              }
+            }
+          },
+          onDragEnd: e => {
+            // remove dragging class
+            this.$refs.note.classList.remove('is-dragging')
+            // set the dragged item down
+            gsap.to(this.$refs.note, 0.1, {
+              scale: 1.0,
+              rotation: this.rotation,
+            })
+
+            // this.updateCoords(self.endX, self.endY)
+          },
+          onThrowComplete: e => {
+            const self = this.draggableInstance[0]
+            // tell firebase
+            this.updateCoords(self.endX, self.endY)
+          },
+        })
+        this.moveNote()
+      }
+    },
+    draggableDestroy() {
+      // lets make sure there is an instance to destoy
+      if (this.$refs.note && this.draggableInstance) {
+        const self = this.draggableInstance[0]
+        const time = Math.random() * 1.5 + 0.5
+
+        // set to original position
+        gsap.to(this.$refs.note, time, {
+          x: 0,
+          y: 0,
+          rotation: 0,
+          scale: 1,
+          ease: 'elastic.out(1, 0.8)',
+          onComplete: () => {
+            self.kill()
+            this.isDraggable = false
+            this.draggableInstance = null
+            // this.$store.dispatch('notes/updateDraggable', false)
+          },
+        })
+      }
+    },
     onIconOpacity(state) {
       if (state === 'show') {
         this.iconsAreOpaque = true
       } else if (state === 'hide') {
         this.iconsAreOpaque = false
       }
+    },
+    getRandomInt(min, max) {
+      min = Math.ceil(min)
+      max = Math.floor(max)
+      return (Math.random() * (max - min) + min).toFixed(3)
     },
   },
 }

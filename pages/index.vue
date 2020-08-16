@@ -1,7 +1,9 @@
 <template>
   <div class="site-wrapper">
-    <CreateNote v-show="$store.state.user.isLoggedIn" class="post" />
     <Notes :notes="notes" />
+    <br />
+    <br />
+    <CreateNote v-show="$store.state.user.isLoggedIn" class="post" />
   </div>
 </template>
 
@@ -41,11 +43,11 @@ export default {
             }
             if (change.type === 'modified') {
               this.notes = snapshot.docs.map(doc => doc.data())
-              console.log('Modified: ', change.doc.data())
+              // console.log('Modified: ', change.doc.data())
             }
             if (change.type === 'removed') {
               this.notes = snapshot.docs.map(doc => doc.data())
-              console.log('Removed: ', change.doc.data())
+              // console.log('Removed: ', change.doc.data())
             }
           })
         })

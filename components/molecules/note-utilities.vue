@@ -7,7 +7,7 @@
     <button
       class="icon delete"
       v-if="userCanEdit"
-      @click="deletePost(noteId)"
+      @click="deleteNote"
       :class="{ opaque: isOpaque }"
     >
       <span class="-hidden">delete note</span>
@@ -149,18 +149,8 @@ export default {
     },
   },
   methods: {
-    deletePost() {
-      this.$firebase
-        .firestore()
-        .collection('notes')
-        .doc(this.noteId)
-        .delete()
-        .then(() => {
-          console.log('note deleted')
-        })
-        .catch(error => {
-          console.log("sorry, the note couldn't be deleted", error)
-        })
+    deleteNote() {
+      this.$parent.$emit('deleteNote', this.id)
     },
   },
 }
