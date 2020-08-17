@@ -26,9 +26,9 @@ export const actions = {
       : window.$app.$emit('draggableDestroy')
   },
   updateWidth({ commit }, val) {
-    commit('setWidth', val)
+    commit('setWidth', Math.round(val))
   },
   updateHeight({ commit }, val) {
-    commit('setHeight', val)
+    commit('setHeight', Math.round(val))
   },
 }

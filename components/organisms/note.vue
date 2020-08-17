@@ -5,6 +5,7 @@
     ref="note"
     :data-x="coords.x"
     :data-y="coords.y"
+    :data-index="index"
   >
     <article class="content">
       <template v-if="type === 'image'">
@@ -54,6 +55,8 @@
   }
 
   &:hover {
+    // z-index: 2000;
+
     /deep/.note__utilities {
       opacity: 1;
       pointer-events: auto;
@@ -120,6 +123,11 @@ export default {
       type: Object,
       required: true,
     },
+    index: {
+      type: Number,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return {
@@ -128,6 +136,8 @@ export default {
       isDraggable: false,
       isMoving: false,
       draggableInstance: null,
+      xPercent: null,
+      yPercent: null,
     }
   },
   computed: {
@@ -206,6 +216,7 @@ export default {
       const xChange = newValue.x !== oldValue.x
       const yChange = newValue.y !== oldValue.y
 
+      // on change, move note to new position
       if (xChange || yChange) {
         this.moveNote()
       }
@@ -266,28 +277,43 @@ export default {
     moveNote() {
       // lets make sure there is something to move in the first place
       if (this.$refs.note && this.draggableInstance) {
+        // fetch position percentages when we have props
+        // this.getPositionPercentages(this.coords.x, this.coords.y)
+        // console.clear()
+        // console.log(this.coords.x, this.xPercent)
+
         // these vars are helpful in determining if note is offscreen
-        const bounds = document.querySelector('.notes').getBoundingClientRect()
         const self = this.$refs.note.getBoundingClientRect()
-        const boundsWidth = bounds.width
-        const boundsHeight = bounds.height
+        const boundsWidth = this.$store.state.notes.canvasWidth
+        const boundsHeight = this.$store.state.notes.canvasHeight
         const selfWidth = self.width
         const selfHeight = self.height
         const isOffscreenX = this.note.coords.x + selfWidth > boundsWidth
         const isOffscreenY = this.note.coords.y + selfHeight > boundsHeight
+        // const xPercent = ((this.coords.x / boundsWidth) * 100).toFixed(3)
+        // const yPercent = ((this.coords.y / boundsHeight) * 100).toFixed(3)
 
         // is note offscreen?
         // like, what if i create a note on a huge screen and you're on a small one?
         // you wouldn't be able to see it.
         gsap.to(this.$refs.note, 1.5, {
+          // absolute units
           x: isOffscreenX ? boundsWidth - selfWidth : this.coords.x,
           y: isOffscreenY ? boundsHeight - selfHeight : this.coords.y,
+          // relative units
+          // x: isOffscreenX
+          //   ? boundsWidth - selfWidth
+          //   : this.xPercent * this.coords.x,
+          // y: isOffscreenY
+          //   ? boundsHeight - selfHeight
+          //   : this.yPercent * this.coords.y,
           rotation: this.rotation,
           ease: 'elastic.out(1, 0.8)',
         })
+        gsap.set(this.$refs.note, { zIndex: this.coords.z })
       }
     },
-    updateCoords(x, y) {
+    updateCoords(x, y, z) {
       this.$firebase
         .firestore()
         .collection('notes')
@@ -296,6 +322,7 @@ export default {
           coords: {
             x,
             y,
+            z,
           },
         })
         .then(() => {
@@ -320,7 +347,7 @@ export default {
     },
     draggableInit() {
       if (this.$store.state.notes.areDraggable) {
-        // let notes
+        // letc notes
         this.draggableInstance = Draggable.create(this.$refs.note, {
           type: 'x,y',
           edgeResistance: 0.5,
@@ -337,6 +364,7 @@ export default {
               rotation: 0,
             })
           },
+
           // onDrag: () => {
           //   let i = notes.length
           //   let multiplier = 1
@@ -366,14 +394,16 @@ export default {
               scale: 1.0,
               rotation: this.rotation,
             })
+
+            const self = this.draggableInstance[0]
+            const zIndex = self.target.style.zIndex
+            // tell firebase
+            this.updateCoords(self.endX, self.endY, zIndex)
           },
           // onThrowComplete: e => {
-          //   const self = this.draggableInstance[0]
-          //   // tell firebase
-          //   this.updateCoords(self.endX, self.endY)
+
           // },
         })
-        this.moveNote()
       }
     },
     draggableDestroy() {
@@ -409,6 +439,13 @@ export default {
       min = Math.ceil(min)
       max = Math.floor(max)
       return (Math.random() * (max - min) + min).toFixed(3)
+    },
+    getPositionPercentages(x, y) {
+      const xBounds = this.$store.state.notes.canvasWidth
+      const yBounds = this.$store.state.notes.canvasHeight
+      // const self = this.$refs.note.getBoundingClientRect()
+      this.xPercent = (x / xBounds).toFixed(4)
+      this.yPercent = (y / yBounds).toFixed(4)
     },
   },
 }

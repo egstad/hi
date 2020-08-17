@@ -233,6 +233,7 @@ export default {
         coords: {
           x: this.getRandomInt(0, this.$store.state.notes.canvasWidth - 400),
           y: this.getRandomInt(0, this.$store.state.notes.canvasHeight - 400),
+          z: null,
         },
         rotation: this.getRandomInt(-4, 4),
       }

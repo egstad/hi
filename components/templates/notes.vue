@@ -12,9 +12,10 @@
       ref="notes"
     >
       <Note
-        v-for="note in notes"
+        v-for="(note, noteIndex) in notes"
         :key="note.id"
         :note="note"
+        :index="noteIndex"
         ref="note"
         class="draggable"
       />
