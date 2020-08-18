@@ -1,7 +1,7 @@
 export const state = () => ({
   areDraggable: false,
-  canvasWidth: 0,
-  canvasHeight: 0,
+  canvasWidth: null,
+  canvasHeight: null,
 })
 
 export const mutations = {

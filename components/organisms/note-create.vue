@@ -209,6 +209,15 @@ export default {
       return (Math.random() * (max - min) + min).toFixed(3)
     },
     modelData() {
+      const xBounds = this.$store.state.notes.canvasWidth
+      const yBounds = this.$store.state.notes.canvasHeight
+      const selfWidth = 400
+      const randomX = this.getRandomInt(0, xBounds - selfWidth)
+      const randomY = this.getRandomInt(0, yBounds - selfWidth)
+      const x = parseFloat(((randomX / xBounds) * 100).toFixed(4))
+      const y = parseFloat(((randomY / yBounds) * 100).toFixed(4))
+      const z = 3000
+
       this.setType()
 
       // create a doc reference before we set/add it
@@ -231,9 +240,9 @@ export default {
           embed: this.$refs.link ? this.$refs.link.linkEmbed : null,
         },
         coords: {
-          x: this.getRandomInt(0, this.$store.state.notes.canvasWidth - 400),
-          y: this.getRandomInt(0, this.$store.state.notes.canvasHeight - 400),
-          z: null,
+          x,
+          y,
+          z,
         },
         rotation: this.getRandomInt(-4, 4),
       }

@@ -19,10 +19,35 @@ export default {
     navigation,
     logo,
   },
+  data() {
+    return {
+      windowWidth: null,
+      draggableBreakpoint: 800,
+      resizeTimer: null,
+      resizeTime: 300,
+    }
+  },
+  watch: {
+    windowWidth(newValue, oldValue) {
+      // if window is larger than breakpoint
+      newValue > this.draggableBreakpoint
+        ? //  init draggable
+          this.$store.dispatch('notes/updateDraggable', true)
+        : // destroy draggable
+          this.$store.dispatch('notes/updateDraggable', false)
+    },
+  },
   beforeMount() {
     window.localStorage.removeItem('user')
     this.handleAuth()
     this.$store.dispatch('theme/init')
+  },
+  mounted() {
+    window.addEventListener('resize', this.onResize)
+    this.handleResize()
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize)
   },
   methods: {
     async handleAuth() {
@@ -53,6 +78,22 @@ export default {
         await localStorage.setItem('user', JSON.stringify(user))
       }
     },
+    onResize() {
+      clearTimeout(this.resizeTimer)
+      this.resizeTimer = setTimeout(() => {
+        this.handleResize()
+      }, this.resizeTime)
+    },
+    handleResize() {
+      const boundingBox = document
+        .querySelector('.notes')
+        .getBoundingClientRect()
+
+      this.$store.dispatch('notes/updateWidth', boundingBox.width)
+      this.$store.dispatch('notes/updateHeight', boundingBox.height)
+      this.windowWidth = window.innerWidth
+      this.$app.$emit('windowResized')
+    },
   },
 }
 </script>
@@ -81,6 +122,6 @@ export default {
   width: 100%;
 }
 
-.site-content {
-}
+// .site-content {
+// }
 </style>

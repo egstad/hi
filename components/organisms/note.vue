@@ -1,12 +1,5 @@
 <template>
-  <li
-    class="note"
-    :class="(`type--${type}`, `tag--${tag}`)"
-    ref="note"
-    :data-x="coords.x"
-    :data-y="coords.y"
-    :data-index="index"
-  >
+  <li class="note" :class="(`type--${type}`, `tag--${tag}`)" ref="note">
     <article class="content">
       <template v-if="type === 'image'">
         <NoteImage :image="image" :message="message" />
@@ -210,6 +203,12 @@ export default {
     rotation() {
       return this.note.rotation
     },
+    xBounds() {
+      return this.$store.state.notes.canvasWidth
+    },
+    yBounds() {
+      return this.$store.state.notes.canvasHeight
+    },
   },
   watch: {
     coords(newValue, oldValue) {
@@ -224,6 +223,7 @@ export default {
   },
   beforeMount() {
     this.$on('setIconOpacity', this.onIconOpacity)
+    this.$app.$on('windowResized', this.moveNote)
   },
   beforeDestroy() {
     this.$off('setIconOpacity', this.onIconOpacity)
@@ -232,14 +232,22 @@ export default {
     this.$app.$on('draggableInit', this.draggableInit)
     this.$app.$on('draggableDestroy', this.draggableDestroy)
     this.$on('deleteNote', this.deleteNote)
-    this.draggableInit()
-    this.showNote()
+
+    this.$nextTick(() => {
+      this.draggableInit()
+      this.showNote()
+    })
   },
   methods: {
     showNote() {
       // stagger animation speeds
       const time = Math.random() * 0.5 + 0.5
 
+      console.log(this.$store.state.notes.areDraggable)
+
+      // setup z-space before animation
+      gsap.set(this.$refs.note, { zIndex: this.coords.z })
+      // animate to place
       gsap.fromTo(
         this.$refs.note,
         {
@@ -251,12 +259,14 @@ export default {
         {
           scale: 1,
           rotation: this.$store.state.notes.areDraggable ? this.rotation : 0,
-          x: this.$store.state.notes.areDraggable ? this.coords.x : 0,
-          y: this.$store.state.notes.areDraggable ? this.coords.y : 0,
+          x: this.$store.state.notes.areDraggable
+            ? (this.coords.x / 100) * this.xBounds
+            : 0,
+          y: this.$store.state.notes.areDraggable
+            ? (this.coords.y / 100) * this.yBounds
+            : 0,
+          zIndex: 2000,
           duration: time,
-          onComplete: () => {
-            this.moveNote()
-          },
           ease: 'elastic.out(1, 0.8)',
         }
       )
@@ -277,11 +287,6 @@ export default {
     moveNote() {
       // lets make sure there is something to move in the first place
       if (this.$refs.note && this.draggableInstance) {
-        // fetch position percentages when we have props
-        // this.getPositionPercentages(this.coords.x, this.coords.y)
-        // console.clear()
-        // console.log(this.coords.x, this.xPercent)
-
         // these vars are helpful in determining if note is offscreen
         const self = this.$refs.note.getBoundingClientRect()
         const boundsWidth = this.$store.state.notes.canvasWidth
@@ -290,40 +295,47 @@ export default {
         const selfHeight = self.height
         const isOffscreenX = this.note.coords.x + selfWidth > boundsWidth
         const isOffscreenY = this.note.coords.y + selfHeight > boundsHeight
-        // const xPercent = ((this.coords.x / boundsWidth) * 100).toFixed(3)
-        // const yPercent = ((this.coords.y / boundsHeight) * 100).toFixed(3)
+        // const xPercent = ((this.xPercent / boundsWidth) * 100).toFixed(3)
+        // const yPercent = ((this.yPercent / boundsHeight) * 100).toFixed(3)
 
         // is note offscreen?
         // like, what if i create a note on a huge screen and you're on a small one?
         // you wouldn't be able to see it.
         gsap.to(this.$refs.note, 1.5, {
           // absolute units
-          x: isOffscreenX ? boundsWidth - selfWidth : this.coords.x,
-          y: isOffscreenY ? boundsHeight - selfHeight : this.coords.y,
+          x: isOffscreenX
+            ? boundsWidth - selfWidth
+            : (this.coords.x / 100) * boundsWidth,
+          y: isOffscreenY
+            ? boundsHeight - selfHeight
+            : (this.coords.y / 100) * boundsHeight,
           // relative units
           // x: isOffscreenX
           //   ? boundsWidth - selfWidth
-          //   : this.xPercent * this.coords.x,
+          //   : (this.coords.x / 100) * boundsWidth,
           // y: isOffscreenY
           //   ? boundsHeight - selfHeight
-          //   : this.yPercent * this.coords.y,
+          //   : (this.coords.y / 100) * boundsHeight,
           rotation: this.rotation,
           ease: 'elastic.out(1, 0.8)',
         })
         gsap.set(this.$refs.note, { zIndex: this.coords.z })
       }
     },
-    updateCoords(x, y, z) {
+    updateCoords(x, y, z, r) {
+      this.getPositionPercentages(x, y)
+
       this.$firebase
         .firestore()
         .collection('notes')
         .doc(this.noteId)
         .update({
           coords: {
-            x,
-            y,
+            x: this.xPercent,
+            y: this.yPercent,
             z,
           },
+          rotation: r,
         })
         .then(() => {
           this.moveNote()
@@ -354,51 +366,29 @@ export default {
           bounds: '.notes',
           inertia: true,
           onDragStart: e => {
-            // add dragging class
             this.$refs.note.classList.add('is-dragging')
-            // fetch all that aren't being dragged
-            // notes = document.querySelectorAll('.note:not(.is-dragging)')
-            // animate
-            gsap.to(this.$refs.note, 0.1, {
-              scale: 1.05,
-              rotation: 0,
+
+            gsap.to(this.$refs.note, 0.3, {
+              scale: 1.1,
+              ease: 'elastic.out(1, 0.5)',
             })
           },
-
-          // onDrag: () => {
-          //   let i = notes.length
-          //   let multiplier = 1
-          //   const self = this.draggableInstance[0]
-
-          //   while (--i > -1) {
-          //     if (self.hitTest(notes[i], '20%')) {
-          //       multiplier++
-
-          //       gsap.to(notes[i], {
-          //         scale: '1.0' + multiplier * 2,
-          //         duration: 0.2,
-          //       })
-          //     } else {
-          //       gsap.to(this.$refs.note, {
-          //         scale: 1,
-          //         duration: 0.2,
-          //       })
-          //     }
-          //   }
-          // },
           onDragEnd: e => {
+            const self = this.draggableInstance[0]
+            const posOrNeg = self.endX > self.startX ? 1 : -1
+            const newRotation = Math.abs(this.rotation) * posOrNeg
+            const zIndex = self.target.style.zIndex
+
             // remove dragging class
             this.$refs.note.classList.remove('is-dragging')
             // set the dragged item down
-            gsap.to(this.$refs.note, 0.1, {
+            gsap.to(this.$refs.note, 0.2, {
               scale: 1.0,
-              rotation: this.rotation,
+              rotation: newRotation,
+              ease: 'power1.in()',
             })
-
-            const self = this.draggableInstance[0]
-            const zIndex = self.target.style.zIndex
             // tell firebase
-            this.updateCoords(self.endX, self.endY, zIndex)
+            this.updateCoords(self.endX, self.endY, zIndex, newRotation)
           },
           // onThrowComplete: e => {
 
@@ -444,8 +434,8 @@ export default {
       const xBounds = this.$store.state.notes.canvasWidth
       const yBounds = this.$store.state.notes.canvasHeight
       // const self = this.$refs.note.getBoundingClientRect()
-      this.xPercent = (x / xBounds).toFixed(4)
-      this.yPercent = (y / yBounds).toFixed(4)
+      this.xPercent = parseFloat(((x / xBounds) * 100).toFixed(4))
+      this.yPercent = parseFloat(((y / yBounds) * 100).toFixed(4))
     },
   },
 }
