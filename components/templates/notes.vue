@@ -41,7 +41,18 @@
       position: absolute;
       width: 400px;
       height: 400px;
-      box-shadow: 0 4px 12px rgba(black, 0.2);
+
+      .theme-light & {
+        box-shadow: 0px 28px 36px rgba(#{var(--note-shadow)}, 0.0282725),
+          0px 8px 12px rgba(#{var(--note-shadow)}, 0.0417275),
+          0px -2px 6px rgba(#{var(--note-shadow)}, 0.07);
+
+        &.is-dragging {
+          box-shadow: 0px 420px 86px rgba(#{var(--note-shadow)}, 0.0125319),
+            0px 112px 64px rgba(#{var(--note-shadow)}, 0.0223319),
+            0px 6px 34px rgba(#{var(--note-shadow)}, 0.05);
+        }
+      }
     }
   }
 }

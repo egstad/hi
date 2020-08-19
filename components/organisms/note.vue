@@ -96,7 +96,6 @@
 <script>
 import gsap from 'gsap'
 import { Draggable } from 'gsap/Draggable'
-// import { CSSPlugin } from 'gsap/CSSPlugin'
 import { mapState } from 'vuex'
 import { InertiaPlugin } from '@/plugins/inertia'
 import NoteText from '@/components/molecules/note-text'
@@ -356,7 +355,9 @@ export default {
 
       this.gsap = gsap.to(this.$refs.note, 0.3, {
         scale: 1.1,
+        rotation: 0,
         ease: 'elastic.out(1, 0.5)',
+        overwrite: true,
       })
     },
     onDragEnd() {
@@ -368,10 +369,10 @@ export default {
       // remove dragging class
       this.$refs.note.classList.remove('is-dragging')
       // set the dragged item down
-      this.gsap = gsap.to(this.$refs.note, 0.2, {
+      this.gsap = gsap.to(this.$refs.note, 0.4, {
         scale: 1.0,
         rotation: newRotation,
-        ease: 'power1.in()',
+        ease: 'elastic.out(1, 0.5)',
       })
       // tell firebase
       this.updateCoords(self.endX, self.endY, newZIndex, newRotation)
