@@ -19,8 +19,7 @@ export default {
     navigation,
     logo,
   },
-  beforeMount() {
-    window.localStorage.removeItem('user')
+  created() {
     this.handleAuth()
     this.$store.dispatch('theme/init')
   },
@@ -81,6 +80,6 @@ export default {
   width: 100%;
 }
 
-.site-content {
-}
+// .site-content {
+// }
 </style>

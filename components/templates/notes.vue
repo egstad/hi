@@ -10,11 +10,13 @@
       class="notes"
       :class="{ 'is-draggable': $store.state.notes.areDraggable }"
       ref="notes"
+      v-if="$store.state.notes.canvasWidth"
     >
       <Note
-        v-for="note in notes"
+        v-for="(note, noteIndex) in notes"
         :key="note.id"
         :note="note"
+        :index="noteIndex"
         ref="note"
         class="draggable"
       />
@@ -39,6 +41,7 @@
       position: absolute;
       width: 400px;
       height: 400px;
+      box-shadow: 0 4px 12px rgba(black, 0.2);
     }
   }
 }
@@ -59,43 +62,34 @@ export default {
   },
   data() {
     return {
-      windowWidth: null,
-      draggableBreakpoint: 1200,
       resizeTimer: null,
-      resizeTime: 300,
+      resizeTime: 250,
     }
-  },
-  watch: {
-    windowWidth(newValue, oldValue) {
-      // if window is larger than breakpoint
-      newValue > this.draggableBreakpoint
-        ? //  init draggable
-          this.$store.dispatch('notes/updateDraggable', true)
-        : // destroy draggable
-          this.$store.dispatch('notes/updateDraggable', false)
-    },
   },
   mounted() {
     window.addEventListener('resize', this.onResize)
-    this.handleResize()
+    this.$on('note::mounted', this.onNoteMount)
+    this.$store.dispatch('notes/getCanvasDimensions')
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.onResize)
+    this.$off('note::mounted', this.onNoteMount)
   },
   methods: {
     onResize() {
       clearTimeout(this.resizeTimer)
       this.resizeTimer = setTimeout(() => {
-        this.handleResize()
+        this.$store.dispatch(
+          'notes/getCanvasDimensions',
+          this.$refs.notes.getBoundingClientRect()
+        )
       }, this.resizeTime)
     },
-    handleResize() {
-      const boundingBox = this.$refs.notes.getBoundingClientRect()
-
-      this.windowWidth = window.innerWidth
-      this.$store.dispatch('notes/updateWidth', boundingBox.width)
-      this.$store.dispatch('notes/updateHeight', boundingBox.height)
-      this.$app.$emit('windowResized')
+    onNoteMount() {
+      this.$store.dispatch(
+        'notes/getCanvasDimensions',
+        this.$refs.notes.getBoundingClientRect()
+      )
     },
   },
 }
