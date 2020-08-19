@@ -73,6 +73,12 @@ So how's it work?
   width: 100%;
   max-width: 400px;
 
+  @media (min-width: 1200px) {
+    position: fixed;
+    bottom: calc(var(--grid-gutter) * 2);
+    right: calc(var(--grid-gutter) * 2);
+  }
+
   header {
     padding: calc(var(--grid-gutter) * 1) calc(var(--grid-gutter) * 0.75)
       calc(var(--grid-gutter) * 3);
@@ -216,7 +222,7 @@ export default {
       const randomY = this.getRandomInt(0, yBounds - selfWidth)
       const x = parseFloat(((randomX / xBounds) * 100).toFixed(4))
       const y = parseFloat(((randomY / yBounds) * 100).toFixed(4))
-      const z = 3000
+      const z = 1000
 
       this.setType()
 

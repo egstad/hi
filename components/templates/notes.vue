@@ -10,6 +10,7 @@
       class="notes"
       :class="{ 'is-draggable': $store.state.notes.areDraggable }"
       ref="notes"
+      v-if="$store.state.notes.canvasWidth"
     >
       <Note
         v-for="(note, noteIndex) in notes"
@@ -40,6 +41,7 @@
       position: absolute;
       width: 400px;
       height: 400px;
+      box-shadow: 0 4px 12px rgba(black, 0.2);
     }
   }
 }
@@ -56,6 +58,38 @@ export default {
     notes: {
       type: Array,
       required: true,
+    },
+  },
+  data() {
+    return {
+      resizeTimer: null,
+      resizeTime: 250,
+    }
+  },
+  mounted() {
+    window.addEventListener('resize', this.onResize)
+    this.$on('note::mounted', this.onNoteMount)
+    this.$store.dispatch('notes/getCanvasDimensions')
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize)
+    this.$off('note::mounted', this.onNoteMount)
+  },
+  methods: {
+    onResize() {
+      clearTimeout(this.resizeTimer)
+      this.resizeTimer = setTimeout(() => {
+        this.$store.dispatch(
+          'notes/getCanvasDimensions',
+          this.$refs.notes.getBoundingClientRect()
+        )
+      }, this.resizeTime)
+    },
+    onNoteMount() {
+      this.$store.dispatch(
+        'notes/getCanvasDimensions',
+        this.$refs.notes.getBoundingClientRect()
+      )
     },
   },
 }

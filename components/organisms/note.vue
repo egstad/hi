@@ -96,6 +96,8 @@
 <script>
 import gsap from 'gsap'
 import { Draggable } from 'gsap/Draggable'
+// import { CSSPlugin } from 'gsap/CSSPlugin'
+import { mapState } from 'vuex'
 import { InertiaPlugin } from '@/plugins/inertia'
 import NoteText from '@/components/molecules/note-text'
 import NoteEmbed from '@/components/molecules/note-embed'
@@ -124,11 +126,9 @@ export default {
   },
   data() {
     return {
-      newTitle: null,
-      isExpanded: false,
-      isDraggable: false,
-      isMoving: false,
+      dragInitialized: false,
       draggableInstance: null,
+      gsap: null,
       xPercent: null,
       yPercent: null,
     }
@@ -203,12 +203,11 @@ export default {
     rotation() {
       return this.note.rotation
     },
-    xBounds() {
-      return this.$store.state.notes.canvasWidth
-    },
-    yBounds() {
-      return this.$store.state.notes.canvasHeight
-    },
+    ...mapState({
+      dragEnabled: state => state.notes.areDraggable,
+      xBounds: state => state.notes.canvasWidth,
+      yBounds: state => state.notes.canvasHeight,
+    }),
   },
   watch: {
     coords(newValue, oldValue) {
@@ -221,63 +220,28 @@ export default {
       }
     },
   },
-  beforeMount() {
-    this.$on('setIconOpacity', this.onIconOpacity)
-    this.$app.$on('windowResized', this.moveNote)
-  },
-  beforeDestroy() {
-    this.$off('setIconOpacity', this.onIconOpacity)
-  },
   mounted() {
     this.$app.$on('draggableInit', this.draggableInit)
     this.$app.$on('draggableDestroy', this.draggableDestroy)
+    this.$app.$on('canvasResized', this.moveNote)
+    this.$on('setIconOpacity', this.onIconOpacity)
     this.$on('deleteNote', this.deleteNote)
-
-    this.$nextTick(() => {
-      this.draggableInit()
-      this.showNote()
-    })
+    this.$parent.$emit('note::mounted')
+  },
+  beforeDestroy() {
+    this.$off('setIconOpacity', this.onIconOpacity)
+    this.$app.$off('draggableInit', this.draggableInit)
+    this.$app.$off('draggableDestroy', this.draggableDestroy)
+    this.$app.$off('canvasResized', this.moveNote)
+    this.$off('setIconOpacity', this.onIconOpacity)
+    this.$off('deleteNote', this.deleteNote)
   },
   methods: {
-    showNote() {
-      // stagger animation speeds
-      const time = Math.random() * 0.5 + 0.5
-
-      console.log(this.$store.state.notes.areDraggable)
-
-      // setup z-space before animation
-      gsap.set(this.$refs.note, { zIndex: this.coords.z })
-      // animate to place
-      gsap.fromTo(
-        this.$refs.note,
-        {
-          scale: 0,
-          rotation: Math.random() * 10,
-          x: 0,
-          y: 0,
-        },
-        {
-          scale: 1,
-          rotation: this.$store.state.notes.areDraggable ? this.rotation : 0,
-          x: this.$store.state.notes.areDraggable
-            ? (this.coords.x / 100) * this.xBounds
-            : 0,
-          y: this.$store.state.notes.areDraggable
-            ? (this.coords.y / 100) * this.yBounds
-            : 0,
-          zIndex: 2000,
-          duration: time,
-          ease: 'elastic.out(1, 0.8)',
-        }
-      )
-    },
     deleteNote() {
-      const time = Math.random() * 0.5 + 0.5
-
-      gsap.to(this.$refs.note, {
+      this.gsap = gsap.to(this.$refs.note, {
         y: this.$store.state.notes.canvasHeight * 2,
-        rotation: `+=${this.getRandomInt(-90, 90)}`,
-        duration: time,
+        rotation: `+=${this.randomFloat(-90, 90)}`,
+        duration: this.randomFloat(1, 2),
         ease: 'power4.in',
         onComplete: () => {
           this.deleteFromFirebase()
@@ -285,41 +249,30 @@ export default {
       })
     },
     moveNote() {
-      // lets make sure there is something to move in the first place
-      if (this.$refs.note && this.draggableInstance) {
+      if (this.$refs.note && this.dragEnabled) {
+        // lets make sure there is something to move in the first place
         // these vars are helpful in determining if note is offscreen
         const self = this.$refs.note.getBoundingClientRect()
-        const boundsWidth = this.$store.state.notes.canvasWidth
-        const boundsHeight = this.$store.state.notes.canvasHeight
         const selfWidth = self.width
         const selfHeight = self.height
-        const isOffscreenX = this.note.coords.x + selfWidth > boundsWidth
-        const isOffscreenY = this.note.coords.y + selfHeight > boundsHeight
-        // const xPercent = ((this.xPercent / boundsWidth) * 100).toFixed(3)
-        // const yPercent = ((this.yPercent / boundsHeight) * 100).toFixed(3)
+        const isOffscreenX = this.note.coords.x + selfWidth > this.xBounds
+        const isOffscreenY = this.note.coords.y + selfHeight > this.yBounds
+        gsap.set(this.$refs.note, { zIndex: this.coords.z })
 
         // is note offscreen?
         // like, what if i create a note on a huge screen and you're on a small one?
         // you wouldn't be able to see it.
-        gsap.to(this.$refs.note, 1.5, {
-          // absolute units
+        this.gsap = gsap.to(this.$refs.note, {
           x: isOffscreenX
-            ? boundsWidth - selfWidth
-            : (this.coords.x / 100) * boundsWidth,
+            ? this.xBounds - selfWidth
+            : (this.coords.x / 100) * this.xBounds,
           y: isOffscreenY
-            ? boundsHeight - selfHeight
-            : (this.coords.y / 100) * boundsHeight,
-          // relative units
-          // x: isOffscreenX
-          //   ? boundsWidth - selfWidth
-          //   : (this.coords.x / 100) * boundsWidth,
-          // y: isOffscreenY
-          //   ? boundsHeight - selfHeight
-          //   : (this.coords.y / 100) * boundsHeight,
+            ? this.yBounds - selfHeight
+            : (this.coords.y / 100) * this.yBounds,
           rotation: this.rotation,
           ease: 'elastic.out(1, 0.8)',
+          duration: this.randomFloat(0.5, 1.5),
         })
-        gsap.set(this.$refs.note, { zIndex: this.coords.z })
       }
     },
     updateCoords(x, y, z, r) {
@@ -337,9 +290,7 @@ export default {
           },
           rotation: r,
         })
-        .then(() => {
-          this.moveNote()
-        })
+      // .then(() => {})
       // .catch(error => {
       //   console.log("sorry, the note couldn't be deleted", error)
       // })
@@ -358,65 +309,72 @@ export default {
         })
     },
     draggableInit() {
-      if (this.$store.state.notes.areDraggable) {
-        // letc notes
+      if (this.dragEnabled && !this.dragInitialized) {
+        this.dragInitialized = true
         this.draggableInstance = Draggable.create(this.$refs.note, {
           type: 'x,y',
-          edgeResistance: 0.5,
           bounds: '.notes',
           inertia: true,
-          onDragStart: e => {
-            this.$refs.note.classList.add('is-dragging')
-
-            gsap.to(this.$refs.note, 0.3, {
-              scale: 1.1,
-              ease: 'elastic.out(1, 0.5)',
-            })
-          },
-          onDragEnd: e => {
-            const self = this.draggableInstance[0]
-            const posOrNeg = self.endX > self.startX ? 1 : -1
-            const newRotation = Math.abs(this.rotation) * posOrNeg
-            const zIndex = self.target.style.zIndex
-
-            // remove dragging class
-            this.$refs.note.classList.remove('is-dragging')
-            // set the dragged item down
-            gsap.to(this.$refs.note, 0.2, {
-              scale: 1.0,
-              rotation: newRotation,
-              ease: 'power1.in()',
-            })
-            // tell firebase
-            this.updateCoords(self.endX, self.endY, zIndex, newRotation)
-          },
-          // onThrowComplete: e => {
-
-          // },
+          edgeResistance: 0.75,
+          throwResistance: 3000,
+          overshootTolerance: 0,
+          allowContextMenu: true,
+          onDragStart: this.onDragStart,
+          onDragEnd: this.onDragEnd,
         })
+
+        this.moveNote()
       }
     },
     draggableDestroy() {
       // lets make sure there is an instance to destoy
       if (this.$refs.note && this.draggableInstance) {
         const self = this.draggableInstance[0]
-        const time = Math.random() * 1.5 + 0.5
+        const time = this.randomFloat(1, 2)
 
-        // set to original position
-        gsap.to(this.$refs.note, time, {
+        // teardown draggable
+        self.disable()
+        this.dragInitialized = false
+        this.draggableInstance = null
+
+        // this.gsap.kill()
+        this.gsap = gsap.to(this.$refs.note, time, {
           x: 0,
           y: 0,
           rotation: 0,
           scale: 1,
-          ease: 'elastic.out(1, 0.8)',
+          overwrite: true,
+          ease: 'elastic.out(1, 0.5)',
           onComplete: () => {
-            self.kill()
-            this.isDraggable = false
-            this.draggableInstance = null
-            // this.$store.dispatch('notes/updateDraggable', false)
+            this.gsap = gsap.set(this.$refs.note, { clearProps: 'all' })
           },
         })
       }
+    },
+    onDragStart() {
+      this.$refs.note.classList.add('is-dragging')
+
+      this.gsap = gsap.to(this.$refs.note, 0.3, {
+        scale: 1.1,
+        ease: 'elastic.out(1, 0.5)',
+      })
+    },
+    onDragEnd() {
+      const self = this.draggableInstance[0]
+      const posOrNeg = self.endX > self.startX ? 1 : -1
+      const newRotation = Math.abs(this.rotation) * posOrNeg
+      const newZIndex = self.target.style.zIndex
+
+      // remove dragging class
+      this.$refs.note.classList.remove('is-dragging')
+      // set the dragged item down
+      this.gsap = gsap.to(this.$refs.note, 0.2, {
+        scale: 1.0,
+        rotation: newRotation,
+        ease: 'power1.in()',
+      })
+      // tell firebase
+      this.updateCoords(self.endX, self.endY, newZIndex, newRotation)
     },
     onIconOpacity(state) {
       if (state === 'show') {
@@ -425,17 +383,12 @@ export default {
         this.iconsAreOpaque = false
       }
     },
-    getRandomInt(min, max) {
-      min = Math.ceil(min)
-      max = Math.floor(max)
-      return (Math.random() * (max - min) + min).toFixed(3)
+    randomFloat(min, max) {
+      return parseFloat((Math.random() * (max - min) + min).toFixed(3))
     },
     getPositionPercentages(x, y) {
-      const xBounds = this.$store.state.notes.canvasWidth
-      const yBounds = this.$store.state.notes.canvasHeight
-      // const self = this.$refs.note.getBoundingClientRect()
-      this.xPercent = parseFloat(((x / xBounds) * 100).toFixed(4))
-      this.yPercent = parseFloat(((y / yBounds) * 100).toFixed(4))
+      this.xPercent = parseFloat(((x / this.xBounds) * 100).toFixed(4))
+      this.yPercent = parseFloat(((y / this.yBounds) * 100).toFixed(4))
     },
   },
 }

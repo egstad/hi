@@ -27,7 +27,7 @@ export default {
       notes: data.docs.map(doc => doc.data()),
     }
   },
-  mounted() {
+  created() {
     this.watchData()
   },
   methods: {
