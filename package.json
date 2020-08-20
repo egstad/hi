@@ -17,7 +17,8 @@
     "@nuxtjs/pwa": "^3.0.0-beta.20",
     "firebase": "^7.17.1",
     "gsap": "^3.5.0",
-    "nuxt": "^2.0.0"
+    "nuxt": "^2.0.0",
+    "vue-a11y-utils": "^0.7.0"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.0",

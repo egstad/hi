@@ -23,6 +23,12 @@ export default {
     this.handleAuth()
     this.$store.dispatch('theme/init')
   },
+  mounted() {
+    window.addEventListener('keydown', this.onKeydown)
+  },
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.onKeydown)
+  },
   methods: {
     async handleAuth() {
       /*
@@ -50,6 +56,28 @@ export default {
           uid: this.$store.state.user.uid,
         }
         await localStorage.setItem('user', JSON.stringify(user))
+      }
+    },
+    onKeydown(event) {
+      const focussedTag = event.target.tagName
+      const ignoredTags = ['TEXTAREA', 'INPUT']
+      const keypress = event.key
+
+      if (!ignoredTags.includes(focussedTag)) {
+        switch (keypress) {
+          case 'n':
+            event.preventDefault()
+            this.$store.dispatch('notes/scatter', true)
+            break
+
+          case 'Escape':
+            event.preventDefault()
+            this.$store.dispatch('notes/scatter', false)
+            break
+
+          default:
+            break
+        }
       }
     },
   },

@@ -36,6 +36,7 @@
     display: block;
     width: 100%;
     height: 100vmax;
+    max-height: 1400px;
 
     /deep/.note {
       position: absolute;

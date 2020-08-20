@@ -86,10 +86,10 @@ export default {
 
           switch (snapshot.state) {
             case 'paused':
-              // console.log('Upload is paused')
+              console.log('Upload is paused')
               break
             case 'running':
-              // console.log('Upload is running')
+              console.log('Upload is running')
               break
           }
         },
@@ -123,7 +123,7 @@ export default {
         () => {
           // Upload completed successfully, now we can get the download URL
           uploadTask.snapshot.ref.getDownloadURL().then(imageUrl => {
-            this.$parent.$emit('imageUploaded', imageUrl)
+            this.$app.$emit('imageUploaded', imageUrl)
           })
         }
       )
