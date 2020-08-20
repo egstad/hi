@@ -1,5 +1,5 @@
 <template>
-  <li class="note" :class="(`type--${type}`, `tag--${tag}`)" ref="note">
+  <li class="note" :class="[type, tag]" ref="note">
     <article class="content">
       <template v-if="type === 'image'">
         <NoteImage :image="image" :message="message" />
@@ -57,31 +57,29 @@
   }
 
   // default, love, cute, sad, sparkle, curious
-  &.tag {
-    &--none {
-      background: var(--note-default-bg);
-      color: var(--note-default-fg);
-    }
-    &--love {
-      background: var(--note-love-bg);
-      color: var(--note-love-fg);
-    }
-    &--cute {
-      background: var(--note-cute-bg);
-      color: var(--note-cute-fg);
-    }
-    &--sad {
-      background: var(--note-sad-bg);
-      color: var(--note-sad-fg);
-    }
-    &--sparkle {
-      background: var(--note-curious-bg);
-      color: var(--note-curious-fg);
-    }
-    &--curious {
-      background: var(--note-curious-bg);
-      color: var(--note-curious-fg);
-    }
+  &.none {
+    background: var(--note-default-bg);
+    color: var(--note-default-fg);
+  }
+  &.love {
+    background: var(--note-love-bg);
+    color: var(--note-love-fg);
+  }
+  &.cute {
+    background: var(--note-cute-bg);
+    color: var(--note-cute-fg);
+  }
+  &.sad {
+    background: var(--note-sad-bg);
+    color: var(--note-sad-fg);
+  }
+  &.sparkle {
+    background: var(--note-curious-bg);
+    color: var(--note-curious-fg);
+  }
+  &.curious {
+    background: var(--note-curious-bg);
+    color: var(--note-curious-fg);
   }
 
   // /deep/.note__utilities {
@@ -126,6 +124,7 @@ export default {
     return {
       dragInitialized: false,
       draggableInstance: null,
+      isBlurred: false,
       gsap: null,
       xPercent: null,
       yPercent: null,
@@ -222,15 +221,20 @@ export default {
     this.$app.$on('draggableInit', this.draggableInit)
     this.$app.$on('draggableDestroy', this.draggableDestroy)
     this.$app.$on('canvasResized', this.moveNote)
+    this.$app.$on('newNote::open', this.dimNote)
+    this.$app.$on('undimNote', this.resetNote)
     this.$on('setIconOpacity', this.onIconOpacity)
     this.$on('deleteNote', this.deleteNote)
     this.$parent.$emit('note::mounted')
+    gsap.set(this.$refs.note, { zIndex: this.coords.z })
   },
   beforeDestroy() {
     this.$off('setIconOpacity', this.onIconOpacity)
     this.$app.$off('draggableInit', this.draggableInit)
     this.$app.$off('draggableDestroy', this.draggableDestroy)
     this.$app.$off('canvasResized', this.moveNote)
+    this.$app.$off('newNote::open', this.dimNote)
+    this.$app.$off('undimNote', this.resetNote)
     this.$off('setIconOpacity', this.onIconOpacity)
     this.$off('deleteNote', this.deleteNote)
   },
@@ -243,6 +247,30 @@ export default {
         ease: 'power4.in',
         onComplete: () => {
           this.deleteFromFirebase()
+        },
+      })
+    },
+    dimNote() {
+      if (this.$refs.note) {
+        gsap.to(this.$refs.note, {
+          duration: 0.5,
+          filter: 'blur(20px)',
+          ease: 'power4.out',
+          onStart: () => {
+            this.isBlurred = true
+          },
+        })
+      }
+    },
+    resetNote() {
+      // this.moveNote()
+      gsap.to(this.$refs.note, {
+        duration: 0.5,
+        filter: 'blur(0px)',
+        ease: 'power4.out',
+        overwrite: true,
+        onComplete: () => {
+          this.isBlurred = false
         },
       })
     },

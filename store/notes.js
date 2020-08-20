@@ -1,13 +1,23 @@
 export const state = () => ({
+  // are they globally draggable?
   areDraggable: false,
+  // should they hide from the 'new note' form?
+  areScattered: false,
+  // when should they never be draggable?
   dragBreakpoint: 1200,
+  // draggable area width
   canvasWidth: null,
+  // draggable area height
   canvasHeight: null,
 })
 
 export const mutations = {
   updateDraggable(state, val) {
     state.areDraggable = val
+  },
+  updateScatter(state, val) {
+    state.areScattered = val
+    console.log('updatescate', state.areScattered)
   },
   setWidth(state, val) {
     state.canvasWidth = val
@@ -25,6 +35,14 @@ export const actions = {
     val === true
       ? window.$app.$emit('draggableInit')
       : window.$app.$emit('draggableDestroy')
+  },
+  scatter({ commit }, val) {
+    commit('updateScatter', val)
+    console.log('scatter fired')
+
+    val === true
+      ? window.$app.$emit('newNote::open')
+      : window.$app.$emit('newNote::close')
   },
   initDragOnResize({ dispatch, state }) {
     state.canvasWidth >= state.dragBreakpoint

@@ -11,9 +11,8 @@
         <Icon type="play" />
       </a>
       <div :class="['thumbnail', embed.type]">
-        <!-- <img :src="embed.thumbnail" alt="" v-if="embed.thumbnail" />
-        <div class="iframe" v-else v-html="embed.embed"></div> -->
-        <div class="iframe" ref="video" v-html="embed.embed"></div>
+        <img :src="embed.thumbnail" alt="" v-if="embed.thumbnail" />
+        <div class="iframe" v-else v-html="embed.embed"></div>
       </div>
     </template>
 

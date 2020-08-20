@@ -8,53 +8,72 @@ So how's it work?
 2. Once the image is successfully uploaded (fileUploadedSuccess), let' create the post
 -->
 <template>
-  <section class="writing">
-    <header>
-      <h2 class="t-headline">new note</h2>
-    </header>
+  <transition
+    name="fade"
+    @before-enter="beforeEnter"
+    @enter="enter"
+    @leave="leave"
+    :css="false"
+  >
+    <section class="writing" v-show="isOpen" ref="newNote">
+      <VueFocusTrap
+        ref="dialog"
+        @open="open"
+        @gofirst="goFirst"
+        @golast="goLast"
+      >
+        <header>
+          <h2 class="t-headline">new note</h2>
+        </header>
 
-    <form v-if="$store.state.user.isLoggedIn" @submit.prevent="onSubmit">
-      <FormTextarea
-        v-model="title"
-        ref="title"
-        placeholder="dear internet diary..."
-        label="write message"
-        :max="titleMaxChars"
-        theme="dark"
-        autocomplete="off"
-        required
-      />
+        <form
+          v-if="$store.state.user.isLoggedIn"
+          @submit.prevent="onSubmit"
+          @keydown.esc="$store.dispatch('notes/scatter', false)"
+        >
+          <FormTextarea
+            v-model="title"
+            ref="title"
+            placeholder="dear internet diary..."
+            label="write message"
+            :max="titleMaxChars"
+            theme="dark"
+            autocomplete="off"
+            required
+          />
 
-      <FormRadio
-        :options="postTagOptions"
-        v-model="postTag"
-        label="choose tag"
-        name="tag"
-        theme="dark"
-        ref="tag"
-      />
+          <FormRadio
+            :options="postTagOptions"
+            v-model="postTag"
+            label="choose tag"
+            name="tag"
+            theme="dark"
+            ref="tag"
+          />
 
-      <FormRadio
-        :options="postAttachmentOptions"
-        v-model="postAttachment"
-        label="add attachment"
-        name="attachment"
-        theme="dark"
-        ref="attachment"
-      />
+          <FormRadio
+            :options="postAttachmentOptions"
+            v-model="postAttachment"
+            label="add attachment"
+            name="attachment"
+            theme="dark"
+            ref="attachment"
+          />
 
-      <div v-if="postAttachment === 'link'">
-        <NoteLinkUploader ref="link" required />
-      </div>
+          <div v-if="postAttachment === 'link'">
+            <NoteLinkUploader ref="link" required />
+          </div>
 
-      <div v-if="postAttachment === 'image'">
-        <NoteImageUploader ref="image" />
-      </div>
+          <div v-if="postAttachment === 'image'">
+            <NoteImageUploader ref="image" />
+          </div>
 
-      <p v-if="error">{{ error }}</p>
-      <FormSubmit text="add note" theme="dark" />
-    </form>
-  </section>
+          <p v-if="error">{{ error }}</p>
+          <FormSubmit text="add note" theme="dark" ref="submit" />
+        </form>
+      </VueFocusTrap>
+    </section>
+  </transition>
 </template>
 
 <style lang="scss" scoped>
@@ -72,12 +91,11 @@ So how's it work?
 
   width: 100%;
   max-width: 400px;
-
-  @media (min-width: 1200px) {
-    position: fixed;
-    bottom: calc(var(--grid-gutter) * 2);
-    right: calc(var(--grid-gutter) * 2);
-  }
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 3000;
+  transform: translate3d(-50%, -50%, 0);
 
   header {
     padding: calc(var(--grid-gutter) * 1) calc(var(--grid-gutter) * 0.75)
@@ -93,12 +111,15 @@ So how's it work?
 <script>
 import * as firebase from 'firebase/app'
 // import FormInput from '@/components/molecules/form-input'
+import { VueFocusTrap } from 'vue-a11y-utils'
+import gsap from 'gsap'
 import FormTextarea from '@/components/molecules/form-textarea'
 import FormRadio from '@/components/molecules/form-radio'
 // import FormSelect from '@/components/molecules/form-select'
 import FormSubmit from '@/components/molecules/form-submit'
 import NoteImageUploader from '@/components/molecules/note-create-image'
 import NoteLinkUploader from '@/components/molecules/note-create-link'
+
 export default {
   components: {
     NoteImageUploader,
@@ -108,12 +129,14 @@ export default {
     // FormInput,
     FormTextarea,
     // FormSelect,
+    VueFocusTrap,
   },
   data() {
     return {
       title: '',
       titleMaxChars: 200,
       error: '',
+      isOpen: false,
       postType: null,
 
       postHasImage: false,
@@ -140,19 +163,24 @@ export default {
     }
   },
   mounted() {
-    this.$app.$on('post::author', this.authorPost)
-    this.$on('imageUploaded', this.onImageUpload)
-    this.$on('linkPreviewReady', this.onLinkPreviewReady)
+    this.$app.$on('newNote::open', this.openNewNote)
+    this.$app.$on('newNote::close', this.closeNewNote)
+    this.$app.$on('imageUploaded', this.onImageUpload)
+    this.getHighestZ()
+  },
+  beforeDestroy() {
+    this.$app.$off('newNote::open', this.openNewNote)
+    this.$app.$off('imageUploaded', this.onImageUpload)
   },
   methods: {
-    async authorPost() {
-      // let's see who is logged in
-      await this.$store.dispatch('user/authenticate')
-
-      // no one? let's sign them in anonymously
-      if (!this.$store.state.user.isLoggedIn) {
-        await this.$store.dispatch('user/loginAnonymously')
-      }
+    openNewNote() {
+      this.isOpen = true
+      this.$refs.dialog.open()
+      this.goFirst()
+    },
+    closeNewNote() {
+      this.isOpen = false
+      this.$refs.dialog.close(true)
     },
     onSubmit() {
       switch (this.postAttachment) {
@@ -188,6 +216,8 @@ export default {
       } else if (this.$refs.link) {
         this.$refs.link.reset()
       }
+
+      this.$store.dispatch('notes/scatter', false)
     },
     onSubmitError(error) {
       this.error = error
@@ -195,10 +225,8 @@ export default {
     },
     onImageUpload(imageUrl) {
       this.postImage = imageUrl
+      console.log('onImageUpload', this.postImage)
       this.submitPost()
-    },
-    onLinkPreviewReady(data) {
-      this.postLink = data
     },
     setType() {
       if (this.postImage) {
@@ -222,7 +250,9 @@ export default {
       const randomY = this.getRandomInt(0, yBounds - selfWidth)
       const x = parseFloat(((randomX / xBounds) * 100).toFixed(4))
       const y = parseFloat(((randomY / yBounds) * 100).toFixed(4))
-      const z = 0
+      const z = parseInt(this.getHighestZ()) || 1100
+
+      console.log(z)
 
       this.setType()
 
@@ -269,6 +299,63 @@ export default {
         .catch(error => {
           this.onSubmitError(error)
         })
+    },
+    open() {
+      this.goFirst()
+    },
+    goFirst() {
+      const firstItem = this.$refs.title.$refs.input
+      firstItem.focus()
+    },
+    goLast() {
+      const lastItem = this.$refs.submit.$el
+      lastItem.focus()
+    },
+    getHighestZ() {
+      const notes = this.$app.$el.querySelectorAll('.note')
+      let highestZ = 0
+
+      notes.forEach(note => {
+        const zIndex = parseInt(note.style.zIndex)
+        console.log(zIndex)
+        if (zIndex > highestZ) {
+          highestZ = zIndex
+        }
+      })
+
+      console.log('higest', highestZ)
+
+      return parseInt(highestZ) + 1
+    },
+    beforeEnter() {
+      gsap.set(this.$refs.newNote, {
+        yPercent: 100,
+        rotation: 20,
+      })
+    },
+    enter(el, done) {
+      this.open()
+      gsap.to(this.$refs.newNote, {
+        yPercent: 0,
+        rotation: 0,
+        duration: 0.5,
+        ease: 'power4.out',
+        onComplete: () => {
+          done()
+        },
+      })
+    },
+    leave(el, done) {
+      gsap.to(this.$refs.newNote, {
+        yPercent: 300,
+        rotation: 40,
+        duration: 1,
+        ease: 'power4.in',
+        onComplete: () => {
+          done()
+          this.$app.$emit('undimNote')
+        },
+      })
     },
   },
 }

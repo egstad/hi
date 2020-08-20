@@ -84,29 +84,29 @@
   }
 }
 
-.tag {
-  &--none .icon {
+.note {
+  &.none .icon {
     background: var(--note-default-bg);
     color: var(--note-default-fg);
   }
-  &--love .icon {
+  &.love .icon {
     background: var(--note-love-bg);
     color: var(--note-love-fg);
   }
-  &--cute .icon {
+  &.cute .icon {
     background: var(--note-cute-bg);
     color: var(--note-cute-fg);
     fill: var(--note-cute-fg);
   }
-  &--sad .icon {
+  &.sad .icon {
     background: var(--note-sad-bg);
     color: var(--note-sad-fg);
   }
-  &--sparkle .icon {
+  &.sparkle .icon {
     background: var(--note-curious-bg);
     color: var(--note-curious-fg);
   }
-  &--curious .icon {
+  &.curious .icon {
     background: var(--note-curious-bg);
     color: var(--note-curious-fg);
   }

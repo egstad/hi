@@ -19,6 +19,13 @@
       <button @click="$store.dispatch('theme/setTheme', 'light')">
         light
       </button>
+      <button
+        @click="
+          $store.dispatch('notes/scatter', !$store.state.notes.areScattered)
+        "
+      >
+        +
+      </button>
     </li>
   </ul>
 </template>
