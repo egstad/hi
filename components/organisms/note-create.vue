@@ -222,7 +222,7 @@ export default {
       const randomY = this.getRandomInt(0, yBounds - selfWidth)
       const x = parseFloat(((randomX / xBounds) * 100).toFixed(4))
       const y = parseFloat(((randomY / yBounds) * 100).toFixed(4))
-      const z = 1000
+      const z = 0
 
       this.setType()
 

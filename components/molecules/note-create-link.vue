@@ -105,7 +105,7 @@ export default {
         case isYoutube.test(input):
           // https://www.youtube.com/watch?v=Ya0dS63YTnU
           replacement =
-            '<iframe src="https://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>'
+            '<iframe src="https://www.youtube.com/embed/$1?rel=0;&autoplay=1&mute=1&loop=1?enablejsapi=1&version=3&playerapiid=ytplayer" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>'
           input = input.replace(isYoutube, replacement)
           // For start time, turn get param & into ?
           input = input.replace('&amp;t=', '?t=')
@@ -115,8 +115,7 @@ export default {
         case isVimeo.test(input):
           // https://vimeo.com/441172521
           console.log('vimeo')
-          replacement =
-            '<iframe src="//player.vimeo.com/video/$1" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>'
+          replacement = `<iframe src="https://player.vimeo.com/video/$1?autoplay=1&muted=1&loop=1&autopause=0&background=1" width="400" height="400" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`
           input = input.replace(isVimeo, replacement)
           type = 'vimeo'
           break
@@ -162,17 +161,10 @@ export default {
         .get(`https://api.linkpreview.net/?key=${this.apiKey}&q=${this.link}`)
         .then(res => {
           if (res.status === 200) {
-            // this.linkPreview = res.data
             return res.data.image
-            // this.linkEmbed = null
-            // this.linkEmbed = {
-            //   source: this.link,
-            //   embed: `<img src="${res.data.image}" />`,
-            //   type: 'image',
-            // }
           } else {
-            console.log('failed')
             this.error = 'sorry, we cant find a preview image for that'
+            console.log('failed', this.error)
           }
         })
 

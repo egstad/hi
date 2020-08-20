@@ -6,7 +6,7 @@
       </template>
 
       <template v-else-if="type === 'link'">
-        <NoteEmbed :embed="embed" :message="message" />
+        <NoteEmbed :embed="embed" :message="message" :tag="tag" />
       </template>
 
       <template v-else>
@@ -69,7 +69,6 @@
     &--cute {
       background: var(--note-cute-bg);
       color: var(--note-cute-fg);
-      fill: var(--note-cute-fg);
     }
     &--sad {
       background: var(--note-sad-bg);

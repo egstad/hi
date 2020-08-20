@@ -35,7 +35,7 @@
   &.is-draggable {
     display: block;
     width: 100%;
-    height: 100vh;
+    height: 100vmax;
 
     /deep/.note {
       position: absolute;
