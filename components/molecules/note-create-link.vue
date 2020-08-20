@@ -161,7 +161,6 @@ export default {
         .get(`https://api.linkpreview.net/?key=${this.apiKey}&q=${this.link}`)
         .then(res => {
           if (res.status === 200) {
-            console.log('got image', res.data)
             return res.data.image
           } else {
             this.error = 'sorry, we cant find a preview image for that'
