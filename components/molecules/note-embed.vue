@@ -1,31 +1,34 @@
 <template>
   <figure class="embed">
     <template v-if="embed.type === 'website'">
-      <div class="thumbnail website" v-if="embed.thumbnail">
-        <img :src="embed.thumbnail" alt="" />
+      <div></div>
+      <div></div>
+      <div>
+        <p>{{ message }}</p>
+        <p>{{ embed.url }}</p>
       </div>
     </template>
 
     <template v-if="embed.type === 'youtube' || embed.type === 'vimeo'">
-      <a :href="embed.source" target="_blank" :class="['playhead', tag]">
+      <a :href="embed.url" target="_blank" :class="['playhead', tag]">
         <Icon type="play" />
       </a>
       <div :class="['thumbnail', embed.type]">
         <img :src="embed.thumbnail" alt="" v-if="embed.thumbnail" />
-        <div class="iframe" v-else v-html="embed.embed"></div>
+        <div class="iframe" v-else v-html="embed.html"></div>
       </div>
     </template>
 
     <template v-if="embed.type === 'image'">
       <div class="thumbnail image">
         <img v-if="embed.thumbnail" :src="embed.thumbnail" alt="" />
-        <img v-else-if="embed.source" :src="embed.source" alt="" />
+        <img v-else-if="embed.url" :src="embed.url" alt="" />
       </div>
     </template>
 
-    <template v-if="embed.type === 'video'">
+    <!-- <template v-if="embed.type === 'video'">
       <div class="thumbnail video" v-html="embed.embed"></div>
-    </template>
+    </template> -->
 
     <!-- <div class="wrapper" v-else v-html="embed.embed"></div> -->
 
@@ -38,12 +41,10 @@
 
 <script>
 import Icon from '@/components/atoms/icons'
-// import Youtube from '@/components/molecules/note-embed-youtube'
 
 export default {
   components: {
     Icon,
-    // Youtube,
   },
   props: {
     embed: {
@@ -100,6 +101,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  transition: transform 0.25s ease-in-out;
 
   &::before {
     content: '';
@@ -112,6 +114,10 @@ export default {
     width: 100%;
     height: 100%;
     pointer-events: none;
+  }
+
+  &:hover {
+    transform: scale(1.15);
   }
 
   /deep/.iframe > iframe {

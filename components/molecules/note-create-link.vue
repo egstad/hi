@@ -12,20 +12,16 @@
         @input="validate"
         required
       />
-      <template v-if="linkEmbed">
+      <template>
         <div class="preview thumbnail" v-if="linkEmbed.thumbnail">
           <img :src="linkEmbed.thumbnail" alt="" />
         </div>
 
         <div
           class="preview embed"
-          v-else-if="linkEmbed.embed"
-          v-html="linkEmbed.embed"
+          v-else-if="linkEmbed.html"
+          v-html="linkEmbed.html"
         ></div>
-
-        <div v-else>
-          there's no preview image for that, but we'll include the link 4 u
-        </div>
       </template>
     </template>
 
@@ -43,13 +39,18 @@ export default {
     return {
       apiKey: '922bdfb9544ae6d6d87664139e5c4042',
       link: null,
-      linkEmbed: null,
       linkIsFormatted: false,
       linkIsValid: false,
-      linkPreview: null,
       keyupTimeout: null,
       keyupTimeoutDuration: 500,
       error: null,
+      linkPreview: null,
+      linkEmbed: {
+        html: null,
+        url: null,
+        thumbnail: null,
+        type: 'website',
+      },
     }
   },
   methods: {
@@ -65,12 +66,6 @@ export default {
       )
 
       this.linkIsFormatted = !!pattern.test(this.link)
-
-      // not valid? cool. hide the previews
-      if (!this.linkIsFormatted) {
-        this.linkPreview = null
-        this.linkEmbed = null
-      }
     },
     validate() {
       clearTimeout(this.keyupTimeout)
@@ -81,7 +76,10 @@ export default {
 
         // 2. is it a video? is it an image? is it just a link?
         if (this.linkIsFormatted) {
+          this.fetchLinkPreview()
           this.handleEmbed()
+        } else {
+          this.linkEmbed.thumbnail = null
         }
       }, this.keyupTimeoutDuration)
 
@@ -89,11 +87,10 @@ export default {
       // if link is formatted, let's double check that this link is real
       // this.linkIsValid = !!this.linkIsFormatted
     },
-    async handleEmbed() {
+    handleEmbed() {
       let input = this.link
       let replacement = null
-      let type = null
-      const thumbnail = await this.fetchLinkPreview()
+      let type = 'website'
       /* eslint-disable */
       const isYoutube = /(?:http?s?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(\S+)/g
       const isVimeo = /(?:http?s?:\/\/)?(?:www\.)?(?:vimeo\.com)\/?(\S+)/g
@@ -130,6 +127,8 @@ export default {
         case isLinkedImage.test(input):
           replacement = '<img src="$1" />'
           input = input.replace(isLinkedImage, replacement)
+          this.linkEmbed.thumbnail = this.link
+          console.log('linked image', input)
           type = 'image'
           break
 
@@ -139,36 +138,32 @@ export default {
           break
       }
 
-      console.log('link', this.link)
       this.linkEmbed = {
-        source: this.link,
-        embed: input,
-        thumbnail,
+        html: input,
+        url: this.link,
+        thumbnail: this.linkEmbed.thumbnail,
         type,
       }
-      console.log(this.linkEmbed)
     },
     reset() {
       this.link = null
       this.linkEmbed = null
       this.linkIsFormatted = false
       this.linkIsValid = false
-      this.linkPreview = false
       this.error = null
     },
-    async fetchLinkPreview() {
-      const image = await this.$axios
+    fetchLinkPreview() {
+      this.$axios
         .get(`https://api.linkpreview.net/?key=${this.apiKey}&q=${this.link}`)
         .then(res => {
           if (res.status === 200) {
-            return res.data.image
+            this.linkEmbed.thumbnail = res.data.image
           } else {
+            this.linkEmbed.thumbnail = null
             this.error = 'sorry, we cant find a preview image for that'
             console.log('failed', this.error)
           }
         })
-
-      return image
     },
   },
 }

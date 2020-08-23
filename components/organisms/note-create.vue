@@ -166,7 +166,6 @@ export default {
     this.$app.$on('newNote::open', this.openNewNote)
     this.$app.$on('newNote::close', this.closeNewNote)
     this.$app.$on('imageUploaded', this.onImageUpload)
-    this.getHighestZ()
   },
   beforeDestroy() {
     this.$app.$off('newNote::open', this.openNewNote)
@@ -250,9 +249,7 @@ export default {
       const randomY = this.getRandomInt(0, yBounds - selfWidth)
       const x = parseFloat(((randomX / xBounds) * 100).toFixed(4))
       const y = parseFloat(((randomY / yBounds) * 100).toFixed(4))
-      const z = parseInt(this.getHighestZ()) || 1100
-
-      console.log(z)
+      const z = this.$store.state.notes.highestZ
 
       this.setType()
 
@@ -310,22 +307,6 @@ export default {
     goLast() {
       const lastItem = this.$refs.submit.$el
       lastItem.focus()
-    },
-    getHighestZ() {
-      const notes = this.$app.$el.querySelectorAll('.note')
-      let highestZ = 0
-
-      notes.forEach(note => {
-        const zIndex = parseInt(note.style.zIndex)
-        console.log(zIndex)
-        if (zIndex > highestZ) {
-          highestZ = zIndex
-        }
-      })
-
-      console.log('higest', highestZ)
-
-      return parseInt(highestZ) + 1
     },
     beforeEnter() {
       gsap.set(this.$refs.newNote, {

@@ -27,8 +27,10 @@
   line-height: var(--note-icon-size);
   display: flex;
   justify-content: space-between;
+  pointer-events: none;
 
   .icon {
+    pointer-events: auto;
     appearance: none;
     border: 0;
     position: relative;

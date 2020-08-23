@@ -47,15 +47,6 @@
     }
   }
 
-  &:hover {
-    // z-index: 2000;
-
-    /deep/.note__utilities {
-      opacity: 1;
-      pointer-events: auto;
-    }
-  }
-
   // default, love, cute, sad, sparkle, curious
   &.none {
     background: var(--note-default-bg);
@@ -204,6 +195,7 @@ export default {
       dragEnabled: state => state.notes.areDraggable,
       xBounds: state => state.notes.canvasWidth,
       yBounds: state => state.notes.canvasHeight,
+      highestZ: state => state.notes.highestZ,
     }),
   },
   watch: {
@@ -221,12 +213,16 @@ export default {
     this.$app.$on('draggableInit', this.draggableInit)
     this.$app.$on('draggableDestroy', this.draggableDestroy)
     this.$app.$on('canvasResized', this.moveNote)
+    // not very performant... remove l8r
     this.$app.$on('newNote::open', this.dimNote)
     this.$app.$on('undimNote', this.resetNote)
+    // end
     this.$on('setIconOpacity', this.onIconOpacity)
     this.$on('deleteNote', this.deleteNote)
-    this.$parent.$emit('note::mounted')
+    // set the z-index
     gsap.set(this.$refs.note, { zIndex: this.coords.z })
+    // share index with parent (to make sure dragged item stacks to top)
+    this.$parent.$emit('note::mounted', this.coords.z)
   },
   beforeDestroy() {
     this.$off('setIconOpacity', this.onIconOpacity)
@@ -343,10 +339,13 @@ export default {
           inertia: true,
           edgeResistance: 0.75,
           throwResistance: 3000,
+          zIndexBoost: false,
+          // zIndex: parseInt(this.highestZ) + 1,
           overshootTolerance: 0,
           allowContextMenu: true,
           onDragStart: this.onDragStart,
           onDragEnd: this.onDragEnd,
+          onClick: this.onClick,
         })
 
         this.moveNote()
@@ -378,8 +377,13 @@ export default {
       }
     },
     onDragStart() {
-      this.$refs.note.classList.add('is-dragging')
+      const newZ = parseInt(this.highestZ) + 1
 
+      // add dragging class
+      this.$refs.note.classList.add('is-dragging')
+      // set new z
+      gsap.set(this.$refs.note, { zIndex: newZ })
+      // handle animation
       this.gsap = gsap.to(this.$refs.note, 0.3, {
         scale: 1.1,
         rotation: 0,
@@ -392,6 +396,7 @@ export default {
       const posOrNeg = self.endX > self.startX ? 1 : -1
       const newRotation = Math.abs(this.rotation) * posOrNeg
       const newZIndex = self.target.style.zIndex
+      this.$store.dispatch('notes/updateHighestZ', newZIndex)
 
       // remove dragging class
       this.$refs.note.classList.remove('is-dragging')
@@ -403,6 +408,13 @@ export default {
       })
       // tell firebase
       this.updateCoords(self.endX, self.endY, newZIndex, newRotation)
+    },
+    onClick() {
+      console.log('click')
+      const newZ = parseInt(this.highestZ) + 1
+      // set new z
+      gsap.set(this.$refs.note, { zIndex: newZ })
+      this.$store.dispatch('notes/updateHighestZ', newZ)
     },
     onIconOpacity(state) {
       if (state === 'show') {

@@ -54,6 +54,18 @@
             0px 6px 34px rgba(#{var(--note-shadow)}, 0.05);
         }
       }
+
+      .theme-dark & {
+        box-shadow: 0px 21px 32px rgba(#{var(--note-shadow)}, 0.06),
+          0px 8px 12px rgba(#{var(--note-shadow)}, 0.1),
+          0px -2px 6px rgba(#{var(--note-shadow)}, 0.15);
+
+        &.is-dragging {
+          box-shadow: 0px 420px 86px rgba(#{var(--note-shadow)}, 0.0125319),
+            0px 112px 64px rgba(#{var(--note-shadow)}, 0.0223319),
+            0px 6px 34px rgba(#{var(--note-shadow)}, 0.05);
+        }
+      }
     }
   }
 }
@@ -79,9 +91,9 @@ export default {
     }
   },
   mounted() {
-    window.addEventListener('resize', this.onResize)
-    this.$on('note::mounted', this.onNoteMount)
     this.$store.dispatch('notes/getCanvasDimensions')
+    this.$on('note::mounted', this.onNoteMount)
+    window.addEventListener('resize', this.onResize)
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.onResize)
@@ -97,11 +109,12 @@ export default {
         )
       }, this.resizeTime)
     },
-    onNoteMount() {
+    onNoteMount(zIndex) {
       this.$store.dispatch(
         'notes/getCanvasDimensions',
         this.$refs.notes.getBoundingClientRect()
       )
+      this.$store.dispatch('notes/updateHighestZ', parseInt(zIndex))
     },
   },
 }

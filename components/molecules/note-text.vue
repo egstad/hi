@@ -25,7 +25,7 @@
   left: 0;
   height: 100%;
   width: 100%;
-  padding: calc(var(--grid-gutter));
+  padding: calc(var(--grid-gutter) * 2);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -49,19 +49,17 @@
   }
 
   &.xl {
-    font-size: 300%;
+    font-size: 250%;
     line-height: 0.65;
     line-height: 0.8;
-    align-items: center !important;
-    text-align: center;
+    align-items: center;
     justify-content: center;
   }
 
   &.xx {
-    font-size: 600%;
+    font-size: 400%;
     line-height: 0;
-    transform: translateY(0.05em);
-    align-items: center !important;
+    align-items: center;
     justify-content: center;
   }
 }

@@ -9,6 +9,8 @@ export const state = () => ({
   canvasWidth: null,
   // draggable area height
   canvasHeight: null,
+  // current highest z-index
+  highestZ: 0,
 })
 
 export const mutations = {
@@ -24,6 +26,9 @@ export const mutations = {
   },
   setHeight(state, val) {
     state.canvasHeight = val
+  },
+  setHighestZ(state, val) {
+    state.highestZ = val
   },
 }
 
@@ -69,5 +74,10 @@ export const actions = {
     dispatch('updateWidth', canvas.width)
     dispatch('updateHeight', canvas.height)
     dispatch('initDragOnResize')
+  },
+  updateHighestZ({ commit, state }, thisZ) {
+    if (thisZ > state.highestZ) {
+      commit('setHighestZ', thisZ)
+    }
   },
 }
