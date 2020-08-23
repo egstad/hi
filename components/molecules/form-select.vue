@@ -4,7 +4,7 @@
       <span class="label" v-if="label">{{ label }}</span>
       <select
         ref="input"
-        class="select"
+        class="select ts1 input"
         :placeholder="placeholder"
         @input="$emit('input', $event.target.value)"
       >
@@ -15,7 +15,6 @@
           >{{ option.message }}</option
         >
       </select>
-      <div class="icon">↓</div>
     </label>
   </div>
 </template>
@@ -52,6 +51,7 @@ $indent: 15px;
 .form-item {
   position: relative;
   padding-top: var(--grid-gutter);
+
   .label {
     font-size: 16px;
     text-transform: uppercase;
@@ -64,14 +64,13 @@ $indent: 15px;
   .select {
     position: relative;
     appearance: none;
+    display: block;
     transition: background $form-trans, color $form-trans;
     width: 100%;
-    font-size: $t-input;
     line-height: var(--input-height);
     padding: 0 $indent;
     border-radius: var(--note-radius-child);
     outline: none;
-    letter-spacing: 0.04em;
     border: 0;
 
     &::placeholder {
@@ -89,80 +88,16 @@ $indent: 15px;
 
   .icon {
     position: absolute;
-    bottom: $t-input * 0.15;
+    top: -2px;
+    font-size: var(--t2);
+    opacity: 0.8;
     right: var(--grid-gutter);
-    font-size: $t-input * 1.4;
+    // bottom: $t-input * 0.15;
+    // font-size: $t-input * 1.4;
     pointer-events: none;
-    content: 'hi';
+    content: '';
     display: block;
     z-index: 1000;
-  }
-
-  &.theme {
-    &--light {
-      .label {
-        color: $form-light;
-      }
-
-      .select {
-        color: $form-light;
-        background: rgba($form-light, 0.2);
-
-        &::placeholder {
-          color: rgba($form-light, 0.6);
-        }
-
-        &:hover {
-          background: rgba($form-light, 0.3);
-
-          &::placeholder {
-            color: $form-light;
-          }
-        }
-
-        &:focus {
-          background: rgba($form-light, 0.8);
-          color: inherit;
-
-          &::placeholder {
-            transition: none;
-            color: inherit;
-          }
-        }
-      }
-    }
-    &--dark {
-      .label {
-        color: $form-dark;
-      }
-
-      .select {
-        color: $form-dark;
-        background: rgba($form-dark, 0.1);
-
-        &::placeholder {
-          color: rgba($form-dark, 0.6);
-        }
-
-        &:hover {
-          background: rgba($form-dark, 0.15);
-
-          &::placeholder {
-            color: $form-dark;
-          }
-        }
-
-        &:focus {
-          background: rgba($form-dark, 0.2);
-          color: $form-dark;
-
-          &::placeholder {
-            transition: none;
-            color: $form-dark;
-          }
-        }
-      }
-    }
   }
 }
 </style>

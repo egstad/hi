@@ -1,7 +1,7 @@
 <template>
   <button :class="`input button button--${theme}`">
     <span class="text">{{ text }}</span>
-    <span class="icon">→</span>
+    <span class="submit-icon">→</span>
   </button>
 </template>
 
@@ -36,6 +36,7 @@ $indent: 15px;
   letter-spacing: 0.04em;
   border: 0;
   text-align: left;
+  font-weight: bold;
 
   &.input {
     background-color: rgba(var(--secondary), 0.75);
@@ -51,7 +52,7 @@ $indent: 15px;
       color: rgba(var(--primary), 1);
       cursor: pointer;
 
-      .icon {
+      .submit-icon {
         transform: translate3d($indent/2, 0, 0);
       }
     }
@@ -62,7 +63,7 @@ $indent: 15px;
   }
 }
 
-.icon {
+.submit-icon {
   display: inline-block;
   transition: transform $form-trans;
 }

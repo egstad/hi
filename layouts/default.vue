@@ -6,6 +6,7 @@
     </div>
 
     <main class="site-content">
+      <CreateNote />
       <nuxt />
     </main>
   </div>
@@ -14,8 +15,11 @@
 <script>
 import navigation from '@/components/molecules/site-nav'
 import logo from '@/components/molecules/site-logo'
+import CreateNote from '@/components/templates/note-create'
+
 export default {
   components: {
+    CreateNote,
     navigation,
     logo,
   },

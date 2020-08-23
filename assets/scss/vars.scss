@@ -1,12 +1,38 @@
 :root {
   --grid-gutter: 15px;
-  --input-height: 60px;
+  --input-height: 54px;
   --note-radius: 32px;
   --note-radius-child: 18px;
   --note-icon-size: 54px;
 
   --timing-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  --t0: 16px;
+
+  --t1: 25px;
+  --t1-line: 20px;
+
+  --t2: 35px;
+  --t2-line: 30px;
+
+  --t3: 40px;
+  --t3-line: 30px;
+
+  --t4: 50px;
+  --t4-line: 35px;
+
+  --t5: 70px;
+  --t5-line: 40px;
+
+  --t6: 85px;
+  --t6-line: 60px;
+
+  --t6: 120px;
+  --t6-line: 90px;
 }
+
+
+
 
 .theme-light {
   --primary: 255, 255, 255;
@@ -43,6 +69,7 @@
   --note-default-bg: #382400;
   --note-default-fg: #A1977D;
 
+
   --note-love-bg: #4A0B1E;
   --note-love-fg: #B47182;
 
@@ -51,6 +78,29 @@
 
   --note-sad-bg: #021E68;
   --note-sad-fg: #4C6AD6;
+  // .form-item {
+  //   .label,
+  //   .input {
+  //     color: var(--note-sad-fg);
+
+  //     &::placeholder {
+  //       color: var(--note-sad-fg);
+  //     }
+
+  //     &:focus {
+  //       color: var(--note-sad-bg);
+  //       background: var(--note-sad-fg);
+
+  //       &::placeholder {
+  //         color: var(--note-sad-bg);
+  //       }
+  //     }
+  //   }
+
+  //   .counter {
+  //     background: var(--note-sad-bg);
+  //   }
+  // }
 
   --note-sparkle-bg: #0F2606;
   --note-sparkle-fg: #4A835D;
