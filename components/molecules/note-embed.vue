@@ -1,22 +1,18 @@
 <template>
   <figure class="embed">
-    <template v-if="embed.type === 'website'">
-      <div></div>
-      <div></div>
-      <div>
-        <p>{{ message }}</p>
-        <p>{{ embed.url }}</p>
-      </div>
-    </template>
+    <pre>{{ embed }}</pre>
 
     <template v-if="embed.type === 'youtube' || embed.type === 'vimeo'">
-      <a :href="embed.url" target="_blank" :class="['playhead', tag]">
+      <a :href="embed.url" target="_blank">
+        <!-- <a :href="embed.url" target="_blank" :class="['playhead', tag]">
         <Icon type="play" />
+      </a> -->
+        <div :class="['thumbnail', embed.type]">
+          <!-- <img :src="embed.thumbnail" alt="" v-if="embed.thumbnail" />
+        <div class="iframe" v-else v-html="embed.html"></div> -->
+          <div class="iframe" v-html="embed.html"></div>
+        </div>
       </a>
-      <div :class="['thumbnail', embed.type]">
-        <img :src="embed.thumbnail" alt="" v-if="embed.thumbnail" />
-        <div class="iframe" v-else v-html="embed.html"></div>
-      </div>
     </template>
 
     <template v-if="embed.type === 'image'">
@@ -40,19 +36,15 @@
 </template>
 
 <script>
-import Icon from '@/components/atoms/icons'
+// import Icon from '@/components/atoms/icons'
 
 export default {
   components: {
-    Icon,
+    // Icon,
   },
   props: {
     embed: {
       type: Object,
-      required: true,
-    },
-    message: {
-      type: String,
       required: true,
     },
     tag: {
@@ -138,64 +130,6 @@ export default {
     // display: block;
     width: 100%;
     height: 100%;
-  }
-}
-
-.playhead {
-  position: absolute;
-  z-index: 2000;
-  top: 50%;
-  left: 50%;
-  height: 100%;
-  transform: translate3d(-50%, -50%, 0);
-  width: calc(var(--note-icon-size) * 2);
-  height: calc(var(--note-icon-size) * 2);
-  border-radius: var(--note-radius);
-  padding: var(--grid-gutter);
-  backdrop-filter: blur(24px);
-  color: inherit;
-  overflow: hidden;
-
-  /deep/svg {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    height: 100%;
-    z-index: 3;
-    transform: translate3d(-50%, -50%, 0);
-    display: block;
-    width: calc(var(--note-icon-size) * 1);
-    height: calc(var(--note-icon-size) * 1);
-  }
-
-  &:after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.7;
-  }
-
-  &.none:after {
-    background: var(--note-default-bg);
-  }
-  &.love:after {
-    background: var(--note-love-bg);
-  }
-  &.cute:after {
-    background: var(--note-cute-bg);
-  }
-  &.sad:after {
-    background: var(--note-sad-bg);
-  }
-  &.sparkle:after {
-    background: var(--note-curious-bg);
-  }
-  &.curious:after {
-    background: var(--note-curious-bg);
   }
 }
 </style>

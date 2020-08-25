@@ -195,6 +195,7 @@ export default {
           yoyo: true,
           ease: 'power3.inOut',
           stagger: 0.1,
+          duration: 1.2,
         }
       )
     },

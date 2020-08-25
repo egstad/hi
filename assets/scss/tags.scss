@@ -21,13 +21,25 @@ $tags: 'none', 'love', 'cute', 'sad', 'joy', 'idk';
         }
       }
 
+      // icons
       .icon .svg path {
         fill: var(--note-#{$tag}-fg) !important;
       }
 
+      .note__utilities.tag--link .icon {
+        background: var(--note-#{$tag}-bg) !important;
+      }
+
+
       .counter {
         background-color: var(--note-#{$tag}-bg);
       }
+
+      .submit .button {
+        background-color: var(--note-#{$tag}-fg);
+        color: var(--note-#{$tag}-bg);
+      }
+
     }
   }
 }

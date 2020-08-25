@@ -16,6 +16,7 @@
         :placeholder="placeholder"
         :class="`input input--${type} ts1`"
         :required="required"
+        @keydown="$emit('keydown', $event)"
         @input="$emit('input', $event.target.value)"
       />
     </label>

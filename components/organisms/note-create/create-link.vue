@@ -1,133 +1,137 @@
 <template>
-  <section class="message-wrap">
+  <section class="link-wrap">
+    <div class="link-paste">
+      <button
+        @click="pasteLink"
+        ref="paste"
+        class="input instructions"
+        type="button"
+        v-if="!linkIsValid"
+      >
+        <span class="ts4">☕</span><br />
+        <span class="ts1"><strong>click to paste link</strong></span>
+      </button>
+
+      <div class="input instructions" v-else>
+        <LinkPreview :link="link" />
+      </div>
+    </div>
+
     <FormInput
       v-model="link"
       type="url"
-      ref="link"
+      ref="text"
       :tip="linkTip"
       placeholder="link to a site, video, or image..."
       label="add a link"
       theme="dark"
       autocomplete="off"
       required
+      @keydown.space.prevent
+      @input="onInput($event)"
     />
   </section>
 </template>
 
 <style lang="scss" scoped>
-.message-wrap {
+$short-row: calc(var(--note-icon-size) + var(--grid-gutter));
+
+.link-wrap {
   display: grid;
-  grid-template-rows: auto;
-  height: 100%;
+  grid-template-rows: auto $short-row;
+  height: calc(100% - 30px);
   align-items: start;
   padding-top: 0.3em;
 
-  .message {
+  .link-paste {
     position: relative;
+    display: grid;
+    grid-template-rows: auto;
     height: 100%;
 
-    /deep/.form-item {
-      display: grid;
-      grid-template-rows: auto;
+    .instructions {
+      border-radius: var(--note-radius-child);
+      display: flex;
       height: 100%;
-    }
-  }
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-weight: bold;
 
-  .prompt {
-    position: absolute;
-    top: calc(var(--grid-gutter * 0.5));
-    right: 0;
-    opacity: 0.8;
-    mix-blend-mode: hue-rotate(120deg);
-    border-radius: var(--note-radius-child);
-    font-variant-numeric: tabular-nums;
-    display: inline-flex;
-    cursor: pointer;
-    user-select: none;
+      .ts5,
+      .ts2 {
+        line-height: 0.4 !important;
+      }
+    }
   }
 }
 </style>
 
 <script>
+import LinkPreview from '@/components/organisms/note-create/create-link-preview'
 import FormInput from '@/components/molecules/form-input'
 
 export default {
   components: {
     FormInput,
+    LinkPreview,
   },
   data() {
     return {
-      message: '',
-      messageMaxChars: 200,
-      promptIndex: 0,
-      messagePrompts: [
-        {
-          label: 'write a note',
-          placeholder: 'dear internet diary...',
-        },
-        { label: 'write a haiku', placeholder: '5-7-5' },
-        {
-          label: 'put ur feelings into a word',
-          placeholder: 'peaceful? opera? butts? prob butts...',
-        },
-        {
-          label: 'what do u admire?',
-          placeholder: 'a person, place, thing...',
-        },
-        {
-          label: 'write about a missed connection',
-          placeholder: 'last week on the bus...',
-        },
-        {
-          label: 'what gives you hope?',
-          placeholder: "(don't lie)",
-        },
-        {
-          label: 'write about something you lost',
-          placeholder: "it's okay to be sad",
-        },
-        {
-          label: 'tell us something sweet',
-          placeholder: 'laughing is nice',
-        },
-        {
-          label: 'what makes you smile?',
-          placeholder: 'cute cats, good burps...',
-        },
-        {
-          label: 'tell us a joke',
-          placeholder: 'so, a duck walks into a bar...',
-        },
-        {
-          label: 'write about a peaceful memory',
-          placeholder: 'dear internet diary...',
-        },
-        {
-          label: 'give the internet some advice',
-          placeholder: 'tell us what we need to hear',
-        },
-        { label: 'write a short story', placeholder: 'in the beginning... jk' },
-      ],
-      messageLabelInterval: null,
-      messageTip: '',
-      messageSize: 't6',
       link: '',
       linkTip: '',
+      linkIsValid: false,
+      linkEmbedData: null,
+      linkKeyupTimeout: null,
+      linkKeyupTimeoutDuration: 500,
     }
   },
+  mounted() {
+    this.$on('previewReady', this.handleLinkEmbed)
+  },
+  beforeDestroy() {
+    this.$off('previewReady', this.handleLinkEmbed)
+  },
   methods: {
-    reset() {
-      this.message = ''
-      this.link = ''
-    },
-    shufflePrompts() {
-      for (let i = this.messagePrompts.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[this.messagePrompts[i], this.messagePrompts[j]] = [
-          this.messagePrompts[j],
-          this.messagePrompts[i],
-        ]
+    checkLinkFormat() {
+      const pattern = new RegExp(
+        '^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+          '(\\#[-a-z\\d_]*)?$',
+        'i'
+      )
+
+      if (pattern.test(this.link)) {
+        this.linkIsValid = true
+        this.linkTip = null
+      } else {
+        this.linkIsValid = false
       }
+    },
+    onInput() {
+      this.validate()
+    },
+    validate() {
+      // a timeout is used to throttle validation.
+      clearTimeout(this.linkKeyupTimeout)
+      this.linkKeyupTimeout = setTimeout(() => {
+        this.checkLinkFormat()
+        this.$emit('input', this.link)
+      }, this.linkKeyupTimeoutDuration)
+    },
+    async pasteLink() {
+      const text = await navigator.clipboard.readText()
+      this.link = text
+      this.validate()
+    },
+    handleLinkEmbed(val) {
+      this.linkEmbedData = val
+      console.log('hiiiiii')
+      this.$parent.$emit('embedDataReady', this.linkEmbedData)
     },
   },
 }

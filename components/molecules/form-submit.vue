@@ -26,13 +26,10 @@ export default {
 $indent: 15px;
 
 .button {
-  appearance: none;
-  width: 100%;
   font-size: $t-input !important;
   line-height: var(--input-height);
   padding: 0 $indent;
   border-radius: var(--note-radius-child);
-  outline: none;
   letter-spacing: 0.04em;
   border: 0;
   text-align: left;

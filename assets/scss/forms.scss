@@ -6,9 +6,12 @@ $form-trans: 400ms ease-out;
 
 .icon,
 .input {
+  appearance: none;
+  width: 100%;
   outline: none;
   background-color: rgba(var(--primary), 1);
   color: rgba(var(--secondary), 1);
+  border: 0;
   cursor: pointer;
 
   &::placeholder {
@@ -26,7 +29,7 @@ $form-trans: 400ms ease-out;
 
     &:focus {
       background-color: rgba(var(--primary), 0.12);
-      backdrop-filter: saturate(120%) brightness(85%);
+      backdrop-filter: saturate(120%) brightness(80%);
     }
   }
 
@@ -34,13 +37,9 @@ $form-trans: 400ms ease-out;
     background-color: rgba(var(--primary), 0.4);
     backdrop-filter: saturate(120%) brightness(105%);
 
-    &:hover {
-      background-color: rgba(var(--primary), 0.8);
-    }
-
+    &:hover,
     &:focus {
-      background-color: rgba(var(--secondary), 0.08);
-      backdrop-filter: saturate(130%);
+      background-color: rgba(var(--primary), 0.8);
     }
   }
 }

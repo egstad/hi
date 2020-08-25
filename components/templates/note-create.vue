@@ -1,6 +1,6 @@
 <template>
   <aside class="note-creator" :class="`tag--${tag}`">
-    <form @submit.prevent class="content">
+    <form @submit.prevent.stop="submitNote" class="content">
       <CreatorToolbar
         class="toolbar"
         :tags="tags"
@@ -10,8 +10,12 @@
       />
 
       <div class="inputs">
-        <Message v-if="type === 'text'" @input="onMessageInput" />
-        <Link v-if="type === 'link'" />
+        <Message
+          v-if="type === 'text'"
+          ref="message"
+          @input="onMessageChange"
+        />
+        <Link v-if="type === 'link'" ref="link" @input="onLinkChange" />
       </div>
 
       <div class="submit" :class="{ expanded: formIsValid }">
@@ -73,6 +77,7 @@ $short-row: calc(var(--note-icon-size) + var(--grid-gutter));
 </style>
 
 <script>
+import * as firebase from 'firebase/app'
 import CreatorToolbar from '@/components/organisms/note-create/create-toolbar'
 import Message from '@/components/organisms/note-create/create-message'
 import Link from '@/components/organisms/note-create/create-link'
@@ -90,19 +95,29 @@ export default {
       tag: null,
       type: null,
       message: null,
-      tags: ['none', 'love', 'cute', 'sad', 'joy', 'idk'],
+      link: null,
       formIsValid: false,
+      tags: ['none', 'love', 'cute', 'sad', 'joy', 'idk'],
       types: [
-        { value: 'text', message: 'message', defaultChecked: true },
         { value: 'link', message: 'link' },
+        { value: 'text', message: 'message', defaultChecked: true },
         { value: 'image', message: 'image' },
       ],
+      coords: {
+        x: null,
+        y: null,
+        z: null,
+        r: null,
+      },
+      submissionRef: null,
+      submissionData: null,
     }
   },
   mounted() {
     this.type = this.$refs.utils.type
     this.tag = this.tags[0]
     this.$on('tagUpdated', this.onTagChange)
+    this.$on('embedDataReady', this.onLinkEmbed)
   },
   beforeDestroy() {
     this.$off('tagUpdated', this.onTagChange)
@@ -110,19 +125,22 @@ export default {
   methods: {
     onTypeChange(newType) {
       this.type = newType
-      this.resetAll()
       this.validate()
     },
     onTagChange(newIndex) {
       this.tag = this.tags[newIndex]
       this.validate()
     },
-    onMessageInput(val) {
+    onMessageChange(val) {
       this.message = val
       this.validate()
     },
-    resetAll() {
-      this.message = null
+    onLinkChange(val) {
+      this.link = val
+      this.validate()
+    },
+    onLinkEmbed(val) {
+      this.linkEmbed = val
     },
     validate() {
       switch (this.type) {
@@ -130,10 +148,84 @@ export default {
           this.formIsValid = this.message && this.message.length > 0
           break
 
+        case 'link':
+          this.formIsValid = this.$refs.link && this.$refs.link.linkIsValid
+          break
+
         default:
           this.formIsValid = false
           break
       }
+    },
+    getRandomInt(min, max) {
+      min = Math.ceil(min)
+      max = Math.floor(max)
+      return (Math.random() * (max - min) + min).toFixed(3)
+    },
+    setRandomCoords() {
+      const xBounds = this.$store.state.notes.canvasWidth
+      const yBounds = this.$store.state.notes.canvasHeight
+      const selfWidth = 400
+      const randomX = this.getRandomInt(0, xBounds - selfWidth)
+      const randomY = this.getRandomInt(0, yBounds - selfWidth)
+      this.coords.x = parseFloat(((randomX / xBounds) * 100).toFixed(4))
+      this.coords.y = parseFloat(((randomY / yBounds) * 100).toFixed(4))
+      this.coords.z = this.$store.state.notes.highestZ
+      this.coords.r = this.getRandomInt(-4, 4)
+    },
+    createFirebaseRef() {
+      // create a doc reference before we set/add it
+      // we'll use it so we can edit/delete item later on...
+      this.submissionRef = this.$firebase
+        .firestore()
+        .collection('notes')
+        .doc()
+    },
+    modelSubmissionData() {
+      this.submissionData = {
+        author: this.$store.state.user.uid,
+        id: this.submissionRef.id,
+        created: firebase.firestore.FieldValue.serverTimestamp(),
+        tag: this.tag,
+        type: this.type,
+        coords: this.coords,
+        data: {
+          message: this.message
+            ? // replace \n's with <br/>'s
+              this.message.replace(/\n/g, '<br \\>')
+            : null,
+          link: this.linkEmbed || null,
+        },
+      }
+      console.log(this.submissionData)
+    },
+    async submitNote(imageUrl) {
+      // create a random, new location for the note
+      this.setRandomCoords()
+      // create firebase reference
+      this.createFirebaseRef()
+      // model data
+      this.modelSubmissionData()
+
+      // push data to firebase
+      await this.$firebase
+        .firestore()
+        .collection('notes')
+        .doc(this.submissionData.id)
+        .set(this.submissionData)
+        .then(() => {
+          this.submitSuccess()
+        })
+        .catch(error => {
+          this.submitError(error)
+        })
+    },
+    submitSuccess() {
+      console.log('success')
+    },
+    submitError(error) {
+      this.error = error
+      console.error('Error adding document: ', error)
     },
   },
 }
