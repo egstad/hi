@@ -39,26 +39,11 @@ $indent: 15px;
   font-weight: bold;
 
   &.input {
-    background-color: rgba(var(--secondary), 0.75);
-    color: rgba(var(--primary), 1);
-
-    &:hover {
-      background-color: rgba(var(--secondary), 1);
-    }
-
     &:hover,
     &:focus {
-      background-color: rgba(var(--secondary), 1);
-      color: rgba(var(--primary), 1);
-      cursor: pointer;
-
       .submit-icon {
         transform: translate3d($indent/2, 0, 0);
       }
-    }
-
-    &:focus {
-      box-shadow: inset 0 0 0 2px black, inset 0 0 0 4px white;
     }
   }
 }

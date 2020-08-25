@@ -1,5 +1,5 @@
 <template>
-  <li class="note" :class="[type, tag]" ref="note">
+  <li class="note" :class="[type, `tag--${tag}`]" ref="note">
     <article class="content">
       <template v-if="type === 'image'">
         <NoteImage :image="image" :message="message" />

@@ -1,37 +1,16 @@
 <template>
   <section class="message-wrap">
-    <div class="message">
-      <FormTextarea
-        v-model="message"
-        ref="message"
-        :placeholder="messagePrompts[promptIndex].placeholder"
-        :label="messagePrompts[promptIndex].label"
-        :max="messageMaxChars"
-        :tip="messageTip"
-        :text-size="messageSize"
-        autocomplete="off"
-        required
-        @input="$emit('input', $event)"
-      />
-      <div class="label prompt" ref="prompt" @click="nextPrompt">
-        <span class="char">I</span>
-        <span class="char">D</span>
-        <span class="char">F</span>
-        <span class="char">K</span>
-      </div>
-    </div>
-
-    <!-- <FormInput
-        v-model="link"
-        type="url"
-        ref="link"
-        :tip="linkTip"
-        placeholder="link to a site, video, or image..."
-        label="add a link"
-        theme="dark"
-        autocomplete="off"
-        required
-      /> -->
+    <FormInput
+      v-model="link"
+      type="url"
+      ref="link"
+      :tip="linkTip"
+      placeholder="link to a site, video, or image..."
+      label="add a link"
+      theme="dark"
+      autocomplete="off"
+      required
+    />
   </section>
 </template>
 
@@ -70,15 +49,11 @@
 </style>
 
 <script>
-import gsap from 'gsap'
-import FormTextarea from '@/components/molecules/form-textarea'
-// import FormInput from '@/components/molecules/form-input'
+import FormInput from '@/components/molecules/form-input'
 
 export default {
   components: {
-    FormTextarea,
-    // FormInput,
-    // Toolbar,
+    FormInput,
   },
   data() {
     return {
@@ -140,9 +115,6 @@ export default {
       linkTip: '',
     }
   },
-  mounted() {
-    this.animatePrompt()
-  },
   methods: {
     reset() {
       this.message = ''
@@ -156,47 +128,6 @@ export default {
           this.messagePrompts[i],
         ]
       }
-    },
-    nextPrompt() {
-      if (this.promptIndex + 1 === this.messagePrompts.length) {
-        this.promptIndex = 0
-      } else {
-        this.promptIndex++
-      }
-
-      const chars = this.$refs.prompt.querySelectorAll('.char')
-
-      gsap.fromTo(
-        chars,
-        {
-          rotation: 0,
-          opacity: 1,
-        },
-        {
-          rotation: 360,
-          stagger: 0.2,
-          opacity: 1,
-        }
-      )
-    },
-    animatePrompt() {
-      const chars = this.$refs.prompt.querySelectorAll('.char')
-
-      gsap.fromTo(
-        chars,
-        {
-          opacity: 1,
-          y: 0,
-        },
-        {
-          y: 0,
-          opacity: 0.3,
-          repeat: '-1',
-          yoyo: true,
-          ease: 'power3.inOut',
-          stagger: 0.1,
-        }
-      )
     },
   },
 }

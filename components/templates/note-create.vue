@@ -1,5 +1,5 @@
 <template>
-  <aside class="note-creator">
+  <aside class="note-creator" :class="`tag--${tag}`">
     <form @submit.prevent class="content">
       <CreatorToolbar
         class="toolbar"
@@ -10,21 +10,16 @@
       />
 
       <div class="inputs">
-        <Message />
+        <Message v-if="type === 'text'" @input="onMessageInput" />
+        <Link v-if="type === 'link'" />
       </div>
 
-      <div class="submit">
+      <div class="submit" :class="{ expanded: formIsValid }">
         <FormSubmit text="publish" />
       </div>
     </form>
 
     <div class="square"></div>
-    <table>
-      <tr>
-        <td>type: {{ type }}</td>
-        <td>tag: {{ tag }}</td>
-      </tr>
-    </table>
   </aside>
 </template>
 
@@ -36,11 +31,8 @@ $short-row: calc(var(--note-icon-size) + var(--grid-gutter));
   color: var(--note-foreground);
   overflow: hidden;
   border-radius: var(--note-radius);
-  transition: background-color 700ms ease-in-out, color 700ms ease-in-out;
-  background-color: var(--note-default-bg);
-  color: var(--note-default-fg);
+  transition: background-color 400ms ease-out, color 400ms ease-out;
   max-width: 400px;
-  max-height: 400px;
 }
 
 .content {
@@ -51,13 +43,20 @@ $short-row: calc(var(--note-icon-size) + var(--grid-gutter));
   height: 100%;
   padding: var(--grid-gutter);
   display: grid;
-  grid-template-rows: $short-row auto $short-row;
-
-  // .toolbar {
-  // }
+  grid-template-rows: $short-row 1fr auto;
 
   .submit {
-    margin-top: var(--grid-gutter);
+    transition: max-height 0.5s var(--timing-elastic);
+    overflow: hidden;
+    max-height: 0;
+
+    /deep/button {
+      margin-top: var(--grid-gutter);
+    }
+
+    &.expanded {
+      max-height: $short-row;
+    }
   }
 }
 
@@ -71,32 +70,28 @@ $short-row: calc(var(--note-icon-size) + var(--grid-gutter));
     grid-column: 1 / 1;
   }
 }
-
-table {
-  position: fixed;
-  bottom: 0;
-  background: gray;
-  color: white;
-  z-index: 1000;
-}
 </style>
 
 <script>
 import CreatorToolbar from '@/components/organisms/note-create/create-toolbar'
 import Message from '@/components/organisms/note-create/create-message'
+import Link from '@/components/organisms/note-create/create-link'
 import FormSubmit from '@/components/molecules/form-submit'
 
 export default {
   components: {
     CreatorToolbar,
     Message,
+    Link,
     FormSubmit,
   },
   data() {
     return {
       tag: null,
-      tags: ['none', 'love', 'cute', 'sad', 'joy', 'idk'],
       type: null,
+      message: null,
+      tags: ['none', 'love', 'cute', 'sad', 'joy', 'idk'],
+      formIsValid: false,
       types: [
         { value: 'text', message: 'message', defaultChecked: true },
         { value: 'link', message: 'link' },
@@ -109,12 +104,36 @@ export default {
     this.tag = this.tags[0]
     this.$on('tagUpdated', this.onTagChange)
   },
+  beforeDestroy() {
+    this.$off('tagUpdated', this.onTagChange)
+  },
   methods: {
     onTypeChange(newType) {
       this.type = newType
+      this.resetAll()
+      this.validate()
     },
     onTagChange(newIndex) {
       this.tag = this.tags[newIndex]
+      this.validate()
+    },
+    onMessageInput(val) {
+      this.message = val
+      this.validate()
+    },
+    resetAll() {
+      this.message = null
+    },
+    validate() {
+      switch (this.type) {
+        case 'text':
+          this.formIsValid = this.message && this.message.length > 0
+          break
+
+        default:
+          this.formIsValid = false
+          break
+      }
     },
   },
 }

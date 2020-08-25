@@ -1,6 +1,6 @@
 <template>
   <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <!-- tags: default, love, cute, sad, sparkle, curious -->
+    <!-- tags: none, love, cute, sad, joy, idk -->
     <path
       v-if="type === 'close'"
       class="fill"

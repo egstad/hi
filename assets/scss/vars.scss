@@ -40,8 +40,8 @@
   --tertiary: 255, 255, 255;
   --note-shadow: 0,0,0;
 
-  --note-default-bg: #FFEC87;
-  --note-default-fg: #3C3201;
+  --note-none-bg: #FFEC87;
+  --note-none-fg: #3C3201;
 
   --note-love-bg: #FFBBD3;
   --note-love-fg: #720037;
@@ -52,11 +52,11 @@
   --note-sad-bg: #BAEEFE;
   --note-sad-fg: #013A7D;
 
-  --note-sparkle-bg: #FFEC87;
-  --note-sparkle-fg: #3C3201;
+  --note-joy-bg: #FFEC87;
+  --note-joy-fg: #3C3201;
 
-  --note-curious-bg: #DED3FF;
-  --note-curious-fg: #1B0FA0;
+  --note-idk-bg: #DED3FF;
+  --note-idk-fg: #1B0FA0;
 }
 
 
@@ -66,8 +66,8 @@
   --tertiary: 50, 49, 49;
   --note-shadow: 0,0,0;
 
-  --note-default-bg: #382400;
-  --note-default-fg: #A1977D;
+  --note-none-bg: #382400;
+  --note-none-fg: #A1977D;
 
 
   --note-love-bg: #4A0B1E;
@@ -78,33 +78,10 @@
 
   --note-sad-bg: #021E68;
   --note-sad-fg: #4C6AD6;
-  // .form-item {
-  //   .label,
-  //   .input {
-  //     color: var(--note-sad-fg);
 
-  //     &::placeholder {
-  //       color: var(--note-sad-fg);
-  //     }
+  --note-joy-bg: #0F2606;
+  --note-joy-fg: #4A835D;
 
-  //     &:focus {
-  //       color: var(--note-sad-bg);
-  //       background: var(--note-sad-fg);
-
-  //       &::placeholder {
-  //         color: var(--note-sad-bg);
-  //       }
-  //     }
-  //   }
-
-  //   .counter {
-  //     background: var(--note-sad-bg);
-  //   }
-  // }
-
-  --note-sparkle-bg: #0F2606;
-  --note-sparkle-fg: #4A835D;
-
-  --note-curious-bg: #250B5E;
-  --note-curious-fg: #8C67DA;
+  --note-idk-bg: #250B5E;
+  --note-idk-fg: #8C67DA;
 }

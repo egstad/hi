@@ -1,47 +1,55 @@
 // var(--secondary) : black;
 $form-dark : black;
 $form-light : white;
-$form-trans: 350ms ease-out;
+$form-trans: 400ms ease-out;
 
 
+.icon,
 .input {
-  background-color: rgba(var(--secondary), 0.08);
+  outline: none;
+  background-color: rgba(var(--primary), 1);
   color: rgba(var(--secondary), 1);
-  transform: translate3d(0,0,0);
-  backdrop-filter: saturate(100%) brightness(100%);
+  cursor: pointer;
 
   &::placeholder {
     transition: color $form-trans;
     color: rgba(var(--secondary), 0.5);
   }
 
-  &:hover {
-    .theme-dark & {
-      backdrop-filter: saturate(150%) brightness(120%);
+  .theme-dark & {
+    background-color: rgba(var(--secondary), 0.06);
+    backdrop-filter: saturate(120%);
+
+    &:hover {
+      background-color: rgba(var(--secondary), 0.12);
     }
 
-    .theme-light & {
-      backdrop-filter: saturate(130%) brightness(100%);
+    &:focus {
+      background-color: rgba(var(--primary), 0.12);
+      backdrop-filter: saturate(120%) brightness(85%);
     }
   }
 
-  &:focus {
-    .theme-dark & {
-      backdrop-filter: saturate(150%) brightness(120%);
+  .theme-light & {
+    background-color: rgba(var(--primary), 0.4);
+    backdrop-filter: saturate(120%) brightness(105%);
+
+    &:hover {
+      background-color: rgba(var(--primary), 0.8);
     }
 
-    .theme-light & {
-      backdrop-filter: saturate(130%) brightness(100%);
-    }
-
-    &::placeholder {
-      opacity: 0;
+    &:focus {
+      background-color: rgba(var(--secondary), 0.08);
+      backdrop-filter: saturate(130%);
     }
   }
 }
 
 
+
+
 .label {
+  transition: color 400ms ease-out;
   font-size: var(--t0);
   text-transform: uppercase;
   display: flex;
@@ -76,6 +84,7 @@ $form-trans: 350ms ease-out;
 }
 
 .counter {
+  transition: color 400ms ease-out, background-color 400ms ease-out;
   pointer-events: none;
   position: absolute;
   z-index: 2;
@@ -83,9 +92,4 @@ $form-trans: 350ms ease-out;
   right: calc(var(--grid-gutter) * 1);
   border-radius: var(--note-radius-child);
   font-variant-numeric: tabular-nums;
-
-
-  .theme-dark & {
-    backdrop-filter: saturate(150%) brightness(80%);
-  }
 }

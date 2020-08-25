@@ -70,7 +70,6 @@ $indent: 15px;
     line-height: var(--input-height);
     padding: 0 $indent;
     border-radius: var(--note-radius-child);
-    outline: none;
     border: 0;
 
     &::placeholder {
