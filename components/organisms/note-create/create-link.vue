@@ -94,6 +94,12 @@ export default {
     this.$off('previewReady', this.handleLinkEmbed)
   },
   methods: {
+    reset() {
+      this.link = ''
+      this.linkTip = ''
+      this.linkIsValid = false
+      this.linkEmbedData = null
+    },
     checkLinkFormat() {
       const pattern = new RegExp(
         '^(https?:\\/\\/)?' + // protocol
@@ -130,7 +136,6 @@ export default {
     },
     handleLinkEmbed(val) {
       this.linkEmbedData = val
-      console.log('hiiiiii')
       this.$parent.$emit('embedDataReady', this.linkEmbedData)
     },
   },

@@ -15,7 +15,7 @@
     </div>
 
     <div v-if="linkEmbed.title" class="link-preview__info">
-      <h3 class="ts">{{ linkEmbed.title | truncate(40) }}</h3>
+      <h3 class="ts1">{{ linkEmbed.title | truncate(40) }}</h3>
       <p class="ts0">{{ link | truncate(25) }}</p>
     </div>
   </a>
@@ -171,6 +171,10 @@ export default {
     justify-content: space-between;
     padding: var(--grid-gutter);
     padding-left: 0;
+
+    > * {
+      word-break: break-all;
+    }
   }
 
   &__image {

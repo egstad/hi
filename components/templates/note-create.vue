@@ -99,8 +99,8 @@ export default {
       formIsValid: false,
       tags: ['none', 'love', 'cute', 'sad', 'joy', 'idk'],
       types: [
-        { value: 'link', message: 'link' },
         { value: 'text', message: 'message', defaultChecked: true },
+        { value: 'link', message: 'link' },
         { value: 'image', message: 'image' },
       ],
       coords: {
@@ -221,7 +221,15 @@ export default {
         })
     },
     submitSuccess() {
-      console.log('success')
+      this.resetForm()
+    },
+    resetForm() {
+      if (this.$refs.message) {
+        this.$refs.message.reset()
+      }
+      if (this.$refs.link) {
+        this.$refs.link.reset()
+      }
     },
     submitError(error) {
       this.error = error

@@ -26,6 +26,12 @@
       <div class="thumbnail video" v-html="embed.embed"></div>
     </template> -->
 
+    <template v-if="embed.type === 'website'">
+      <div class="thumbnail video" v-if="embed.thumbnail">
+        <img :src="embed.thumbnail" alt="" />
+      </div>
+    </template>
+
     <!-- <div class="wrapper" v-else v-html="embed.embed"></div> -->
 
     <!-- <figcaption>
