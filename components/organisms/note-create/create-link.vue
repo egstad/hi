@@ -6,10 +6,13 @@
         ref="paste"
         class="input instructions"
         type="button"
-        v-if="!linkIsValid"
+        v-if="!linkIsValid && !linkEmbedData"
       >
         <span class="ts4">☕</span><br />
-        <span class="ts1"><strong>click to paste link</strong></span>
+        <span class="ts1"
+          ><strong v-if="!linkEmbedIsLoading">click to paste link</strong
+          ><strong v-else>loading...</strong></span
+        >
       </button>
 
       <div class="input instructions" v-else>
@@ -82,6 +85,7 @@ export default {
       link: '',
       linkTip: '',
       linkIsValid: false,
+      linkEmbedIsLoading: false,
       linkEmbedData: null,
       linkKeyupTimeout: null,
       linkKeyupTimeoutDuration: 500,
@@ -116,6 +120,7 @@ export default {
         this.linkTip = null
       } else {
         this.linkIsValid = false
+        this.linkEmbedData = null
       }
     },
     onInput() {
@@ -131,11 +136,13 @@ export default {
     },
     async pasteLink() {
       const text = await navigator.clipboard.readText()
+      this.linkEmbedIsLoading = true
       this.link = text
       this.validate()
     },
     handleLinkEmbed(val) {
       this.linkEmbedData = val
+      this.linkEmbedIsLoading = false
       this.$parent.$emit('embedDataReady', this.linkEmbedData)
     },
   },

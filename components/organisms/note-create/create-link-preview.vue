@@ -47,6 +47,7 @@ export default {
     return {
       apiKey: '922bdfb9544ae6d6d87664139e5c4042',
       error: null,
+      isLoading: true,
       linkPreview: null,
       linkEmbed: {
         html: null,
@@ -130,8 +131,11 @@ export default {
             this.error = 'sorry, we cant find a preview image for that'
             console.warn('fetchLinkPreview() failed', this.error)
           }
+
+          // pass the embed data to my parent
           this.$parent.$emit('previewReady', this.linkEmbed)
-          console.log(this.linkEmbed)
+          // all done!
+          this.isLoading = false
         })
     },
   },
