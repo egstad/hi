@@ -1,17 +1,9 @@
 <template>
-  <li class="note" :class="[type, tag]" ref="note">
+  <li class="note" :class="[type, `tag--${tag}`]" ref="note">
     <article class="content">
-      <template v-if="type === 'image'">
-        <NoteImage :image="image" :message="message" />
-      </template>
-
-      <template v-else-if="type === 'link'">
-        <NoteEmbed :embed="embed" :message="message" :tag="tag" />
-      </template>
-
-      <template v-else>
-        <NoteText :message="message" />
-      </template>
+      <NoteImage v-if="type === 'image'" :image="image" />
+      <NoteEmbed v-else-if="type === 'link'" :embed="link" :tag="tag" />
+      <NoteText v-else :message="message" />
 
       <NoteUtilities
         :is-opaque="iconsAreOpaque"
@@ -46,38 +38,6 @@
       grid-column: 1 / 1;
     }
   }
-
-  // default, love, cute, sad, sparkle, curious
-  &.none {
-    background: var(--note-default-bg);
-    color: var(--note-default-fg);
-  }
-  &.love {
-    background: var(--note-love-bg);
-    color: var(--note-love-fg);
-  }
-  &.cute {
-    background: var(--note-cute-bg);
-    color: var(--note-cute-fg);
-  }
-  &.sad {
-    background: var(--note-sad-bg);
-    color: var(--note-sad-fg);
-  }
-  &.sparkle {
-    background: var(--note-curious-bg);
-    color: var(--note-curious-fg);
-  }
-  &.curious {
-    background: var(--note-curious-bg);
-    color: var(--note-curious-fg);
-  }
-
-  // /deep/.note__utilities {
-  //   opacity: 0;
-  //   pointer-events: none;
-  //   transition: opacity 200ms ease-out;
-  // }
 }
 </style>
 
@@ -105,11 +65,6 @@ export default {
       type: Object,
       required: true,
     },
-    index: {
-      type: Number,
-      required: false,
-      default: null,
-    },
   },
   data() {
     return {
@@ -127,18 +82,19 @@ export default {
         return false
       },
       set() {
-        if (
-          this.type === 'image' ||
-          (this.type === 'link' && this.embed.thumbnail) ||
-          (this.embed && this.embed.type === 'image') ||
-          (this.type === 'link' &&
-            this.embed.type === 'video' &&
-            this.embed.embed)
-        ) {
-          return true
-        } else {
-          return false
-        }
+        return true
+        // if (
+        //   this.type === 'image' ||
+        //   this.type === 'link' ||
+        //   this.embed ||
+        //   (this.type === 'link' &&
+        //     this.embed.type === 'video' &&
+        //     this.embed.embed)
+        // ) {
+        //   return true
+        // } else {
+        //   return false
+        // }
       },
     },
     // @string
@@ -149,7 +105,7 @@ export default {
     // @string
     // @returns: main message from note
     message() {
-      return this.note.message
+      return this.note.data.message
     },
     // @string
     // @returns: default, love, cute, sad, sparkle, curious
@@ -169,27 +125,17 @@ export default {
     // @string
     // @returns: a url attached to the note
     link() {
-      return this.note.media.link
+      return this.note.data.link
     },
     // @string
     // @returns: a firebase url to the uploaded image
     image() {
-      return this.note.media.image
-    },
-    // @string
-    // @returns: an embed attached to the note
-    embed() {
-      return this.note.media.embed
+      return this.note.data.image
     },
     // @object
     // @returns: the coordinates of the note
-    coords(old) {
+    coords() {
       return this.note.coords
-    },
-    // @number
-    // @returns: a random number
-    rotation() {
-      return this.note.rotation
     },
     ...mapState({
       dragEnabled: state => state.notes.areDraggable,
@@ -210,6 +156,7 @@ export default {
     },
   },
   mounted() {
+    console.log(this.note)
     this.$app.$on('draggableInit', this.draggableInit)
     this.$app.$on('draggableDestroy', this.draggableDestroy)
     this.$app.$on('canvasResized', this.moveNote)
@@ -277,8 +224,8 @@ export default {
         const self = this.$refs.note.getBoundingClientRect()
         const selfWidth = self.width
         const selfHeight = self.height
-        const isOffscreenX = this.note.coords.x + selfWidth > this.xBounds
-        const isOffscreenY = this.note.coords.y + selfHeight > this.yBounds
+        const isOffscreenX = this.coords.x + selfWidth > this.xBounds
+        const isOffscreenY = this.coords.y + selfHeight > this.yBounds
         gsap.set(this.$refs.note, { zIndex: this.coords.z })
 
         // is note offscreen?
@@ -291,7 +238,7 @@ export default {
           y: isOffscreenY
             ? this.yBounds - selfHeight
             : (this.coords.y / 100) * this.yBounds,
-          rotation: this.rotation,
+          rotation: this.coords.r,
           ease: 'elastic.out(1, 0.8)',
           duration: this.randomFloat(0.5, 1.5),
         })
@@ -309,10 +256,12 @@ export default {
             x: this.xPercent,
             y: this.yPercent,
             z,
+            r,
           },
-          rotation: r,
         })
-      // .then(() => {})
+        .then(() => {
+          console.log('updated pos')
+        })
       // .catch(error => {
       //   console.log("sorry, the note couldn't be deleted", error)
       // })
@@ -394,7 +343,7 @@ export default {
     onDragEnd() {
       const self = this.draggableInstance[0]
       const posOrNeg = self.endX > self.startX ? 1 : -1
-      const newRotation = Math.abs(this.rotation) * posOrNeg
+      const newRotation = Math.abs(this.coords.r) * posOrNeg
       const newZIndex = self.target.style.zIndex
       this.$store.dispatch('notes/updateHighestZ', newZIndex)
 

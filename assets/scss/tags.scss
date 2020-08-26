@@ -1,0 +1,93 @@
+//<!-- tags: none, love, cute, sad, joy, idk -->
+
+$tags: 'none', 'love', 'cute', 'sad', 'joy', 'idk';
+
+
+@each $tag in $tags {
+  .tag {
+    &--#{$tag} {
+      background-color: var(--note-#{$tag}-bg);
+      color: var(--note-#{$tag}-fg);
+
+      .label {
+        color: var(--note-#{$tag}-fg);
+      }
+
+      .input {
+        color: var(--note-#{$tag}-fg);
+
+        &::placeholder {
+          color: var(--note-#{$tag}-fg);
+        }
+      }
+
+      // icons
+      .icon .svg path {
+        fill: var(--note-#{$tag}-fg) !important;
+      }
+
+      .note__utilities.tag--link .icon {
+        background: var(--note-#{$tag}-bg) !important;
+      }
+
+
+      .counter {
+        background-color: var(--note-#{$tag}-bg);
+      }
+
+      .submit .button {
+        background-color: var(--note-#{$tag}-fg);
+        color: var(--note-#{$tag}-bg);
+      }
+
+    }
+  }
+}
+
+
+
+
+
+
+.icon {
+  pointer-events: auto;
+  appearance: none;
+  border: 0;
+  position: relative;
+  overflow: hidden;
+  padding: calc(var(--grid-gutter) * 0.5);
+  width: var(--note-icon-size);
+  height: var(--note-icon-size);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  border-radius: var(--note-radius-child);
+
+  // this hides descriptions
+  // while keeping them accessible for screen readers
+  .-hidden {
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    position: absolute !important;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  &.cancel {
+    svg {
+      transition: transform 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      transform: translate(0, 0, 0) rotate(0deg);
+    }
+
+    &:hover {
+      svg {
+        transform: translate3d(0, 0, 0) rotate(90deg);
+      }
+    }
+  }
+}

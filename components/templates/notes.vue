@@ -13,10 +13,9 @@
       v-if="$store.state.notes.canvasWidth"
     >
       <Note
-        v-for="(note, noteIndex) in notes"
+        v-for="note in notes"
         :key="note.id"
         :note="note"
-        :index="noteIndex"
         ref="note"
         class="draggable"
       />
@@ -94,6 +93,7 @@ export default {
     this.$store.dispatch('notes/getCanvasDimensions')
     this.$on('note::mounted', this.onNoteMount)
     window.addEventListener('resize', this.onResize)
+    console.log(this.notes)
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.onResize)

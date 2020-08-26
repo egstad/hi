@@ -1,5 +1,42 @@
 $t-headline: 72px;
-$t-input: 33px;
+$t-input: var(--t1);
+
+.t {
+  &s0 {
+    font-size: var(--t0);
+  }
+  &s1 {
+    font-size: var(--t1);
+    line-height: var(--t1-line);
+    letter-spacing: 0.08em;
+  }
+  &s2 {
+    font-size: var(--t2);
+    line-height: var(--t2-line);
+    letter-spacing: 0.06em;
+  }
+  &s3 {
+    font-size: var(--t3);
+    line-height: var(--t3-line);
+    letter-spacing: 0.04em;
+  }
+  &s4 {
+    font-size: var(--t4);
+    line-height: var(--t4-line);
+  }
+  &s5 {
+    font-size: var(--t5);
+    line-height: var(--t5-line);
+  }
+  &s6 {
+    font-size: var(--t6);
+    line-height: var(--t6-line);
+  }
+  &s7 {
+    font-size: var(--t7);
+    line-height: var(--t7-line);
+  }
+}
 
 
 .t-headline {

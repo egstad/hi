@@ -53,6 +53,7 @@ export default {
       '~/assets/scss/reset.scss',
       '~/assets/scss/typography.scss',
       '~/assets/scss/forms.scss',
+      '~/assets/scss/tags.scss',
     ],
   },
   /*

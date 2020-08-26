@@ -1,18 +1,26 @@
 <template>
   <div class="form-item" :class="`theme--${theme}`">
-    <label>
-      <span class="label" v-if="label"
-        >{{ label
-        }}<template v-if="value.length">
-          – {{ value.length }}/{{ max }}</template
-        ></span
+    <transition name="fade">
+      <span class="label counter" v-if="max && value.length"
+        >{{ value.length }}/{{ max }}</span
       >
+    </transition>
+
+    <label>
+      <div class="label" @click="$emit('click')">
+        <span>{{ label }}</span>
+
+        <transition name="fade">
+          <span class="tip" v-if="tip">{{ tip }}</span>
+        </transition>
+      </div>
+
       <textarea
         ref="input"
         :maxlength="max"
         :value="value"
         :placeholder="placeholder"
-        class="textarea input"
+        class="textarea input ts3"
         :required="required"
         @input="$emit('input', $event.target.value)"
       ></textarea>
@@ -25,8 +33,13 @@ export default {
   props: {
     label: {
       type: String,
-      required: false,
+      required: true,
       default: '',
+    },
+    tip: {
+      type: String,
+      required: false,
+      default: null,
     },
     required: {
       type: Boolean,
@@ -58,109 +71,39 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$indent: 15px;
-
-$light: white;
-$dark: black;
-
-$trans: 200ms ease-out;
-
 .form-item {
   padding-top: var(--grid-gutter);
-  .label {
-    font-size: 16px;
-    text-transform: uppercase;
-    display: block;
-    font-weight: bold;
-    letter-spacing: 0.125em;
-    padding: 6px $indent;
+  position: relative;
+  display: flex;
+
+  label {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    grid-template-rows: calc(var(--t0) + var(--grid-gutter)) auto;
   }
 
   .textarea {
     vertical-align: top;
+    font-weight: bold;
     appearance: none;
     resize: none;
     width: 100%;
+    height: 100%;
     min-height: calc(var(--input-height) * 2);
-    max-height: 300px;
-    font-size: $t-input;
-    line-height: 1;
-    padding: calc(var(--grid-gutter) * 0.5) $indent;
+    padding: calc(var(--grid-gutter) * 0.8) var(--grid-gutter);
     border-radius: var(--note-radius-child);
     outline: none;
-    letter-spacing: 0.04em;
     border: 0;
-
-    &::placeholder {
-      transition: color $trans;
-    }
   }
+}
 
-  // &.theme {
-  //   &--light {
-  //     .label {
-  //       color: $light;
-  //     }
-
-  //     .textarea {
-  //       color: $light;
-  //       background: rgba($light, 0.2);
-
-  //       &::placeholder {
-  //         color: rgba($light, 0.6);
-  //       }
-
-  //       &:hover {
-  //         background: rgba($light, 0.3);
-
-  //         &::placeholder {
-  //           color: $light;
-  //         }
-  //       }
-
-  //       &:focus {
-  //         background: rgba($light, 0.8);
-  //         color: inherit;
-
-  //         &::placeholder {
-  //           transition: none;
-  //           color: inherit;
-  //         }
-  //       }
-  //     }
-  //   }
-  //   &--dark {
-  //     .label {
-  //       color: $dark;
-  //     }
-
-  //     .textarea {
-  //       color: $dark;
-  //       background: rgba($dark, 0.05);
-
-  //       &::placeholder {
-  //         color: rgba($dark, 0.6);
-  //       }
-
-  //       &:hover {
-  //         background: rgba($dark, 0.1);
-
-  //         &::placeholder {
-  //           color: $dark;
-  //         }
-  //       }
-
-  //       &:focus {
-  //         background: rgba($dark, 0.15);
-  //         color: $dark;
-
-  //         &::placeholder {
-  //           transition: none;
-  //           color: $dark;
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease-in-out;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

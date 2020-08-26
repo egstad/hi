@@ -1,12 +1,38 @@
 :root {
   --grid-gutter: 15px;
-  --input-height: 60px;
+  --input-height: 54px;
   --note-radius: 32px;
   --note-radius-child: 18px;
   --note-icon-size: 54px;
 
   --timing-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  --t0: 16px;
+
+  --t1: 25px;
+  --t1-line: 20px;
+
+  --t2: 35px;
+  --t2-line: 30px;
+
+  --t3: 40px;
+  --t3-line: 30px;
+
+  --t4: 50px;
+  --t4-line: 35px;
+
+  --t5: 70px;
+  --t5-line: 40px;
+
+  --t6: 85px;
+  --t6-line: 60px;
+
+  --t6: 120px;
+  --t6-line: 90px;
 }
+
+
+
 
 .theme-light {
   --primary: 255, 255, 255;
@@ -14,8 +40,8 @@
   --tertiary: 255, 255, 255;
   --note-shadow: 0,0,0;
 
-  --note-default-bg: #FFEC87;
-  --note-default-fg: #3C3201;
+  --note-none-bg: #FFEC87;
+  --note-none-fg: #3C3201;
 
   --note-love-bg: #FFBBD3;
   --note-love-fg: #720037;
@@ -26,11 +52,11 @@
   --note-sad-bg: #BAEEFE;
   --note-sad-fg: #013A7D;
 
-  --note-sparkle-bg: #FFEC87;
-  --note-sparkle-fg: #3C3201;
+  --note-joy-bg: #FFEC87;
+  --note-joy-fg: #3C3201;
 
-  --note-curious-bg: #DED3FF;
-  --note-curious-fg: #1B0FA0;
+  --note-idk-bg: #DED3FF;
+  --note-idk-fg: #1B0FA0;
 }
 
 
@@ -40,8 +66,9 @@
   --tertiary: 50, 49, 49;
   --note-shadow: 0,0,0;
 
-  --note-default-bg: #382400;
-  --note-default-fg: #A1977D;
+  --note-none-bg: #382400;
+  --note-none-fg: #A1977D;
+
 
   --note-love-bg: #4A0B1E;
   --note-love-fg: #B47182;
@@ -52,9 +79,9 @@
   --note-sad-bg: #021E68;
   --note-sad-fg: #4C6AD6;
 
-  --note-sparkle-bg: #0F2606;
-  --note-sparkle-fg: #4A835D;
+  --note-joy-bg: #0F2606;
+  --note-joy-fg: #4A835D;
 
-  --note-curious-bg: #250B5E;
-  --note-curious-fg: #8C67DA;
+  --note-idk-bg: #250B5E;
+  --note-idk-fg: #8C67DA;
 }

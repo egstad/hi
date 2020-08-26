@@ -1,14 +1,22 @@
 <template>
   <div class="form-item" :class="`theme--${theme}`">
     <label>
-      <span class="label" v-if="label">{{ label }}</span>
+      <div class="label" v-if="label">
+        <span>{{ label }}</span>
+
+        <transition name="fade">
+          <span class="tip" v-if="tip">{{ tip }}</span>
+        </transition>
+      </div>
+
       <input
         ref="input"
         :type="type"
         :value="value"
         :placeholder="placeholder"
-        :class="`input input--${type}`"
+        :class="`input input--${type} ts1`"
         :required="required"
+        @keydown="$emit('keydown', $event)"
         @input="$emit('input', $event.target.value)"
       />
     </label>
@@ -22,6 +30,11 @@ export default {
       type: String,
       required: false,
       default: '',
+    },
+    tip: {
+      type: String,
+      required: false,
+      default: null,
     },
     type: {
       type: String,
@@ -52,19 +65,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$indent: 15px;
 $trans: 200ms ease-out;
 
 .form-item {
   padding-top: var(--grid-gutter);
 
-  .label {
-    font-size: 16px;
-    text-transform: uppercase;
-    display: block;
-    font-weight: bold;
-    letter-spacing: 0.125em;
-    padding: 6px $indent;
+  label {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    grid-template-rows: calc(var(--t0) + var(--grid-gutter)) auto;
   }
 
   .input {
@@ -72,10 +82,9 @@ $trans: 200ms ease-out;
     width: 100%;
     font-size: $t-input;
     line-height: var(--input-height);
-    padding: 0 $indent;
+    padding: 0 var(--grid-gutter);
     border-radius: var(--note-radius-child);
     outline: none;
-    letter-spacing: 0.04em;
     border: 0;
 
     &::placeholder {
