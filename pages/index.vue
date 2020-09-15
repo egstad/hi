@@ -23,14 +23,46 @@ export default {
       .orderBy('created', 'desc')
       .get()
 
+    // what time is it?
+    const date = new Date()
+    // but like, in seconds plz
+    const now = Math.round(date.getTime() / 1000)
+    // how many seconds should posts last? (a day)
+    const noteDuration = 86400
+    // fetch posts only a day old
+    const recentNotes = data.docs.filter(doc => {
+      const created = doc.data().created.seconds
+
+      return now - created < noteDuration
+    })
+
     return {
-      notes: data.docs.map(doc => doc.data()),
+      notes: recentNotes.map(doc => doc.data()),
     }
   },
   created() {
     this.watchData()
   },
   methods: {
+    filterNotes(data) {
+      // what time is it?
+      const date = new Date()
+      // but like, in seconds plz
+      const now = Math.round(date.getTime() / 1000)
+      // how many seconds should posts last? (a day)
+      const noteDuration = 86400
+      // fetch posts only a day old
+      const recentNotes = data.filter(doc => {
+        // newly created items don't have a time assigned quite yet...
+        // hacky fix is to set the time to right now
+        const created = doc.data().created ? doc.data().created.seconds : now
+        const isNotExpired = now - created < noteDuration
+
+        return isNotExpired
+      })
+
+      return recentNotes
+    },
     watchData() {
       this.$firebase
         .firestore()
@@ -39,14 +71,18 @@ export default {
         .onSnapshot(snapshot => {
           snapshot.docChanges().forEach(change => {
             if (change.type === 'added') {
-              this.notes = snapshot.docs.map(doc => doc.data())
+              const updates = this.filterNotes(snapshot.docs)
+              this.notes = updates.map(doc => doc.data())
+              // this.notes = snapshot.docs.map(doc => doc.data())
             }
             if (change.type === 'modified') {
-              this.notes = snapshot.docs.map(doc => doc.data())
+              const updates = this.filterNotes(snapshot.docs)
+              this.notes = updates.map(doc => doc.data())
               // console.log('Modified: ', change.doc.data())
             }
             if (change.type === 'removed') {
-              this.notes = snapshot.docs.map(doc => doc.data())
+              const updates = this.filterNotes(snapshot.docs)
+              this.notes = updates.map(doc => doc.data())
               // console.log('Removed: ', change.doc.data())
             }
           })

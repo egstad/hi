@@ -156,7 +156,7 @@ export default {
     },
   },
   mounted() {
-    console.log(this.note)
+    // console.log(this.note)
     this.$app.$on('draggableInit', this.draggableInit)
     this.$app.$on('draggableDestroy', this.draggableDestroy)
     this.$app.$on('canvasResized', this.moveNote)

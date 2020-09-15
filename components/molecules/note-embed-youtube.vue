@@ -55,7 +55,7 @@ export default {
       })
     },
     onPlayerReady() {
-      console.log(this.player)
+      // console.log(this.player)
     },
     toggle() {
       this.player().pauseVideo()

@@ -7,7 +7,7 @@
     <li>
       <nuxt-link to="/profile">profile</nuxt-link>
     </li>
-    <li v-if="$store.state.user.isLoggedIn && !$store.state.user.isAnon">
+    <!-- <li v-if="$store.state.user.isLoggedIn && !$store.state.user.isAnon">
       <button @click="$store.dispatch('user/logout')">
         logout
       </button>
@@ -26,7 +26,7 @@
       >
         +
       </button>
-    </li>
+    </li> -->
   </ul>
 </template>
 

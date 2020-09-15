@@ -27,11 +27,15 @@ header {
   }
 }
 h1 {
-  font-size: 130px;
+  font-size: 136px;
   line-height: 0.6;
   text-indent: -0.036em;
   margin-right: var(--grid-gutter);
   font-weight: bold;
+
+  @media (min-width: 800px) {
+    font-size: clamp(200px, 20vw, 280px);
+  }
 }
 
 h2 span {
